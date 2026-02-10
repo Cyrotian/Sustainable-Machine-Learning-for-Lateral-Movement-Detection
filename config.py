@@ -1,11 +1,30 @@
 import os
-from dataclasses import dataclass
 
-@dataclass
+from pathlib import Path
+
 class Config:
-    # Paths
-    LMD_2022_PATH = "../data/lmd2022/LMD-2022_NormalVsMalicious.csv"
-    LMD_2023_PATH = "../data/lmd2023/test_set.csv"
+
+    CONFIG_DIR = Path(__file__).parent.resolve(strict=True)  # .../src/
+    PROJECT_ROOT = Path("/home/mike/Documents/Sustainable-Machine-Learning-for-Lateral-Movement-Detection")
+
+    
+    
+
+    DATA_DIR = PROJECT_ROOT / "data"
+    LMD_2022_DIR = DATA_DIR / "lmd2022"
+    LMD_2023_DIR = DATA_DIR / "lmd2023"
+    
+   
+    LMD_2022_PATH = str(LMD_2022_DIR / "LMD-2022_NormalVsMalicious.csv")
+    LMD_2022_NORMAL_PATH = str(LMD_2022_DIR / "LMD-2022_NormalVsMalicious.csv")
+    LMD_2023_EORS_PATH = str(LMD_2023_DIR / "LMD-2023_EoRS.csv")
+    LMD_2023_NORMAL_PATH = str(LMD_2023_DIR / "LMD-2023_Normal.csv")
+    LMD_2023_TEST_PATH = str(LMD_2023_DIR / "lmd2023_test_file.csv")
+    
+
+    OUTPUT_DIR = str(PROJECT_ROOT / "final_datasets")
+
+    
     
     # Model parameters
     RANDOM_STATE = 42
@@ -17,8 +36,9 @@ class Config:
     RF_MAX_DEPTH = None
     
     # Isolation Forest
-    IF_CONTAMINATION = 0.35  # Based on your 35% normal, 65% malicious split
-    
+    IF_CONTAMINATION = 0.35
+
+
     # LSTM
     LSTM_UNITS = 64
     LSTM_EPOCHS = 50

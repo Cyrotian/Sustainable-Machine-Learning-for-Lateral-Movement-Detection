@@ -1,0 +1,1746 @@
+Feature,MI_Score
+num__EventID,0.46846403304093814
+cat__RuleName_-,0.2516914153156102
+cat__Image_Category_Infra,0.14974040751553921
+cat__Image_Category_System32,0.14820366148907077
+cat__Signed_True,0.11718358801015204
+cat__Signed_0,0.11667998418996545
+cat__Signature_0,0.11667998418996545
+cat__ImageLoaded_0,0.11667998418996545
+cat__EventType_0,0.09380613151956621
+cat__EventType_SetValue,0.09111620277047196
+cat__Product_MicrosoftÃÂÃÂ® WindowsÃÂÃÂ® Operating System,0.08780172157772537
+cat__GrantedAccess_0,0.0874376690863139
+cat__Signature_Microsoft Windows,0.08698432833990664
+cat__SourceImage_0,0.07986737464802163
+cat__TargetImage_0,0.07986737464802163
+cat__QueryName_0,0.0635469808915669
+cat__ParentUser_0,0.058799618316572516
+cat__RuleName_Sysmon_Event_3(NetworkConnect),0.05053977728941393
+cat__Archived_false - insufficient disk space,0.04719511846891672
+cat__IsExecutable_False,0.04719511846891672
+cat__RuleName_DLL,0.047184226915974584
+cat__Image_Category_UserProfile,0.046578471635784824
+cat__SourceImage_C:\Windows\system32\svchost.exe,0.04589312281823982
+cat__Product_MicrosoftÃÂÃÂÃÂÃÂ® WindowsÃÂÃÂÃÂÃÂ® Operating System,0.038250977016774296
+cat__DestinationPort_Bin_WellKnown,0.03804535126189397
+cat__GrantedAccess_0x1400,0.037723728237487486
+cat__SourcePort_Bin_WellKnown,0.03713848753644669
+cat__Protocol_udp,0.0347075613396699
+cat__OriginalFileName_0,0.03348920025933318
+cat__Company_0,0.03348920025933318
+cat__FileVersion_0,0.03348920025933318
+cat__Product_0,0.03348920025933318
+cat__Description_0,0.033376396673595696
+cat__TargetImage_C:\Windows\sysmon64.exe,0.0321847196555029
+cat__ParentImage_0,0.03171819215419028
+num__LogonId_Populated,0.03171819215419028
+cat__CurrentDirectory_0,0.03171819215419028
+cat__IntegrityLevel_0,0.031443415097843125
+cat__SourcePortName_netbios-dgm,0.030337873127871066
+cat__DestinationPortName_netbios-dgm,0.030337873127871066
+cat__Archived_0,0.029022439922124554
+cat__IsExecutable_nan,0.028491419551125857
+cat__SourceHostname_LAPTOP-ROPR18AK,0.02708110001990153
+cat__ParentUser_-,0.02669293081677679
+cat__ParentImage_-,0.02669293081677679
+num__QueryStatus,0.026568739319848256
+cat__TerminalSessionId_1,0.026178265200051357
+cat__QueryName_WINDOWS10EVAL,0.02544803299080424
+cat__TerminalSessionId_0,0.02386112834910097
+cat__GrantedAccess_0x1fffff,0.022822727818429558
+cat__CurrentDirectory_C:\Windows\system32\,0.021217931994611847
+cat__DestinationHostname_LAPTOP-ROPR18AK,0.019477750526578283
+cat__RuleName_T1122,0.018414210919965694
+cat__DestinationPortName_netbios-ns,0.01822167659188722
+cat__SourcePortName_netbios-ns,0.01822167659188722
+cat__ParentUser_NT AUTHORITY\SYSTEM,0.01789789817571636
+cat__Image_Category_AttackTool,0.017609138916176596
+cat__SourceIsIpv6_False,0.017486657794267293
+cat__SourceHostname_-,0.017124465708693637
+"cat__Signature_Splunk, Inc.",0.016906137555882855
+cat__FileVersion_10.0.14393.0 (rs1_release.160715-1616),0.016851023047632363
+cat__DestinationHostname_-,0.015119909584645527
+cat__IntegrityLevel_Medium,0.014818311933789817
+cat__DestinationIp_169.254.255.255,0.01471333378369237
+cat__Company_Microsoft Corporation,0.014430695389101855
+cat__FileVersion_10.0.14393.4350 (rs1_release.210407-2154),0.014209552183426094
+cat__Protocol_0,0.01369484366848446
+cat__SourcePort_Bin_NotPopulated,0.013505913952574056
+cat__DestinationIp_0,0.013505913952574056
+cat__SourceIsIpv6_0,0.013505913952574056
+cat__SourcePortName_0,0.013505913952574056
+cat__Initiated_0,0.013505913952574056
+cat__DestinationHostname_0,0.013505913952574056
+cat__DestinationPortName_0,0.013505913952574056
+cat__DestinationPort_Bin_NotPopulated,0.013505913952574056
+cat__SourceIp_0,0.013505913952574056
+cat__SourceHostname_0,0.013505913952574056
+cat__IntegrityLevel_System,0.013445998008896391
+cat__RuleName_InvDB-Pub,0.013384308784328336
+cat__QueryName_Other_Rare,0.012596591005402884
+cat__SourceIp_169.254.255.255,0.012559570896499929
+cat__GrantedAccess_0x1000,0.01227910387745594
+cat__Company_-,0.011529975973363919
+cat__RuleName_InvDB-CompileTimeClaim,0.010520299979226884
+"cat__RuleName_T1031,T1050",0.010169413412659653
+cat__RuleName_InvDB-Ver,0.009984745292005319
+cat__Description_-,0.009775500762371448
+cat__FileVersion_-,0.009775500762371448
+cat__ParentUser_STEFANIA\altinistef,0.009636853366773153
+cat__FileVersion_10.0.14393.4169 (rs1_release.210107-1130),0.009467103248362668
+cat__Product_-,0.009441167145896741
+cat__SourceImage_C:\Tools\ProcessExplorer\procexp64.exe,0.009279480722752337
+cat__SourceUser_ATTACKRANGE\Administrator,0.009279480722752337
+cat__RuleName_InvDB-Path,0.009235732546191297
+cat__Product_Microsoft Edge,0.008986259291144535
+cat__Description_Microsoft Edge,0.0085232135580149
+cat__ParentImage_C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe,0.0085232135580149
+cat__OriginalFileName_msedge.exe,0.008452005925219434
+cat__Description_MicrosoftÃÂÃÂ® C Runtime Library,0.008387820494876394
+cat__RuleName_InvDB-DriverVer,0.008309614777791956
+cat__OriginalFileName_-,0.008145572679014095
+cat__FileVersion_10.0.19041.1865 (WinBuild.160101.0800),0.007775934120240829
+cat__Initiated_False,0.007392029629201241
+cat__RuleName_T1042,0.007384855085001366
+cat__ImageLoaded_Other_Rare,0.007114817778942615
+cat__DestinationPortName_-,0.006786648701364476
+cat__DestinationIp_10.0.1.12,0.006781349253192778
+cat__SourceHostname_win-dc-128.attackrange.local,0.006604422283306835
+cat__IntegrityLevel_Low,0.00646144893581635
+cat__FileVersion_10.0.14393.2969 (rs1_release.190503-1820),0.006392262482070685
+cat__ParentImage_C:\Windows\System32\svchost.exe,0.006325851466660897
+cat__Initiated_True,0.006268380318530137
+cat__CurrentDirectory_Other_Rare,0.0061852192021846185
+cat__Description_Host Process for Windows Tasks,0.006003654068021855
+cat__OriginalFileName_taskhostw.exe,0.006003654068021855
+cat__IsExecutable_0,0.00599390474117599
+cat__ParentImage_Other_Rare,0.005901328468393571
+cat__QueryName__ldap._tcp.1d834d76-6b7b-4d0f-bba2-48dc02c609cf.domains._msdcs.stefania.local.,0.005610271500920347
+cat__SourceUser_0,0.005390522752536361
+cat__TargetUser_0,0.005390522752536361
+cat__DestinationPort_Bin_Registered,0.005227886059686113
+cat__QueryName__ldap._tcp.Default-First-Site-Name._sites.dc._msdcs.stefania.local.,0.005220531699743403
+cat__TargetUser_ATTACKRANGE\Administrator,0.004894206281510952
+cat__FileVersion_10.0.19041.2193 (WinBuild.160101.0800),0.0048664314016922915
+cat__QueryName__ldap._tcp.dc._msdcs.stefania.local.,0.004831032288957111
+cat__Description_Windows NT BASE API Client DLL,0.004797558248537601
+cat__SourceImage_C:\Windows\system32\csrss.exe,0.004762422063687606
+cat__RuleName_Usermode,0.0047602400149589046
+cat__RuleName_EXE,0.004689455674565274
+cat__FileVersion_10.0.14393.4046 (rs1_release.201028-1803),0.004683382320142267
+cat__FileVersion_107.0.1418.62,0.004618679265756785
+cat__Description_Windows Cryptographic Primitives Library,0.004613144141292123
+cat__SourceIp_10.0.1.14,0.004586809522482707
+cat__SourceImage_C:\Windows\system32\conhost.exe,0.0045645192068784505
+cat__Product_Microsoft Edge Update,0.0045479107865075315
+cat__RuleName_C:\Users,0.004512529519837976
+cat__Company_Microsoft,0.004490271168199715
+cat__Description_Microsoft Edge Update,0.0044417729311354605
+cat__OriginalFileName_msedgeupdate.dll,0.004371024266940745
+cat__SourceIp_192.168.1.5,0.004362592190672931
+cat__Signature_Microsoft Corporation,0.004288529436974338
+cat__Product_MicrosoftÃÂÃÂ® Visual StudioÃÂÃÂ® 2017,0.004244692428351661
+cat__FileVersion_14.16.27012.6 built by: vcwrkspc,0.004244692428351661
+cat__TargetImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-powershell.exe,0.004218393630498293
+cat__SourceImage_C:\Program Files\SplunkUniversalForwarder\bin\splunkd.exe,0.004200862518005825
+cat__ParentImage_C:\Program Files\SplunkUniversalForwarder\bin\splunkd.exe,0.004148275992050365
+cat__CurrentDirectory_C:\Program Files (x86)\Microsoft\Edge\Application\107.0.1418.62\,0.004123466318561805
+"cat__Company_The OpenSSL Project, http://www.openssl.org/",0.004095699680271403
+cat__Description_OpenSSL Shared Library,0.004095699680271403
+cat__Product_The OpenSSL Toolkit,0.004095699680271403
+cat__FileVersion_1.0.2t,0.004095699680271403
+cat__TargetImage_C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy\SearchUI.exe,0.004034373554108142
+cat__OriginalFileName_gdi32,0.003981819359317837
+cat__Description_GDI Client DLL,0.003981819359317837
+cat__SourceIp_10.0.1.15,0.003903007193721296
+cat__OriginalFileName_wevtutil.exe,0.0038760053340731737
+cat__Description_Eventing Command Line Utility,0.0038760053340731737
+cat__FileVersion_10.0.19041.746 (WinBuild.160101.0800),0.0038760053340731737
+cat__QueryName__kerberos._tcp.dc._msdcs.stefania.local.,0.003840661675239186
+cat__SourceHostname_win-host-987.attackrange.local,0.003754202348100172
+cat__QueryName__kerberos._tcp.Default-First-Site-Name._sites.dc._msdcs.stefania.local.,0.003628641227054887
+cat__NewThreadId_0,0.0035579835496473908
+cat__TargetImage_Other_Rare,0.003536721658331222
+cat__DestinationHostname_ip-10-0-1-12.us-west-2.compute.internal,0.0035355201868638927
+cat__FileVersion_8.0.2,0.0035355201868638927
+cat__Company_Splunk Inc.,0.0035355201868638927
+cat__DestinationPortName_https,0.003396309817509547
+cat__FileVersion_1.3.147.37,0.003204813612064022
+cat__RuleName_Downloads,0.003134203300378809
+cat__DestinationHostname_win-dc-128.attackrange.local,0.003028856905862229
+cat__StartAddress_0,0.002993006336792432
+cat__TargetImage_C:\Windows\SystemApps\ShellExperienceHost_cw5n1h2txyewy\ShellExperienceHost.exe,0.0029764975470131794
+"cat__RuleName_Suspicious,ImageBeginWithBackslash",0.0029577120235557263
+cat__SourceImage_C:\Windows\system32\taskmgr.exe,0.002819480206863033
+cat__StartModule_0,0.00278127001080946
+cat__SourceHostname_WINDOWS10EVAL.stefania.local,0.0027636655138894425
+cat__ParentImage_C:\ProgramData\Microsoft\Windows Defender\Platform\4.18.2211.5-0\MsMpEng.exe,0.0027107069926442934
+cat__SourcePortName_-,0.002684051472801832
+cat__SourcePort_Bin_Ephemeral,0.002684051472801832
+cat__FileVersion_10.0.19041.1 (WinBuild.160101.0800),0.0025856777738767155
+cat__Product_splunk Application,0.002531851410191452
+cat__TargetImage_C:\Program Files\Mozilla Firefox\firefox.exe,0.0024882979369587332
+cat__FileVersion_10.0.14393.4402 (rs1_release.210426-1725),0.0024708785094631203
+cat__TargetImage_C:\Program Files\SplunkUniversalForwarder\bin\splunkd.exe,0.0024447514696968875
+cat__Protocol_tcp,0.0024435701746791487
+cat__Description_Remote Procedure Call Runtime,0.0024360430167592595
+cat__OriginalFileName_rpcrt4.dll,0.0024360430167592595
+cat__ImageLoaded_C:\Windows\System32\rpcrt4.dll,0.0024360430167592595
+cat__TargetImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-admon.exe,0.0024186269512565944
+cat__OriginalFileName_Kernelbase.dll,0.0024186269512565944
+cat__ImageLoaded_C:\Windows\System32\KernelBase.dll,0.0024186269512565944
+cat__OriginalFileName_bcryptprimitives.dll,0.002375091688818984
+cat__ImageLoaded_C:\Windows\System32\bcryptprimitives.dll,0.002375091688818984
+cat__Product_Microsoft OneDrive,0.0023580099905324316
+cat__ImageLoaded_C:\Windows\System32\kernel32.dll,0.0023576795439895284
+cat__OriginalFileName_kernel32,0.0023576795439895284
+cat__GrantedAccess_0x101400,0.0023576795439895284
+cat__ImageLoaded_C:\Windows\System32\oleaut32.dll,0.0023402685190245173
+cat__Description_OLEAUT32.DLL,0.0023402685190245173
+cat__OriginalFileName_OLEAUT32.DLL,0.0023402685190245173
+cat__FileVersion_10.0.14393.3808 (rs1_release.200707-2105),0.0023054498281026986
+cat__SourceIsIpv6_True,0.002279338748479305
+cat__ImageLoaded_C:\Windows\System32\srvcli.dll,0.002261932761106804
+cat__OriginalFileName_SRVCLI.DLL,0.002261932761106804
+cat__OriginalFileName_DBGCORE.DLL,0.002261932761106804
+cat__ImageLoaded_C:\Windows\System32\dbgcore.dll,0.002261932761106804
+cat__FileVersion_10.0.14321.1024 (debuggers(dbg).210127-1811),0.002261932761106804
+cat__Description_Windows Core Debugging Helpers,0.002261932761106804
+cat__Description_Server Service Client DLL,0.002261932761106804
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\archive.dll,0.002244527892800753
+cat__Description_Host for SCM/SDDL/LSA Lookup APIs,0.0022358258782520235
+cat__OriginalFileName_sechost.dll,0.0022358258782520235
+cat__ImageLoaded_C:\Windows\System32\sechost.dll,0.0022358258782520235
+cat__OriginalFileName_bcrypt.dll,0.0022184226882724298
+cat__ImageLoaded_C:\Windows\System32\bcrypt.dll,0.0022184226882724298
+cat__ImageLoaded_C:\Windows\System32\dbghelp.dll,0.002209721512804484
+cat__ImageLoaded_C:\Windows\System32\kernel.appcore.dll,0.002209721512804484
+cat__FileVersion_10.0.14393.2312 (rs1_release.180607-1919),0.002209721512804484
+cat__OriginalFileName_kernel.appcore.dll,0.002209721512804484
+cat__OriginalFileName_DBGHELP.DLL,0.002209721512804484
+cat__FileVersion_10.0.14321.1024 (rs1_release.160715-1616),0.002209721512804484
+cat__Description_Windows Image Helper,0.002209721512804484
+cat__Description_AppModel API Host,0.002209721512804484
+cat__TargetImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-winprintmon.exe,0.0022010206169952445
+cat__ParentImage_C:\Windows\System32\services.exe,0.002181735241857814
+cat__FileVersion_10.0.19041.1741 (WinBuild.160101.0800),0.002146486188320038
+cat__ImageLoaded_C:\Windows\System32\ntdll.dll,0.0021401221752244334
+cat__OriginalFileName_ntdll.dll,0.0021401221752244334
+cat__Description_NT Layer DLL,0.0021401221752244334
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\vcruntime140.dll,0.0021314235160232523
+cat__OriginalFileName_vcruntime140.dll,0.0021314235160232523
+cat__OriginalFileName_ws2_32.dll,0.002122725136317824
+cat__FileVersion_10.0.14393.3241 (rs1_release_inmarket.190910-1801),0.002122725136317824
+cat__Description_Windows Socket 2.0 32-Bit DLL,0.002122725136317824
+cat__ImageLoaded_C:\Windows\System32\ws2_32.dll,0.002122725136317824
+cat__ImageLoaded_C:\Windows\System32\win32u.dll,0.002105329215316337
+cat__OriginalFileName_Win32u.DLL,0.002105329215316337
+cat__Description_Win32u,0.002105329215316337
+cat__OriginalFileName_msvcp140.dll,0.002096631673985286
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\msvcp140.dll,0.002096631673985286
+cat__Description_Cryptographic Service Provider API,0.0020879344120770388
+cat__ImageLoaded_C:\Windows\System32\cryptsp.dll,0.0020879344120770388
+cat__FileVersion_10.0.14393.3659 (rs1_release_1.200410-1813),0.0020879344120770388
+cat__OriginalFileName_cryptsp.dll,0.0020879344120770388
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\libxmlsec-openssl.dll,0.0020792374295731733
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\libxslt.dll,0.0020792374295731733
+"cat__RuleName_Context,DeviceConnectedOrUpdated",0.002075993975453272
+cat__ImageLoaded_C:\Windows\System32\advapi32.dll,0.00207054072645331
+cat__Description_Advanced Windows 32 Base API,0.00207054072645331
+cat__OriginalFileName_advapi32.dll,0.00207054072645331
+cat__ImageLoaded_C:\Windows\System32\ole32.dll,0.002061844302704112
+cat__OriginalFileName_libeay32.dll,0.002061844302704112
+cat__OriginalFileName_OLE32.DLL,0.002061844302704112
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\libeay32.dll,0.002061844302704112
+cat__Description_Microsoft OLE for Windows,0.002061844302704112
+cat__Description_Multi-User Windows USER API Client DLL,0.0020531481583014946
+cat__Description_Base cryptographic API DLL,0.0020531481583014946
+cat__OriginalFileName_user32,0.0020531481583014946
+cat__ImageLoaded_C:\Windows\System32\user32.dll,0.0020531481583014946
+cat__OriginalFileName_cryptbase.dll,0.0020531481583014946
+cat__Description_libxml2 library,0.0020444522932316217
+cat__OriginalFileName_libxml2.dll,0.0020444522932316217
+cat__FileVersion_2.9.9,0.0020444522932316217
+cat__ImageLoaded_C:\Windows\System32\gdi32full.dll,0.0020444522932316217
+cat__Product_libxml2,0.0020444522932316217
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\libxml2.dll,0.0020444522932316217
+cat__ImageLoaded_C:\Windows\System32\ucrtbase.dll,0.0020357567074747174
+cat__OriginalFileName_ucrtbase.dll,0.0020357567074747174
+cat__FileVersion_10.0.14393.2999 (rs1_release_inmarket.190520-1518),0.002027061401014142
+cat__OriginalFileName_msvcp_win.dll,0.002027061401014142
+cat__ImageLoaded_C:\Windows\System32\msvcp_win.dll,0.002027061401014142
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\ssleay32.dll,0.0020183663738306337
+cat__OriginalFileName_ssleay32.dll,0.0020183663738306337
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\libxmlsec.dll,0.0020183663738306337
+cat__OriginalFileName_NetApi32.DLL,0.0020096716259073374
+cat__Description_Net Win32 API DLL,0.0020096716259073374
+cat__ImageLoaded_C:\Windows\System32\netapi32.dll,0.0020096716259073374
+cat__OriginalFileName_ADs,0.0019922829677631176
+cat__Description_ADs Router Layer DLL,0.0019922829677631176
+cat__ImageLoaded_C:\Windows\System32\activeds.dll,0.0019922829677631176
+cat__FileVersion_10.0.14393.3269 (rs1_release.190929-1234),0.00198358905750836
+cat__OriginalFileName_WLDAP32.DLL,0.00198358905750836
+cat__OriginalFileName_WKSCLI.DLL,0.00198358905750836
+cat__ImageLoaded_C:\Windows\System32\Wldap32.dll,0.00198358905750836
+cat__ImageLoaded_C:\Windows\System32\wkscli.dll,0.00198358905750836
+cat__Description_Workstation Service Client DLL,0.00198358905750836
+cat__Description_Win32 LDAP API DLL,0.00198358905750836
+cat__ImageLoaded_C:\Windows\System32\msvcrt.dll,0.001974895426439305
+cat__ImageLoaded_C:\Windows\System32\combase.dll,0.001974895426439305
+cat__Description_Microsoft Enhanced Cryptographic Provider,0.001974895426439305
+cat__FileVersion_7.0.14393.2457 (rs1_release_inmarket.180822-1743),0.001974895426439305
+cat__OriginalFileName_rsaenh.dll,0.001974895426439305
+cat__ImageLoaded_C:\Windows\System32\rsaenh.dll,0.001974895426439305
+cat__Description_Microsoft COM for Windows,0.001974895426439305
+cat__OriginalFileName_COMBASE.DLL,0.001974895426439305
+cat__Description_Windows NT CRT DLL,0.001974895426439305
+cat__OriginalFileName_msvcrt.dll,0.001974895426439305
+cat__ImageLoaded_C:\Windows\System32\netutils.dll,0.001966202074540943
+cat__Description_Net Win32 API Helpers DLL,0.001966202074540943
+cat__OriginalFileName_NETUTILS.DLL,0.001966202074540943
+cat__TargetImage_C:\Windows\Explorer.EXE,0.0019575090017916186
+cat__ImageLoaded_C:\Windows\System32\gdi32.dll,0.0019227395019411134
+cat__TargetImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-MonitorNoHandle.exe,0.0019227395019411134
+cat__TargetImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-regmon.exe,0.0019215888545061075
+cat__ImageLoaded_C:\Windows\System32\cryptbase.dll,0.0019130071539956578
+cat__FileVersion_108.0.1462.46,0.0018997978145251868
+cat__TargetImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-netmon.exe,0.0018966653072514453
+cat__ParentUser_STEFANIA\altinitat,0.0018748833872133694
+cat__EventType_DeleteValue,0.0018445386807851164
+cat__OriginalFileName_adsldpc,0.0018358352840085676
+cat__Description_ADs LDAP Provider C DLL,0.0018358352840085676
+cat__ImageLoaded_C:\Windows\System32\adsldpc.dll,0.0018358352840085676
+cat__FileVersion_10.0.19041.1682 (WinBuild.160101.0800),0.0018293330934215923
+cat__SourceIp_192.168.1.21,0.0018293330934215923
+cat__Description_Microsoft OneDriveFile Co-Authoring Executable,0.0017941036768611973
+cat__OriginalFileName_FileCoAuth.exe,0.0017941036768611973
+cat__SourceIp_192.168.1.23,0.0017923795099531441
+cat__OriginalFileName_dsregcmd.exe,0.0017588762226298186
+cat__Description_DSREG commandline tool,0.0017588762226298186
+cat__FileVersion_10.0.19041.546 (WinBuild.160101.0800),0.0017236507304766637
+cat__RuleName_T1099,0.0016884272001558148
+cat__DestinationPort_Bin_Ephemeral,0.0016621104940023508
+cat__Archived_nan,0.0016532056314200565
+cat__TargetImage_C:\Windows\explorer.exe,0.001644744144797268
+cat__TargetImage_C:\Windows\system32\conhost.exe,0.0016360613879299532
+cat__SourceImage_C:\Windows\System32\RuntimeBroker.exe,0.0016100147880393385
+cat__StartModule_C:\Windows\System32\KERNELBASE.dll,0.0015475526922254235
+cat__FileVersion_10.0.19041.2075 (WinBuild.160101.0800),0.0014793867128834906
+cat__EventType_DeleteKey,0.0014771272027893833
+cat__SourceImage_C:\Windows\explorer.exe,0.0014624647042218789
+cat__FileVersion_10.0.19041.572 (WinBuild.160101.0800),0.0014419173983378653
+cat__OriginalFileName_GPUpdate.exe,0.0014419173983378653
+cat__Description_MicrosoftÃÂÃÂÃÂÃÂ® Group Policy Update Utility,0.0014419173983378653
+cat__SourcePortName_domain,0.0014364347998039144
+cat__TargetImage_C:\Windows\system32\svchost.exe,0.0014090067377385464
+cat__OriginalFileName_MoUSOCoreWorker.exe,0.001406709553727582
+cat__Description_Windows Modules Installer,0.001406709553727582
+cat__Description_MoUSO Core Worker Process,0.001406709553727582
+cat__OriginalFileName_TrustedInstaller.exe,0.001406709553727582
+cat__FileVersion_107.0.1418.56,0.001406709553727582
+cat__Description_Microsoft Malware Protection Command Line Utility,0.0013715036687159208
+cat__OriginalFileName_MpCmdRun.exe,0.0013715036687159208
+cat__FileVersion_22.238.1114.0002,0.0013715036687159208
+cat__DestinationIp_0:0:0:0:0:0:0:1,0.0013410132231687702
+cat__SourceIp_0:0:0:0:0:0:0:1,0.0013410132231687702
+cat__SourceHostname_iphonechristos,0.0013010977764942025
+cat__FileVersion_4.18.2211.5 (WinBuild.160101.0800),0.001265897768783884
+cat__SourceImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-powershell.exe,0.0012196162013858869
+cat__SourceIp_169.254.138.2,0.0011955036289346029
+cat__OriginalFileName_RUNDLL32.EXE,0.0011845573751989398
+cat__Description_Windows host process (Rundll32),0.0011845573751989398
+cat__FileVersion_10.0.19041.1202 (WinBuild.160101.0800),0.0011603094962978474
+cat__Description_Security Support Provider Interface,0.0011589380973329247
+cat__TargetUser_NT AUTHORITY\SYSTEM,0.0011577963386804405
+cat__SourceIp_192.168.1.255,0.0011251173215221623
+cat__SourceIp_169.254.77.2,0.0011251173215221623
+cat__ParentImage_C:\Windows\System32\smss.exe,0.0011251173215221623
+cat__FileVersion_4.18.1907.16384 (WinBuild.160101.0800),0.0011251173215221623
+cat__TargetImage_C:\Windows\system32\cmd.exe,0.0010982735896396187
+cat__SourceIp_169.254.80.102,0.001089927104361183
+cat__DestinationIp_169.254.9.4,0.001089927104361183
+cat__DestinationPortName_ldap,0.0010549501193283344
+cat__SourceIp_169.254.50.19,0.0010547388445676965
+cat__ParentImage_C:\Windows\explorer.exe,0.0010316990884331099
+cat__SourceIp_169.254.97.182,0.001019552541890261
+cat__SourceIp_169.254.3.2,0.001019552541890261
+cat__FileVersion_1.3.171.37,0.001019552541890261
+cat__Description_Network monitor,0.0009943089053904494
+cat__OriginalFileName_splunk-netmon.exe,0.0009943089053904494
+cat__Product_Splunk Application,0.0009943089053904494
+cat__DestinationIp_192.168.214.2,0.00098436819608721
+cat__SourceIp_169.254.234.2,0.00098436819608721
+cat__SourceIp_192.168.214.255,0.00098436819608721
+cat__DestinationIp_10.0.1.14,0.000959662880538812
+cat__SourceIp_169.254.250.108,0.0009491858069069952
+cat__SourceIp_192.168.156.105,0.0009491858069069952
+cat__SourceIp_192.168.229.2,0.0009491858069069952
+cat__DestinationIp_192.168.229.255,0.0009491858069069952
+cat__SourceIp_192.168.98.2,0.0009491858069069952
+cat__SourceHostname_LAPTOP-ROPR18AK.home,0.0009491858069069952
+cat__SourceIp_169.254.9.4,0.0009491858069069952
+cat__SourceIp_169.254.142.2,0.0009491858069069952
+cat__SourceIp_169.254.157.2,0.0009491858069069952
+cat__SourceIp_192.168.16.2,0.0009140053741022872
+cat__DestinationIp_169.254.3.2,0.0009140053741022872
+cat__DestinationIp_169.254.77.2,0.0009140053741022872
+cat__DestinationIp_169.254.250.108,0.0009140053741022872
+cat__DestinationIp_192.168.98.255,0.0009140053741022872
+cat__DestinationIp_192.168.156.255,0.0009140053741022872
+cat__DestinationIp_192.168.16.255,0.0009140053741022872
+cat__Description_Windows Modules Installer Worker,0.0009140053741022872
+cat__OriginalFileName_TiWorker.exe,0.0009140053741022872
+cat__SourceIp_192.168.1.8,0.0009140053741022872
+cat__FileVersion_22.248.1127.0001,0.0009140053741022872
+cat__DestinationIp_169.254.157.2,0.0009140053741022872
+cat__Description_Active Directory monitor,0.0009077021548547295
+cat__OriginalFileName_splunk-admon.exe,0.0009077021548547295
+cat__GrantedAccess_0x1410,0.0009077021548547295
+cat__GrantedAccess_0x3600,0.0008990430033632806
+cat__SourceIp_192.168.179.255,0.0008788268974263382
+cat__SourceIp_192.168.128.102,0.0008788268974263382
+cat__DestinationIp_192.168.179.2,0.0008788268974263382
+cat__DestinationIp_192.168.128.255,0.0008788268974263382
+cat__OriginalFileName_smartscreen.exe,0.0008788268974263382
+cat__OriginalFileName_slui.exe,0.0008788268974263382
+cat__OriginalFileName_logonui.exe,0.0008788268974263382
+cat__Description_Windows Logon User Interface Host,0.0008788268974263382
+cat__Description_Windows Defender SmartScreen,0.0008788268974263382
+cat__Description_Windows Activation Client,0.0008788268974263382
+cat__SourceIp_fe80:0:0:0:b574:557a:2d92:ce61,0.0008644091666222264
+cat__DestinationIp_fe80:0:0:0:b574:557a:2d92:ce61,0.0008470939095338754
+cat__DestinationIp_169.254.234.2,0.0008436503766341488
+cat__DestinationIp_192.168.76.2,0.0008436503766341488
+cat__SourceIp_169.254.45.171,0.0008436503766341488
+cat__SourceIp_192.168.76.255,0.0008436503766341488
+cat__OriginalFileName_splunk-winprintmon.exe,0.0008384366962475558
+cat__Description_Windows Print Monitor ,0.0008384366962475558
+cat__SourceImage_C:\Windows\system32\lsass.exe,0.0008384366962475558
+cat__SourceUser_NT AUTHORITY\SYSTEM,0.0008282906478373781
+cat__DestinationIp_192.168.179.255,0.0008084758114746717
+cat__SourceIp_169.254.30.169,0.0008084758114746717
+cat__FileVersion_10.0.19041.1949 (WinBuild.160101.0800),0.0008084758114746717
+cat__TargetImage_C:\Windows\system32\DllHost.exe,0.0008038106110749097
+cat__Description_Registry monitor,0.000777843953066553
+cat__OriginalFileName_splunk-regmon.exe,0.000777843953066553
+cat__DestinationIp_192.168.156.105,0.0007733032017036559
+cat__SourceIp_192.168.179.2,0.0007733032017036559
+cat__FileVersion_10.0.19041.2251 (WinBuild.160101.0800),0.0007733032017036559
+cat__DestinationIp_169.254.219.4,0.0007733032017036559
+cat__SourceIp_192.168.156.255,0.0007733032017036559
+cat__SourceIp_192.168.1.25,0.0007716075324669298
+cat__Image_Category_Other,0.0007586840460825639
+cat__Description_Windows Security Health Host,0.0007381325470712475
+cat__FileVersion_4.18.2210.6 (WinBuild.160101.0800),0.0007381325470712475
+cat__SourceIp_169.254.43.26,0.0007381325470712475
+cat__SourceIp_192.168.128.255,0.0007381325470712475
+cat__SourceIp_169.254.228.2,0.0007381325470712475
+cat__DestinationIp_169.254.45.171,0.0007381325470712475
+cat__DestinationIp_192.168.128.102,0.0007381325470712475
+cat__OriginalFileName_SecurityHealthHost.exe,0.0007381325470712475
+cat__DestinationIp_169.254.138.2,0.0007381325470712475
+cat__OriginalFileName_SplunkMonNoHandle.exe,0.0007345717232791777
+cat__FileVersion_10.0.10011.16384,0.0007345717232791777
+cat__Company_Windows (R) Win 7 DDK provider,0.0007345717232791777
+cat__Product_Windows (R) Win 7 DDK driver,0.0007345717232791777
+cat__Description_SplunkMonNoHandle Control Program,0.0007345717232791777
+cat__SourceIp_192.168.98.255,0.0007029638473340285
+cat__SourceIp_192.168.16.255,0.0007029638473340285
+cat__DestinationIp_192.168.98.2,0.0007029638473340285
+cat__DestinationIp_169.254.80.102,0.0007029638473340285
+cat__DestinationIp_169.254.142.2,0.0007029638473340285
+cat__DestinationIp_192.168.16.2,0.0007029638473340285
+cat__FileVersion_10.0.19041.1320 (WinBuild.160101.0800),0.0007029638473340285
+cat__Product_Oracle VM VirtualBox Guest Additions,0.0007029638473340285
+cat__Company_Oracle and/or its affiliates,0.0007029638473340285
+cat__FileVersion_10.0.14393.2273 (rs1_release_1.180427-1811),0.0006913064085152971
+cat__DestinationIp_10.0.1.15,0.000674002218315272
+cat__ImageLoaded_C:\Windows\System32\secur32.dll,0.000674002218315272
+cat__OriginalFileName_secur32.dll,0.000674002218315272
+cat__DestinationIp_169.254.50.19,0.0006677971022400358
+cat__DestinationIp_192.168.76.255,0.0006677971022400358
+cat__DestinationIp_192.168.1.28,0.0006677971022400358
+cat__DestinationIp_192.168.229.2,0.0006677971022400358
+cat__SourceIp_192.168.76.2,0.0006677971022400358
+cat__SourceIp_192.168.229.255,0.0006677971022400358
+cat__DestinationIp_169.254.228.2,0.0006677971022400358
+cat__FileVersion_7.0.4.154605,0.0006677971022400358
+cat__ParentUser_NT AUTHORITY\NETWORK SERVICE,0.0006326323115468501
+cat__DestinationIp_192.168.1.255,0.0006326323115468501
+cat__SourceIp_169.254.219.4,0.0006326323115468501
+cat__SourceImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-regmon.exe,0.0006220962825709952
+cat__FileVersion_108.0.1462.54,0.000597469475005006
+cat__DestinationIp_169.254.30.169,0.000597469475005006
+cat__RuleName_T1101,0.000597469475005006
+cat__DestinationIp_169.254.43.26,0.000597469475005006
+cat__DestinationIp_169.254.97.182,0.000597469475005006
+cat__OriginalFileName_CSRSS.Exe,0.0005689687037966056
+cat__Description_Client Server Runtime Process,0.0005689687037966056
+cat__FileVersion_108.0.1462.42,0.000562308592367727
+cat__IsExecutable_type:  5 sysazlive.uksouth.cloudapp.azure.com,0.000562308592367727
+cat__FileVersion_10.0.19041.964 (WinBuild.160101.0800),0.000562308592367727
+cat__Description_Microsoft Feedback SIUF Deployment Manager Client,0.000562308592367727
+cat__NewThreadId_nan,0.000562308592367727
+cat__SourceIp_192.168.214.2,0.000562308592367727
+cat__OriginalFileName_sc.exe,0.000562308592367727
+cat__Archived_::ffff:20.49.223.105,0.000562308592367727
+cat__Description_Service Control Manager Configuration Tool,0.000562308592367727
+cat__OriginalFileName_dmclient.exe,0.000562308592367727
+cat__TargetImage_C:\Windows\system32\winrs.exe,0.000535608497302659
+cat__DestinationIp_52.113.194.132,0.0005271496633896268
+cat__Description_UsoClient,0.0005271496633896268
+cat__Description_Consent UI for administrative applications,0.0005271496633896268
+cat__FileVersion_10.0.19041.2180 (WinBuild.160101.0800),0.0005271496633896268
+cat__OriginalFileName_UsoClient,0.0005271496633896268
+cat__OriginalFileName_consent.exe,0.0005271496633896268
+cat__StartModule_-,0.0005271496633896268
+cat__DestinationIp_192.168.214.255,0.0005271496633896268
+cat__FileVersion_10.0.14393.2339 (rs1_release_inmarket.180611-1502),0.0005183142551103831
+cat__SourceImage_C:\Program Files\SplunkUniversalForwarder\bin\splunk-admon.exe,0.0005096675482573979
+cat__ImageLoaded_C:\Program Files\SplunkUniversalForwarder\bin\splunk-powershell.exe,0.0005096675482573979
+cat__Archived_False,0.0004919926878230981
+cat__Description_Windows Problem Reporting,0.0004919926878230981
+cat__RuleName_C:\ProgramData,0.0004919926878230981
+cat__ImageLoaded_C:\Windows\System32\sspicli.dll,0.0004837290844556495
+cat__FileVersion_10.0.14393.2580 (rs1_release_inmarket.181009-1745),0.0004837290844556495
+cat__OriginalFileName_sspicli.dll,0.0004837290844556495
+cat__RuleName_ProcessHostingdotNETCode,0.0004568376654197838
+cat__Description_PWA Identity Proxy Host,0.0004568376654197838
+cat__OriginalFileName_identity_helper.exe,0.0004568376654197838
+cat__RuleName_T1137,0.0004568376654197838
+cat__FileVersion_10.0.19041.1620 (WinBuild.160101.0800),0.0004568376654197838
+cat__FileVersion_10.0.14393.3297 (rs1_release_1.191001-1045),0.00044050383290060793
+cat__TargetImage_C:\Windows\system32\winlogon.exe,0.00044050383290060793
+cat__Description_NSI User-mode interface DLL,0.00042321566437204285
+cat__OriginalFileName_nsi.dll,0.00042321566437204285
+cat__IsExecutable_::ffff:192.168.1.23,0.00042168459593621213
+cat__RuleName_T1053,0.00042168459593621213
+cat__OriginalFileName_unsecapp.dll,0.00042168459593621213
+cat__RuleName_Tamper-Winlogon,0.00042168459593621213
+cat__Description_VirtualBox Guest Additions Service,0.00042168459593621213
+cat__DestinationIp_192.168.1.5,0.00042168459593621213
+cat__OriginalFileName_VBoxService.exe,0.00042168459593621213
+cat__Description_Sink to receive asynchronous callbacks for WMI client application,0.00042168459593621213
+cat__OriginalFileName_smss.exe,0.0004096237757426366
+cat__Description_Windows Session Manager,0.0004096237757426366
+cat__DestinationHostname_ip-10-0-1-15.us-west-2.compute.internal,0.000397285481235226
+cat__Description_IP Helper API,0.000397285481235226
+cat__OriginalFileName_iphlpapi.dll,0.000397285481235226
+cat__GrantedAccess_0x101001,0.000388642638692694
+cat__OriginalFileName_services.exe,0.0003865334791224445
+cat__OriginalFileName_SecurityHealthService.exe,0.0003865334791224445
+cat__OriginalFileName_uhssvc,0.0003865334791224445
+cat__DestinationIp_192.168.1.1,0.0003865334791224445
+cat__Description_System activity monitor,0.0003865334791224445
+cat__FileVersion_10.0.19041.2072 (WinBuild.160101.0800),0.0003865334791224445
+cat__Product_Sysinternals Sysmon,0.0003865334791224445
+cat__Product_Microsoft Malware Protection,0.0003865334791224445
+cat__FileVersion_10.0.19041.928 (WinBuild.160101.0800),0.0003865334791224445
+cat__FileVersion_10.0.19041.2300 (WinBuild.160101.0800),0.0003865334791224445
+cat__Description_Microsoft Update Health Service,0.0003865334791224445
+cat__Description_Services and Controller app,0.0003865334791224445
+cat__Description_Windows Security Health Service,0.0003865334791224445
+cat__OriginalFileName_WerFault.exe,0.0003865334791224445
+cat__Description_DNS Client API DLL,0.0003800000720408647
+cat__OriginalFileName_dnsapi,0.0003800000720408647
+cat__Description_Windows Spooler Driver,0.0003627157663281715
+cat__OriginalFileName_winspool.drv,0.0003627157663281715
+cat__GrantedAccess_0x40,0.0003627157663281715
+cat__DestinationPortName_epmap,0.0003627157663281715
+cat__StartAddress_0x00007FFB1215AAB0,0.00035138431473528617
+cat__CurrentDirectory_C:\Windows,0.00035138431473528617
+"cat__RuleName_T1060,RunKey",0.00035138431473528617
+cat__DestinationIp_192.168.1.21,0.00035138431473528617
+cat__SourceUser_STEFANIA\altinistef,0.00035138431473528617
+cat__Description_Windows SQM Consolidator,0.00034609406519149367
+cat__OriginalFileName_wsqmcons.exe,0.00034609406519149367
+cat__Description_Antimalware Service Executable,0.00031623710252452015
+cat__FileVersion_1.3.171.39,0.00031623710252452015
+cat__Product_Microsoft SharePoint,0.00031623710252452015
+cat__IsExecutable_type:  5 e9659.dspg.akamaiedge.net,0.00031623710252452015
+cat__Description_Updateability From SCM,0.00031623710252452015
+cat__OriginalFileName_OneDrive.exe,0.00031623710252452015
+cat__Description_Application Frame Host,0.00031623710252452015
+cat__OriginalFileName_ApplicationFrameHost.exe,0.00031623710252452015
+cat__RuleName_T1023,0.00031623710252452015
+cat__OriginalFileName_SgrmBroker.exe,0.00031623710252452015
+cat__OriginalFileName_upfc.exe,0.00031623710252452015
+cat__RuleName_T1176,0.00031623710252452015
+cat__OriginalFileName_NisSrv.exe,0.00031623710252452015
+cat__OriginalFileName_MsMpEng.exe,0.00031623710252452015
+cat__Protocol_NT AUTHORITY\SYSTEM,0.00031623710252452015
+cat__Description_System Guard Runtime Monitor Broker Service,0.00031623710252452015
+cat__DestinationIp_104.103.236.46,0.00031623710252452015
+cat__DestinationHostname_a104-103-236-46.deploy.static.akamaitechnologies.com,0.00031623710252452015
+cat__TerminalSessionId_0x3e7,0.00031623710252452015
+cat__Description_Microsoft OneDrive,0.00031623710252452015
+cat__CurrentDirectory_nan,0.00031623710252452015
+cat__Description_Microsoft SharePoint,0.00031623710252452015
+cat__StartAddress_0x00007FF9D8E4AAB0,0.00031623710252452015
+cat__Description_Microsoft Network Realtime Inspection Service,0.00031623710252452015
+cat__OriginalFileName_Microsoft.SharePoint.exe,0.00031623710252452015
+cat__TargetImage_C:\Windows\system32\LogonUI.exe,0.0003108694686849633
+cat__DestinationPortName_microsoft-ds,0.00029358957549339634
+cat__GrantedAccess_0x1478,0.0002849500424475992
+cat__Description_Filter Library,0.0002849500424475992
+cat__OriginalFileName_filterLib.dll,0.0002849500424475992
+cat__Description_Windows Command Processor,0.0002846288251598878
+cat__OriginalFileName_Cmd.Exe,0.0002846288251598878
+cat__RuleName_0,0.00028109184224600885
+cat__Description_Windows Update,0.00028109184224600885
+cat__Description_Windows Start-Up Application,0.00028109184224600885
+cat__DestinationIp_224.0.0.251,0.00028109184224600885
+cat__OriginalFileName_CredentialUIBroker.exe,0.00028109184224600885
+cat__Description_Credential Manager UI Host,0.00028109184224600885
+cat__DestinationIp_239.255.255.250,0.00028109184224600885
+cat__Description_WMI Reverse Performance Adapter Maintenance Utility,0.00028109184224600885
+cat__OriginalFileName_wmicookr.dll,0.00028109184224600885
+cat__OriginalFileName_WinInit.exe,0.00028109184224600885
+cat__Description_DXGI Adapter Cache,0.00028109184224600885
+cat__OriginalFileName_wuauclt.exe,0.00028109184224600885
+cat__OriginalFileName_DXGIAdapterCache.exe,0.00028109184224600885
+cat__TargetImage_C:\Windows\system32\dwm.exe,0.00025903309729207683
+cat__DestinationHostname_win-host-987.attackrange.local,0.00025903309729207683
+cat__Description_Management Infrastructure,0.00025039466684018477
+cat__Product_Apache HTTP Server,0.00024594853365383766
+cat__FileVersion_14.12,0.00024594853365383766
+cat__Company_Microsoft Corp.,0.00024594853365383766
+cat__Company_Apache Software Foundation,0.00024594853365383766
+cat__Description_Windows Security notification icon,0.00024594853365383766
+cat__OriginalFileName_AppHostNameRegistrationVerifier.exe,0.00024594853365383766
+cat__Description_WaasMedic Agent Exe,0.00024594853365383766
+cat__Product_Windows Drive Optimizer,0.00024594853365383766
+cat__DestinationHostname_iphonechristos,0.00024594853365383766
+cat__FileVersion_2.2.14,0.00024594853365383766
+cat__Description_ApacheBench command line utility,0.00024594853365383766
+cat__Description_App Uri Handlers Registration Verifier,0.00024594853365383766
+cat__FileVersion_22.227.1030.0001,0.00024594853365383766
+cat__Description_Disk Defragmenter Module,0.00024594853365383766
+cat__OriginalFileName_Defrag.EXE,0.00024594853365383766
+cat__StartAddress_0x00007FFC4B67ACA0,0.00024594853365383766
+cat__StartAddress_0x00007FF893ACAAB0,0.00024594853365383766
+cat__DestinationIp_192.168.1.22,0.00024594853365383766
+cat__OriginalFileName_sihost.exe,0.00024594853365383766
+cat__OriginalFileName_SecurityHealthSystray.exe,0.00024594853365383766
+cat__OriginalFileName_WaasMedicAgent.exe,0.00024594853365383766
+cat__OriginalFileName_ab.exe,0.00024594853365383766
+cat__Description_Shell Infrastructure Host,0.00024594853365383766
+"cat__RuleName_T1089,Tamper-Defender",0.00024594853365383766
+cat__ParentImage_C:\Windows\System32\winlogon.exe,0.00023688656348116704
+cat__TargetUser_NT AUTHORITY\NETWORK SERVICE,0.00021672950787751102
+cat__TargetImage_C:\Windows\system32\lsass.exe,0.00021367297847797628
+cat__IntegrityLevel_High,0.00021183817302721474
+cat__IsExecutable_::ffff:192.168.1.25,0.00021080717649903948
+cat__Description_Standalone Updater,0.00021080717649903948
+cat__Product_Microsoft Your Phone,0.00021080717649903948
+cat__Description_WindowsÃÂÃÂÃÂÃÂ® installer,0.00021080717649903948
+cat__FileVersion_4.8.4320.0 built by: NET48REL1LAST_C,0.00021080717649903948
+cat__FileVersion_5.0.19041.2193 (WinBuild.160101.0800),0.00021080717649903948
+cat__OriginalFileName_ClipRenew.exe,0.00021080717649903948
+cat__DestinationIp_224.0.0.252,0.00021080717649903948
+cat__Description_Acquire License From Store,0.00021080717649903948
+cat__Product_MicrosoftÃÂÃÂÃÂÃÂ® .NET Framework,0.00021080717649903948
+cat__StartAddress_nan,0.00021080717649903948
+cat__OriginalFileName_NGenTask.exe,0.00021080717649903948
+cat__OriginalFileName_PhoneExperienceHost.dll,0.00021080717649903948
+cat__OriginalFileName_msiexec.exe,0.00021080717649903948
+cat__Description_Microsoft .NET Framework optimization service,0.00021080717649903948
+cat__Description_Microsoft Phone Link,0.00021080717649903948
+cat__OriginalFileName_OneDriveStandaloneUpdater.exe,0.00021080717649903948
+cat__IntegrityLevel_AppContainer,0.00021080717649903948
+cat__Description_whoami - displays logged on user information,0.00019234164208714962
+cat__OriginalFileName_whoami.exe,0.00019234164208714962
+cat__DestinationIp_192.168.1.33,0.0001899333696409461
+cat__SourceUser_NT AUTHORITY\NETWORK SERVICE,0.0001899333696409461
+cat__Company_Sysinternals - www.sysinternals.com,0.00018609467145369054
+cat__FileVersion_10.0.14393.3986 (rs1_release.201002-1707),0.00018129714353295502
+cat__Description_Speech Model Download Executable,0.0001756677705370322
+cat__FileVersion_1.1.18500.10 (bd3bd17b10e8c188734ef863541b1db0d3f8b954),0.0001756677705370322
+cat__IsExecutable_212.205.126.80,0.0001756677705370322
+cat__OriginalFileName_VSSVC.EXE,0.0001756677705370322
+cat__Description_Microsoft Malware Protection Signature Update Stub,0.0001756677705370322
+cat__FileVersion_10.0.19041.84 (WinBuild.160101.0800),0.0001756677705370322
+cat__Description_Userinit Logon Application,0.0001756677705370322
+cat__DestinationHostname_LAPTOP-ROPR18AK.home,0.0001756677705370322
+cat__DestinationIp_20.223.237.241,0.0001756677705370322
+cat__OriginalFileName_spoolsv.exe,0.0001756677705370322
+cat__DestinationIp_52.109.88.193,0.0001756677705370322
+cat__DestinationIp_52.109.76.149,0.0001756677705370322
+cat__StartAddress_0x00007FFB9DE3B880,0.0001756677705370322
+cat__Description_MicrosoftÃÂÃÂÃÂÃÂ® Volume Shadow Copy Service,0.0001756677705370322
+cat__OriginalFileName_MpSigStub.exe,0.0001756677705370322
+cat__OriginalFileName_EXPLORER.EXE,0.0001756677705370322
+cat__OriginalFileName_SpeechModelDownload.exe,0.0001756677705370322
+cat__Description_Windows logon reminder,0.0001756677705370322
+cat__IsExecutable_::ffff:212.205.126.113,0.0001756677705370322
+cat__OriginalFileName_USERINIT.EXE,0.0001756677705370322
+cat__OriginalFileName_WLRMNDR.EXE,0.0001756677705370322
+cat__RuleName_sc Execution,0.0001756677705370322
+cat__Description_Spooler SubSystem App,0.0001756677705370322
+cat__Description_Microsoft(C) Register Server,0.0001756677705370322
+cat__IsExecutable_type:  5 e-prod-alb-default-us-east-1.adzerk.net,0.0001756677705370322
+cat__IsExecutable_type:  5 e4113.dscd.akamaiedge.net,0.0001756677705370322
+cat__Description_Windows Logon Application,0.0001756677705370322
+cat__OriginalFileName_WINLOGON.EXE,0.0001756677705370322
+cat__Description_Windows Explorer,0.0001756677705370322
+cat__Archived_::ffff:212.205.126.80,0.0001756677705370322
+cat__OriginalFileName_REGSVR32.EXE,0.0001756677705370322
+cat__DestinationPortName_domain,0.00017266119289094817
+cat__OriginalFileName_PROFAPI.DLL,0.00016402551769269203
+cat__Description_User Profile Basic API,0.00016402551769269203
+cat__GrantedAccess_0x3200,0.00016402551769269203
+cat__FileVersion_10.0.19041.2311 (WinBuild.160101.0800),0.00016292171051849003
+cat__Description_winrs,0.0001553901179223399
+cat__TargetUser_ATTACKRANGE\REED_SCHMIDT,0.0001553901179223399
+cat__OriginalFileName_winrs.exe,0.0001553901179223399
+cat__Description_COM+ Configuration Catalog,0.00014675499356201502
+cat__FileVersion_2001.12.10941.16384 (rs1_release.210107-1130),0.00014675499356201502
+cat__OriginalFileName_CLBCATQ.DLL,0.00014675499356201502
+cat__Product_Windows Installer - Unicode,0.00014174286580334873
+cat__Description_Desktop Window Manager,0.00014174286580334873
+cat__OriginalFileName_dwm.exe,0.00014174286580334873
+cat__Description_Microsoft Edge Installer,0.00014053031552312242
+cat__IsExecutable_type:  5 e8652.dscx.akamaiedge.net,0.00014053031552312242
+cat__Description_Microsoft Antimalware WU Stub,0.00014053031552312242
+cat__SourceIp_192.168.1.14,0.00014053031552312242
+cat__OriginalFileName_RUNONCE.EXE,0.00014053031552312242
+cat__StartModule_C:\Windows\SYSTEM32\KERNELBASE.dll,0.00014053031552312242
+cat__IsExecutable_type:  5 a1858.dscd.akamai.net,0.00014053031552312242
+cat__RuleName_Mimikatz Execution,0.00014053031552312242
+cat__Archived_::ffff:104.103.236.46,0.00014053031552312242
+cat__Archived_::ffff:104.103.236.172,0.00014053031552312242
+"cat__Description_Failed to open service configuration with error 94 - Last error: The media is write protected.
+",0.00014053031552312242
+cat__OriginalFileName_sihclient.exe,0.00014053031552312242
+cat__DestinationIp_204.79.197.239,0.00014053031552312242
+cat__DestinationIp_40.126.32.101,0.00014053031552312242
+cat__OriginalFileName_CTFMON.EXE,0.00014053031552312242
+cat__DestinationHostname_speedport.ip,0.00014053031552312242
+cat__Description_CTF Loader,0.00014053031552312242
+cat__Archived_212.205.126.113,0.00014053031552312242
+cat__Description_Run Once Wrapper,0.00014053031552312242
+cat__Description_Background Task Host,0.00014053031552312242
+cat__FileVersion_14.13,0.00014053031552312242
+cat__StartAddress_0xFFFFFEC8753020D0,0.00014053031552312242
+cat__StartAddress_0x00007FFD44D6B880,0.00014053031552312242
+cat__FileVersion_10.0.19041.2364 (WinBuild.160101.0800),0.00014053031552312242
+cat__FileVersion_1.22092.214.0,0.00014053031552312242
+cat__OriginalFileName_backgroundTaskHost.exe,0.00014053031552312242
+cat__Product_Microsoft Edge Installer,0.00014053031552312242
+cat__Description_SIH Client,0.00014053031552312242
+cat__TargetImage_C:\Windows\System32\svchost.exe,0.00013960260264758977
+cat__TargetUser_Window Manager\DWM-1,0.00013812014459387142
+cat__OriginalFileName_mi.dll,0.00013812014459387142
+cat__Description_Crypto API32,0.00013812014459387142
+cat__OriginalFileName_CRYPT32.DLL,0.00013812014459387142
+cat__TargetImage_C:\Users\Public\splunkd.exe,0.00013812014459387142
+cat__SourceHostname_ip-10-0-1-15.us-west-2.compute.internal,0.0001294855709997292
+cat__Description_Performance Counters for Windows Native DLL,0.0001294855709997292
+cat__OriginalFileName_pcwum.dll,0.0001294855709997292
+cat__OriginalFileName_DSROLE.DLL,0.00012085127276318438
+cat__OriginalFileName_winnsi.dll,0.00012085127276318438
+cat__Description_Network Store Information RPC interface,0.00012085127276318438
+cat__Description_ASN.1 Runtime APIs,0.00012085127276318438
+cat__OriginalFileName_msasn1.dll,0.00012085127276318438
+cat__OriginalFileName_imm32,0.00012085127276318438
+cat__Description_DS Setup Client DLL,0.00012085127276318438
+cat__Description_Multi-User Windows IMM32 API Client DLL,0.00012085127276318438
+cat__OriginalFileName_OnDemandConnRouteHelper.dll,0.00011221724986494727
+cat__OriginalFileName_miutils.dll,0.00011221724986494727
+cat__OriginalFileName_webio.dll,0.00011221724986494727
+cat__Description_On Demand Connctiond Route Helper,0.00011221724986494727
+cat__FileVersion_10.0.14393.3866 (rs1_release.200805-1327),0.00011221724986494727
+cat__Description_Web Transfer Protocols API,0.00011221724986494727
+cat__SourceIp_192.168.1.18,0.00010631563728020387
+cat__RuleName_Sysmon_Event_1(ProcessCreate),0.00010539481120795408
+cat__IsExecutable_192.168.1.22,0.00010539481120795408
+cat__IsExecutable_::ffff:152.199.21.118,0.00010539481120795408
+cat__StartAddress_0x00007FFC8DC5AAB0,0.00010539481120795408
+cat__OriginalFileName_DiskSnapshot.exe,0.00010539481120795408
+cat__Description_VirtualBox Certificate Utility,0.00010539481120795408
+cat__FileVersion_10.0.19041.1806 (WinBuild.160101.0800),0.00010539481120795408
+cat__OriginalFileName_WerMgr,0.00010539481120795408
+cat__SourceUser_STEFANIA\altinitat,0.00010539481120795408
+cat__OriginalFileName_dasHost.exe,0.00010539481120795408
+cat__FileVersion_10.0.19041.1081 (WinBuild.160101.0800),0.00010539481120795408
+cat__OriginalFileName_dstokenclean.exe,0.00010539481120795408
+cat__IsExecutable_type:  5 cs9.wpc.v0cdn.net,0.00010539481120795408
+cat__IsExecutable_type:  5 azureedge.mdc.akamaized.net,0.00010539481120795408
+cat__IsExecutable_::ffff:52.85.221.122,0.00010539481120795408
+cat__StartModule_52.200.237.99,0.00010539481120795408
+cat__StartModule_nan,0.00010539481120795408
+"cat__RuleName_Alert,Sysinternals Tool Used",0.00010539481120795408
+cat__Description_VirtualBox Guest Additions Tray Application,0.00010539481120795408
+cat__OriginalFileName_SystemSettings.exe,0.00010539481120795408
+cat__Description_Setup/Uninstall,0.00010539481120795408
+cat__Description_Settings,0.00010539481120795408
+cat__IsExecutable_type:  5 a-0016.a-msedge.net,0.00010539481120795408
+cat__IsExecutable_type:  5 a1851.dscg2.akamai.net,0.00010539481120795408
+cat__IsExecutable_type:  5 firstparty-azurefd-prod-first.trafficmanager.net,0.00010539481120795408
+cat__IsExecutable_::ffff:212.205.126.80,0.00010539481120795408
+cat__OriginalFileName_VBoxCertUtil.exe,0.00010539481120795408
+cat__IsExecutable_::ffff:212.205.126.41,0.00010539481120795408
+cat__IsExecutable_52.85.158.44,0.00010539481120795408
+cat__IsExecutable_212.205.126.113,0.00010539481120795408
+cat__FileVersion_12.0.4518.1014,0.00010539481120795408
+cat__FileVersion_10.0.19645.1046 (WinBuild.160101.0800),0.00010539481120795408
+cat__DestinationIp_52.184.220.11,0.00010539481120795408
+cat__DestinationIp_20.50.73.10,0.00010539481120795408
+cat__DestinationIp_52.109.28.62,0.00010539481120795408
+cat__Archived_type:  5 a1879.dscw14.akamai.net,0.00010539481120795408
+cat__ParentUser_LAPTOP-ROPR18AK\chrsm,0.00010539481120795408
+cat__Description_DiskSnapshot.exe,0.00010539481120795408
+cat__Archived_::ffff:212.205.126.113,0.00010539481120795408
+cat__Archived_52.85.158.83,0.00010539481120795408
+cat__DestinationIp_51.132.193.104,0.00010539481120795408
+cat__DestinationIp_192.168.1.8,0.00010539481120795408
+cat__DestinationIp_192.168.1.6,0.00010539481120795408
+cat__DestinationIp_52.109.68.59,0.00010539481120795408
+cat__OriginalFileName_setup.exe,0.00010539481120795408
+cat__Archived_204.79.197.219,0.00010539481120795408
+cat__Archived_212.205.126.80,0.00010539481120795408
+cat__DestinationIp_20.50.80.210,0.00010539481120795408
+cat__DestinationIp_20.50.201.195,0.00010539481120795408
+cat__Description_Device Census,0.00010539481120795408
+cat__Description_Data Sharing Service Maintenance Driver,0.00010539481120795408
+cat__Description_Device Association Framework Provider Host,0.00010539481120795408
+cat__Archived_::ffff:152.199.19.161,0.00010539481120795408
+cat__OriginalFileName_DeviceCensus.exe,0.00010539481120795408
+cat__Archived_::ffff:212.205.126.123,0.00010539481120795408
+cat__TargetUser_ATTACKRANGE\JULIUS_PITTS,0.00010358350228961396
+cat__Product_MicrosoftÃÂÃÂ® .NET Framework,0.00010358350228961396
+cat__OriginalFileName_CFGMGR32.DLL,0.00010358350228961396
+cat__Description_Remote Access AutoDial Helper,0.00010358350228961396
+cat__OriginalFileName_rasadhlp.dll,0.00010358350228961396
+cat__Description_Configuration Manager DLL,0.00010358350228961396
+cat__TargetImage_C:\Program Files\Amazon\SSM\amazon-ssm-agent.exe,0.00010358350228961396
+cat__DestinationIp_192.168.1.31,0.00010358350228961396
+cat__OriginalFileName_UxTheme.dll,0.00010358350228961396
+cat__OriginalFileName_userenv.dll,0.00010358350228961396
+cat__Description_Userenv,0.00010358350228961396
+cat__Description_Microsoft UxTheme Library,0.00010358350228961396
+cat__FileVersion_10.0.14393.206 (rs1_release.160915-0644),9.495003001689555e-05
+cat__OriginalFileName_winrshost.exe,9.495003001689555e-05
+cat__Description_Host Process for WinRM's Remote Shell plugin,9.495003001689555e-05
+cat__GrantedAccess_0x100000,9.495003001689555e-05
+cat__TerminalSessionId_2,9.313139795090849e-05
+cat__OriginalFileName_winhttp.dll,8.631683303083042e-05
+cat__Description_Console Window Host,8.631683303083042e-05
+cat__Description_SHCORE,8.631683303083042e-05
+cat__OriginalFileName_CONHOST.EXE,8.631683303083042e-05
+cat__OriginalFileName_SHCORE.dll,8.631683303083042e-05
+cat__Description_Windows HTTP Services,8.631683303083042e-05
+cat__RuleName_RDP,8.540282770830949e-05
+cat__FileVersion_10.0.19041.2006 (WinBuild.160101.0800),8.144804213429515e-05
+cat__DestinationHostname_WIN-VS75JVTCIPO,8.015321695963962e-05
+cat__DestinationPortName_ms-wbt-server,8.015321695963962e-05
+cat__Description_Group Policy Client API,7.768391131182488e-05
+cat__OriginalFileName_gpapi.dll,7.768391131182488e-05
+cat__ParentUser_NT AUTHORITY\LOCAL SERVICE,7.026125734566817e-05
+cat__IsExecutable_type:  5 dual.part-0032.t-0009.t-msedge.net,7.026125734566817e-05
+cat__Archived_type:  5 dual.part-0032.t-0009.t-msedge.net,7.026125734566817e-05
+cat__IsExecutable_::ffff:192.168.1.14,7.026125734566817e-05
+cat__OriginalFileName_elevation_service.exe,7.026125734566817e-05
+cat__IsExecutable_157.240.20.35,7.026125734566817e-05
+cat__FileVersion_1.22102.229.0,7.026125734566817e-05
+cat__OriginalFileName_SystemSettingsBroker.exe,7.026125734566817e-05
+cat__Archived_type:  5 firstparty-azurefd-prod.trafficmanager.net,7.026125734566817e-05
+cat__StartModule_::ffff:13.107.227.60,7.026125734566817e-05
+cat__IsExecutable_type:  5 e11089.d.akamaiedge.net,7.026125734566817e-05
+cat__Archived_::ffff:52.85.221.120,7.026125734566817e-05
+cat__IsExecutable_::ffff:192.168.1.18,7.026125734566817e-05
+cat__IsExecutable_52.30.235.132,7.026125734566817e-05
+cat__IsExecutable_52.85.158.21,7.026125734566817e-05
+cat__IsExecutable_52.85.158.37,7.026125734566817e-05
+cat__IsExecutable_52.85.158.73,7.026125734566817e-05
+cat__IsExecutable_52.85.158.83,7.026125734566817e-05
+cat__IsExecutable_212.205.126.41,7.026125734566817e-05
+cat__StartAddress_::ffff:13.107.219.60,7.026125734566817e-05
+cat__Description_System Settings Broker,7.026125734566817e-05
+cat__OriginalFileName_LINK.EXE,7.026125734566817e-05
+cat__DestinationIp_13.107.42.16,7.026125734566817e-05
+cat__DestinationIp_104.16.163.13,7.026125734566817e-05
+cat__DestinationIp_20.42.73.26,7.026125734566817e-05
+cat__DestinationIp_20.82.250.189,7.026125734566817e-05
+cat__DestinationIp_20.108.14.61,7.026125734566817e-05
+cat__OriginalFileName_srtasks.exe,7.026125734566817e-05
+cat__Archived_type:  5 s.pinimg.com.edgekey.net,7.026125734566817e-05
+cat__IsExecutable_185.199.109.133,7.026125734566817e-05
+cat__IsExecutable_type:  5 s3-w.us-east-1.amazonaws.com,7.026125734566817e-05
+cat__OriginalFileName_WinWord.exe,7.026125734566817e-05
+cat__IsExecutable_151.101.2.152,7.026125734566817e-05
+cat__OriginalFileName_MicrosoftEdgeUpdate.exe,7.026125734566817e-05
+cat__Description_Provisioning package runtime processing tool,7.026125734566817e-05
+cat__OriginalFileName_MicrosoftEdgeUpdateComRegisterShell64.exe,7.026125734566817e-05
+cat__Product_MicrosoftÃÂÃÂÃÂÃÂ® Visual StudioÃÂÃÂÃÂÃÂ®,7.026125734566817e-05
+cat__Archived_52.85.158.88,7.026125734566817e-05
+cat__Description_MicrosoftÃÂÃÂÃÂÃÂ® Incremental Linker,7.026125734566817e-05
+cat__Description_MicrosoftÃÂÃÂÃÂÃÂ® Windows System Protection background tasks.,7.026125734566817e-05
+cat__StartAddress_0xFFFFCC86058A20D0,7.026125734566817e-05
+cat__FileVersion_51.1052.0.0,7.026125734566817e-05
+cat__NewThreadId_2196,7.026125734566817e-05
+cat__Archived_151.101.66.152,7.026125734566817e-05
+cat__FileVersion_22.232.1106.0002,7.026125734566817e-05
+cat__FileVersion_5.00 (WinBuild.160101.0800),7.026125734566817e-05
+cat__OriginalFileName_tzsync.exe,7.026125734566817e-05
+cat__Description_Microsoft Edge Update COM Registration Helper,7.026125734566817e-05
+cat__FileVersion_10.0.19041.2486 (WinBuild.160101.0800),7.026125734566817e-05
+cat__Description_Microsoft Office Word,7.026125734566817e-05
+cat__NewThreadId_3640,7.026125734566817e-05
+cat__Product_2007 Microsoft Office system,7.026125734566817e-05
+cat__Archived_212.205.126.123,7.026125734566817e-05
+cat__StartAddress_13.107.238.60,7.026125734566817e-05
+cat__Archived_212.205.126.33,7.026125734566817e-05
+cat__Description_Location Notification,7.026125734566817e-05
+cat__StartAddress_0xFFFFB03F55CA20D0,7.026125734566817e-05
+cat__StartAddress_0xFFFFD41FDBD020D0,7.026125734566817e-05
+cat__DestinationIp_40.126.32.132,7.026125734566817e-05
+cat__DestinationIp_40.126.31.64,7.026125734566817e-05
+cat__DestinationIp_51.104.182.209,7.026125734566817e-05
+cat__DestinationIp_40.79.150.120,7.026125734566817e-05
+cat__DestinationIp_52.109.8.19,7.026125734566817e-05
+cat__DestinationIp_52.109.32.36,7.026125734566817e-05
+cat__DestinationIp_52.109.32.24,7.026125734566817e-05
+cat__DestinationIp_104.208.16.94,7.026125734566817e-05
+cat__DestinationIp_23.96.225.71,7.026125734566817e-05
+cat__DestinationIp_51.105.71.136,7.026125734566817e-05
+cat__DestinationIp_104.208.16.90,7.026125734566817e-05
+cat__NewThreadId_type:  5 part-0032.t-0009.fbs1-t-msedge.net,7.026125734566817e-05
+cat__DestinationIp_52.159.49.199,7.026125734566817e-05
+cat__DestinationIp_52.168.117.169,7.026125734566817e-05
+cat__DestinationIp_93.184.220.29,7.026125734566817e-05
+cat__OriginalFileName_provtool,7.026125734566817e-05
+cat__Archived_212.205.77.211,7.026125734566817e-05
+cat__Archived_23.23.183.231,7.026125734566817e-05
+cat__Archived_212.205.77.203,7.026125734566817e-05
+cat__Archived_52.85.158.42,7.026125734566817e-05
+cat__Archived_52.85.158.79,7.026125734566817e-05
+cat__Archived_::ffff:2.18.234.129,7.026125734566817e-05
+cat__OriginalFileName_LocationNotificationWindows.exe,7.026125734566817e-05
+cat__FileVersion_14.25.28612.0 built by: vcwrkspc,7.026125734566817e-05
+cat__Description_MicrosoftÃÂÃÂÃÂÃÂ® Cabinet Maker,7.026125734566817e-05
+cat__OriginalFileName_makecab.exe,7.026125734566817e-05
+cat__IsExecutable_type:  5 e3230.b.akamaiedge.net,7.026125734566817e-05
+cat__IsExecutable_type:  5 eafd-3p-profile.usgovtrafficmanager.net,7.026125734566817e-05
+cat__DestinationIp_162.159.128.61,7.026125734566817e-05
+cat__Description_TimeZone Sync Task,7.026125734566817e-05
+cat__DestinationIp_169.254.121.47,7.026125734566817e-05
+cat__IsExecutable_type:  5 2-01-37d2-0006.cdx.cedexis.net,7.026125734566817e-05
+cat__DestinationIp_132.226.63.138,7.026125734566817e-05
+cat__DestinationIp_13.89.179.9,7.026125734566817e-05
+cat__StartAddress_52.6.63.209,7.026125734566817e-05
+cat__Archived_type:  5 shed.dual-low.part-0032.t-0009.t-msedge.net,7.026125734566817e-05
+cat__NewThreadId_13.107.237.60,7.026125734566817e-05
+cat__DestinationIp_20.189.173.5,7.026125734566817e-05
+cat__DestinationIp_20.189.173.7,7.026125734566817e-05
+cat__DestinationIp_20.190.160.21,7.026125734566817e-05
+cat__DestinationIp_20.42.65.85,7.026125734566817e-05
+cat__DestinationIp_134.213.193.62,7.026125734566817e-05
+cat__DestinationIp_212.205.126.40,7.026125734566817e-05
+cat__NewThreadId_5200,7.026125734566817e-05
+cat__DestinationIp_38.27.122.126,7.026125734566817e-05
+cat__DestinationIp_40.124.168.44,7.026125734566817e-05
+cat__DestinationIp_13.107.138.9,7.026125734566817e-05
+cat__DestinationIp_20.42.65.89,7.026125734566817e-05
+cat__DestinationIp_20.42.65.90,7.026125734566817e-05
+cat__OriginalFileName_kerberos.dll,6.90512648448625e-05
+cat__Description_WSMan Service,6.90512648448625e-05
+cat__Description_Kerberos Security Package,6.90512648448625e-05
+cat__OriginalFileName_WsmSvc.dll,6.90512648448625e-05
+cat__OriginalFileName_PowerShell.EXE,6.871793580978192e-05
+cat__Description_Windows PowerShell,6.871793580978192e-05
+cat__SourceImage_Other_Rare,6.230507738837383e-05
+cat__OriginalFileName_Windows.Storage.dll,6.041889361068113e-05
+cat__Description_Microsoft WinRT Storage API,6.041889361068113e-05
+cat__OriginalFileName_twinapi.appcore.dll,5.1786797590351466e-05
+cat__GrantedAccess_0x1f3fff,5.1786797590351466e-05
+cat__OriginalFileName_fwpuclnt.dll,5.1786797590351466e-05
+cat__GrantedAccess_0x101541,5.1786797590351466e-05
+cat__Description_Microsoft Windows Sockets 2.0 Service Provider,5.1786797590351466e-05
+cat__Description_.NET Framework,5.1786797590351466e-05
+cat__FileVersion_10.0.14393.4225 (rs1_release.210127-1811),5.1786797590351466e-05
+cat__Description_twinapi.appcore,5.1786797590351466e-05
+cat__FileVersion_7.0.14393.4169 (rs1_release.210107-1130),5.1786797590351466e-05
+cat__Product_WindowsÃÂÃÂ® Search,5.1786797590351466e-05
+cat__Description_FWP/IPsec User-Mode API,5.1786797590351466e-05
+cat__DestinationPortName_llmnr,5.1786797590351466e-05
+cat__OriginalFileName_mswsock.dll,5.1786797590351466e-05
+cat__TargetImage_C:\Windows\System32\spoolsv.exe,4.984709726780129e-05
+cat__OriginalFileName_dwmapi.dll,4.315497676791427e-05
+cat__OriginalFileName_mmc.exe,4.315497676791427e-05
+cat__Description_MSCTF Server DLL,4.315497676791427e-05
+cat__FileVersion_2.34,4.315497676791427e-05
+cat__Description_Microsoft Desktop Window Manager API,4.315497676791427e-05
+cat__FileVersion_10.0.14393.3930,4.315497676791427e-05
+cat__Description_Microsoft Property System,4.315497676791427e-05
+cat__OriginalFileName_MSCTF.DLL,4.315497676791427e-05
+cat__Description_Remote Desktop Connection,4.315497676791427e-05
+cat__Description_Microsoft CoreMessaging Dll,4.315497676791427e-05
+cat__FileVersion_10.0.14393.4283 (rs1_release.210303-1802),4.315497676791427e-05
+cat__SourceIp_10.0.1.255,4.315497676791427e-05
+cat__Description_Microsoft Management Console,4.315497676791427e-05
+cat__OriginalFileName_mstsc.exe,4.315497676791427e-05
+cat__OriginalFileName_propsys.dll,4.315497676791427e-05
+cat__Description_Device Broker And Policy COM Server,4.315497676791427e-05
+cat__OriginalFileName_DeviceAccess.dll,4.315497676791427e-05
+cat__OriginalFileName_CoreMessaging.dll,4.315497676791427e-05
+cat__DestinationIp_192.168.1.13,4.286073246049095e-05
+cat__DestinationPortName_http,3.704702939188683e-05
+cat__EventType_ConnectPipe,3.6922898460779025e-05
+cat__EventType_CreatePipe,3.6922898460779025e-05
+cat__Company_Alexander Roshal,3.512965369182155e-05
+cat__Company_StoreDesktopExtension,3.512965369182155e-05
+cat__NewThreadId_3300,3.512965369182155e-05
+cat__NewThreadId_3304,3.512965369182155e-05
+cat__OriginalFileName_mprecovery.exe,3.512965369182155e-05
+cat__OriginalFileName_AM_Delta_Patch_1.381.58.0.exe,3.512965369182155e-05
+cat__OriginalFileName_MicrosoftEdgeUpdateSetup.exe,3.512965369182155e-05
+cat__Description_Microsoft Edge Update Setup,3.512965369182155e-05
+cat__Description_Microsoft Edge WebView2,3.512965369182155e-05
+cat__TerminalSessionId_3,3.512965369182155e-05
+cat__NewThreadId_6608,3.512965369182155e-05
+cat__Description_Pick an app,3.512965369182155e-05
+cat__Product_StoreDesktopExtension,3.512965369182155e-05
+cat__Description_UserAccountControlSettings,3.512965369182155e-05
+cat__OriginalFileName_AM_Delta_Patch_1.381.2018.0.exe,3.512965369182155e-05
+cat__OriginalFileName_AM_Delta_Patch_1.381.1435.0.exe,3.512965369182155e-05
+cat__OriginalFileName_OptionalFeatures.EXE,3.512965369182155e-05
+cat__OriginalFileName_OpenWith.exe,3.512965369182155e-05
+cat__Archived_::ffff:20.219.13.99,3.512965369182155e-05
+cat__Archived_::ffff:20.203.155.189,3.512965369182155e-05
+cat__Archived_::ffff:2.21.17.69,3.512965369182155e-05
+cat__Archived_::ffff:13.224.194.4,3.512965369182155e-05
+cat__Archived_::ffff:13.107.6.163,3.512965369182155e-05
+cat__Archived_::ffff:108.156.61.136,3.512965369182155e-05
+cat__NewThreadId_54.83.121.57,3.512965369182155e-05
+cat__NewThreadId_54.80.178.68,3.512965369182155e-05
+cat__Description_OOBE-Maintenance,3.512965369182155e-05
+cat__FileVersion_22210.1401.13.0,3.512965369182155e-05
+cat__FileVersion_22.225.1026.0001,3.512965369182155e-05
+cat__OriginalFileName_mini_installer.exe,3.512965369182155e-05
+cat__NewThreadId_3344,3.512965369182155e-05
+cat__NewThreadId_3340,3.512965369182155e-05
+cat__NewThreadId_3308,3.512965369182155e-05
+cat__Archived_104.111.224.159,3.512965369182155e-05
+cat__Archived_104.103.78.186,3.512965369182155e-05
+cat__IsExecutable_type:  5 zrh20prdapp02-canary.switzerlandnorth.cloudapp.azure.com,3.512965369182155e-05
+cat__IsExecutable_type:  5 www-linkedin-com.l-0005.l-msedge.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 t-ring.t-9999.t-msedge.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 star-azureedge-prod.trafficmanager.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 shed.dual-low.part-0032.t-0009.fdv2-t-msedge.net,3.512965369182155e-05
+cat__Product_Microsoft Edge WebView2,3.512965369182155e-05
+cat__Product_GrooveMonitor Utility,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:NgSZ2y4BMUu7aESl.1,3.512965369182155e-05
+cat__FileVersion_108.0.1462.76,3.512965369182155e-05
+cat__FileVersion_10.0.19041.1503 (WinBuild.160101.0800),3.512965369182155e-05
+cat__FileVersion_10.0.19041.1889 (WinBuild.160101.0800),3.512965369182155e-05
+cat__Archived_104.122.201.187,3.512965369182155e-05
+cat__Archived_104.122.199.12,3.512965369182155e-05
+cat__Archived_104.111.248.44,3.512965369182155e-05
+cat__Archived_104.111.243.142,3.512965369182155e-05
+cat__NewThreadId_3688,3.512965369182155e-05
+cat__NewThreadId_3684,3.512965369182155e-05
+cat__NewThreadId_3652,3.512965369182155e-05
+cat__NewThreadId_3632,3.512965369182155e-05
+cat__NewThreadId_3628,3.512965369182155e-05
+cat__NewThreadId_3608,3.512965369182155e-05
+cat__NewThreadId_3604,3.512965369182155e-05
+cat__NewThreadId_3576,3.512965369182155e-05
+cat__NewThreadId_35.157.242.113,3.512965369182155e-05
+cat__FileVersion_21.220.1024.0005,3.512965369182155e-05
+cat__NewThreadId_3356,3.512965369182155e-05
+cat__FileVersion_10.0.18362.1 (WinBuild.160101.0800),3.512965369182155e-05
+cat__FileVersion_4.18.2211.5,3.512965369182155e-05
+cat__OriginalFileName_taskkill.exe,3.512965369182155e-05
+cat__Archived_::ffff:104.111.218.129,3.512965369182155e-05
+cat__Archived_99.81.246.120,3.512965369182155e-05
+cat__Archived_8.2.108.175,3.512965369182155e-05
+cat__Archived_77.88.21.119,3.512965369182155e-05
+cat__Archived_54.82.184.245,3.512965369182155e-05
+cat__Archived_54.231.197.9,3.512965369182155e-05
+cat__Archived_54.175.162.7,3.512965369182155e-05
+cat__Archived_52.85.221.176,3.512965369182155e-05
+cat__FileVersion_7.0.4,3.512965369182155e-05
+cat__FileVersion_6.11.0,3.512965369182155e-05
+cat__Archived_2.19.51.152,3.512965369182155e-05
+cat__Archived_192.229.221.185,3.512965369182155e-05
+cat__Archived_205.185.216.42,3.512965369182155e-05
+cat__NewThreadId_3016,3.512965369182155e-05
+cat__Archived_2.21.186.207,3.512965369182155e-05
+cat__Description_AntiMalware Definition Update,3.512965369182155e-05
+cat__DestinationHostname_a95-100-210-141.deploy.static.akamaitechnologies.com,3.512965369182155e-05
+cat__OriginalFileName_AM_Delta_Patch_1.381.1372.0.exe,3.512965369182155e-05
+cat__OriginalFileName_AM_Delta.exe,3.512965369182155e-05
+cat__StartAddress_3.124.154.128,3.512965369182155e-05
+cat__StartAddress_2.21.69.162,3.512965369182155e-05
+cat__StartAddress_18.210.1.248,3.512965369182155e-05
+cat__StartAddress_0xFFFFF0055FCA20D0,3.512965369182155e-05
+cat__StartAddress_0xFFFFEA13E0C320D0,3.512965369182155e-05
+cat__StartAddress_0xFFFFB4978B4A20D0,3.512965369182155e-05
+cat__StartAddress_0xFFFF98D3233620D0,3.512965369182155e-05
+cat__StartAddress_0x00007FFF19BEACA0,3.512965369182155e-05
+cat__Archived_52.85.158.76,3.512965369182155e-05
+cat__Archived_52.85.158.74,3.512965369182155e-05
+cat__Archived_2.21.69.104,3.512965369182155e-05
+cat__NewThreadId_3.5.2.216,3.512965369182155e-05
+cat__NewThreadId_2940,3.512965369182155e-05
+cat__NewThreadId_2888,3.512965369182155e-05
+cat__NewThreadId_2856,3.512965369182155e-05
+cat__NewThreadId_2804,3.512965369182155e-05
+cat__NewThreadId_2656,3.512965369182155e-05
+cat__NewThreadId_2424,3.512965369182155e-05
+cat__NewThreadId_2.21.69.152,3.512965369182155e-05
+cat__NewThreadId_2.19.51.168,3.512965369182155e-05
+cat__FileVersion_2.4,3.512965369182155e-05
+cat__FileVersion_16.0.11629.20238,3.512965369182155e-05
+cat__FileVersion_51.52.0.0,3.512965369182155e-05
+cat__Product_WinRAR,3.512965369182155e-05
+cat__Description_WinRAR archiver,3.512965369182155e-05
+cat__OriginalFileName_CDB.Exe,3.512965369182155e-05
+cat__FileVersion_4.18.2211.5 (987f645439088f6f5ac2c1573330a7defe40c0d6) (WinBuild.160101.0800),3.512965369182155e-05
+cat__Description_AntiMalware Platform Update (amd64fre),3.512965369182155e-05
+cat__NewThreadId_3184,3.512965369182155e-05
+cat__NewThreadId_3268,3.512965369182155e-05
+cat__NewThreadId_3292,3.512965369182155e-05
+cat__Archived_104.16.170.188,3.512965369182155e-05
+cat__Archived_104.16.86.20,3.512965369182155e-05
+cat__Archived_104.18.11.25,3.512965369182155e-05
+cat__Archived_185.234.52.164,3.512965369182155e-05
+cat__Archived_151.101.65.140,3.512965369182155e-05
+cat__Archived_151.101.65.44,3.512965369182155e-05
+cat__Archived_151.101.66.132,3.512965369182155e-05
+cat__Archived_151.101.66.217,3.512965369182155e-05
+cat__Archived_18.202.172.50,3.512965369182155e-05
+cat__Archived_185.199.108.133,3.512965369182155e-05
+cat__Archived_185.199.110.154,3.512965369182155e-05
+cat__Archived_185.199.111.133,3.512965369182155e-05
+cat__Archived_104.26.7.214,3.512965369182155e-05
+cat__IsExecutable_52.211.225.178,3.512965369182155e-05
+cat__IsExecutable_::ffff:20.60.148.228,3.512965369182155e-05
+cat__IsExecutable_::ffff:13.224.194.146,3.512965369182155e-05
+cat__IsExecutable_::ffff:108.156.61.76,3.512965369182155e-05
+cat__IsExecutable_99.81.246.120,3.512965369182155e-05
+cat__IsExecutable_93.158.134.119,3.512965369182155e-05
+cat__IsExecutable_87.230.98.74,3.512965369182155e-05
+cat__NewThreadId_508,3.512965369182155e-05
+cat__NewThreadId_50.112.175.36,3.512965369182155e-05
+cat__NewThreadId_4672,3.512965369182155e-05
+cat__NewThreadId_4352,3.512965369182155e-05
+cat__NewThreadId_388,3.512965369182155e-05
+cat__NewThreadId_3832,3.512965369182155e-05
+cat__NewThreadId_3740,3.512965369182155e-05
+cat__NewThreadId_3708,3.512965369182155e-05
+cat__NewThreadId_3372,3.512965369182155e-05
+cat__IsExecutable_34.246.89.168,3.512965369182155e-05
+cat__IsExecutable_34.246.249.71,3.512965369182155e-05
+cat__IsExecutable_3.248.162.75,3.512965369182155e-05
+cat__IsExecutable_212.205.126.72,3.512965369182155e-05
+cat__IsExecutable_212.205.126.123,3.512965369182155e-05
+cat__IsExecutable_205.185.216.10,3.512965369182155e-05
+cat__IsExecutable_185.60.216.19,3.512965369182155e-05
+cat__IsExecutable_52.85.158.91,3.512965369182155e-05
+cat__IsExecutable_52.85.158.42,3.512965369182155e-05
+cat__IsExecutable_52.85.158.38,3.512965369182155e-05
+cat__IsExecutable_52.85.158.35,3.512965369182155e-05
+cat__IsExecutable_52.85.158.24,3.512965369182155e-05
+cat__IsExecutable_52.85.158.17,3.512965369182155e-05
+cat__IsExecutable_52.40.54.25,3.512965369182155e-05
+cat__IsExecutable_52.30.140.67,3.512965369182155e-05
+cat__IsExecutable_35.83.185.79,3.512965369182155e-05
+cat__IsExecutable_52.85.221.158,3.512965369182155e-05
+cat__IsExecutable_type:  5 cs1227.wpc.alphacdn.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 b-0008.b-msedge.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 augloop-prod-002.francecentral.cloudapp.azure.com,3.512965369182155e-05
+cat__StartAddress_52.27.207.171,3.512965369182155e-05
+cat__StartAddress_52.217.236.1,3.512965369182155e-05
+cat__StartAddress_52.217.205.81,3.512965369182155e-05
+cat__StartAddress_34.204.4.202,3.512965369182155e-05
+cat__IsExecutable_type:  5 home-office365-com.b-0004.b-msedge.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 firstparty-azurefd-prod.trafficmanager.net,3.512965369182155e-05
+cat__StartModule_52.216.209.201,3.512965369182155e-05
+cat__StartAddress_54.237.203.202,3.512965369182155e-05
+cat__RuleName_Sysmon Execution,3.512965369182155e-05
+cat__Image_Category_Temp,3.512965369182155e-05
+cat__StartModule_34.194.25.170,3.512965369182155e-05
+cat__IsExecutable_52.213.198.198,3.512965369182155e-05
+cat__OriginalFileName_UserOOBEBroker.exe,3.512965369182155e-05
+cat__IsExecutable_type:  5 e14705.g.akamaiedge.net,3.512965369182155e-05
+cat__StartModule_52.39.149.186,3.512965369182155e-05
+cat__StartModule_52.217.66.4,3.512965369182155e-05
+cat__Description_MusNotifyIcon.exe,3.512965369182155e-05
+cat__Archived_type:  5 global-entry-afdthirdparty-fallback.trafficmanager.net,3.512965369182155e-05
+cat__Archived_type:  5 eafd-ffgov-sn02.elasticafd.msedge.azure.us,3.512965369182155e-05
+cat__Archived_type:  5 eafd-ffgov-phx02.elasticafd.msedge.azure.us,3.512965369182155e-05
+cat__Archived_type:  5 b-0004.b-msedge.net,3.512965369182155e-05
+cat__Archived_::ffff:52.85.221.68,3.512965369182155e-05
+cat__Archived_::ffff:52.85.221.173,3.512965369182155e-05
+cat__OriginalFileName_UserAccountControlSettings.exe,3.512965369182155e-05
+cat__OriginalFileName_UpdatePlatform.exe,3.512965369182155e-05
+cat__OriginalFileName_StoreDesktopExtension.exe,3.512965369182155e-05
+cat__StartModule_50.17.211.243,3.512965369182155e-05
+cat__StartModule_3.120.107.35,3.512965369182155e-05
+cat__EventType_CreateKey,3.512965369182155e-05
+cat__OriginalFileName_WinRAR.exe,3.512965369182155e-05
+cat__OriginalFileName_Wmiprvse.exe,3.512965369182155e-05
+cat__Description_StoreDesktopExtension,3.512965369182155e-05
+cat__TargetUser_STEFANIA\altinitat,3.512965369182155e-05
+cat__IsExecutable_140.82.112.21,3.512965369182155e-05
+cat__IsExecutable_104.21.15.82,3.512965369182155e-05
+cat__IsExecutable_104.18.10.25,3.512965369182155e-05
+cat__IsExecutable_104.16.88.20,3.512965369182155e-05
+cat__IsExecutable_104.16.171.188,3.512965369182155e-05
+cat__FileVersion_1.381.1870.0,3.512965369182155e-05
+cat__FileVersion_1.381.1451.0,3.512965369182155e-05
+cat__FileVersion_1.381.1435.0,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:FBA5SjdCeUC3uHMb.1,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:BGH3Rh7VtEij5jzg.1,3.512965369182155e-05
+cat__Archived_::ffff:23.2.36.140,3.512965369182155e-05
+cat__SourceIp_169.254.121.47,3.512965369182155e-05
+cat__Description_Microsoft Outlook Communications,3.512965369182155e-05
+cat__Description_Microsoft OneDrive Configuration Application,3.512965369182155e-05
+cat__Description_Microsoft Malware Protection Recovery,3.512965369182155e-05
+cat__OriginalFileName_OOBE-Maintenance.exe,3.512965369182155e-05
+cat__OriginalFileName_NOTEPAD.EXE,3.512965369182155e-05
+cat__OriginalFileName_MusNotifyIcon.exe,3.512965369182155e-05
+cat__OriginalFileName_SecHealthUI.exe,3.512965369182155e-05
+cat__Description_WMI Provider Host,3.512965369182155e-05
+cat__Description_VirtualBox Driver Installer,3.512965369182155e-05
+cat__IsExecutable_type:  5 q-t-9999.q-t-msedge.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 pn1prdapp01-canary.centralindia.cloudapp.azure.com,3.512965369182155e-05
+cat__IsExecutable_type:  5 p-grat00.kxcdn.com,3.512965369182155e-05
+cat__NewThreadId_34.236.63.128,3.512965369182155e-05
+cat__NewThreadId_512,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:6EVUxHvADE2IOvzD.1,3.512965369182155e-05
+cat__Archived_::ffff:212.205.126.83,3.512965369182155e-05
+cat__Description_Microsoft Software Protection Platform Service,3.512965369182155e-05
+cat__Description_Microsoft Help and Support,3.512965369182155e-05
+cat__ParentUser_Window Manager\DWM-1,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:uoxkB3Sz/UWSMP8f.1,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:tmPRY/6MjkCoL078.1,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:lytuwX3Tp06kua8I.1,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:YNkpLVSXlEa2Ttn7.1,3.512965369182155e-05
+cat__ParentUser_C:\Windows\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:UYf1mmynP02sj6hD.1,3.512965369182155e-05
+cat__IsExecutable_140.82.112.26,3.512965369182155e-05
+cat__IsExecutable_140.82.112.22,3.512965369182155e-05
+cat__IsExecutable_52.210.252.249,3.512965369182155e-05
+cat__IsExecutable_52.202.237.42,3.512965369182155e-05
+cat__IsExecutable_51.195.68.163,3.512965369182155e-05
+cat__IsExecutable_45.79.65.87,3.512965369182155e-05
+cat__FileVersion_1.381.2052.0,3.512965369182155e-05
+cat__IsExecutable_185.199.109.154,3.512965369182155e-05
+cat__IsExecutable_172.67.68.240,3.512965369182155e-05
+cat__IsExecutable_157.240.201.35,3.512965369182155e-05
+cat__IsExecutable_151.101.2.217,3.512965369182155e-05
+cat__IsExecutable_151.101.2.132,3.512965369182155e-05
+cat__IsExecutable_151.101.1.44,3.512965369182155e-05
+cat__IsExecutable_151.101.1.140,3.512965369182155e-05
+cat__IsExecutable_142.250.184.225,3.512965369182155e-05
+cat__IsExecutable_142.250.181.226,3.512965369182155e-05
+cat__IsExecutable_140.82.114.26,3.512965369182155e-05
+cat__IsExecutable_140.82.113.25,3.512965369182155e-05
+cat__Archived_::ffff:23.7.17.22,3.512965369182155e-05
+cat__Archived_::ffff:23.67.129.184,3.512965369182155e-05
+cat__Archived_::ffff:23.210.253.239,3.512965369182155e-05
+cat__FileVersion_1.381.75.0,3.512965369182155e-05
+cat__RuleName_notepad Execution,3.512965369182155e-05
+cat__DestinationIp_151.101.13.181,3.512965369182155e-05
+cat__DestinationIp_151.101.12.134,3.512965369182155e-05
+cat__DestinationIp_142.0.173.24,3.512965369182155e-05
+cat__DestinationIp_142.0.165.178,3.512965369182155e-05
+cat__DestinationIp_141.226.224.32,3.512965369182155e-05
+cat__DestinationIp_137.116.214.105,3.512965369182155e-05
+cat__OriginalFileName_GrooveMonitor.exe,3.512965369182155e-05
+cat__OriginalFileName_FileSyncConfig.exe,3.512965369182155e-05
+cat__DestinationIp_185.106.33.48,3.512965369182155e-05
+cat__DestinationIp_184.31.86.154,3.512965369182155e-05
+cat__DestinationIp_182.22.24.252,3.512965369182155e-05
+cat__DestinationIp_2.21.69.161,3.512965369182155e-05
+cat__Description_Symbolic Debugger for Windows,3.512965369182155e-05
+cat__Description_Dism Host Servicing Process,3.512965369182155e-05
+cat__DestinationIp_192.168.1.17,3.512965369182155e-05
+cat__Archived_52.85.158.37,3.512965369182155e-05
+cat__DestinationIp_185.86.138.122,3.512965369182155e-05
+cat__DestinationIp_185.64.190.79,3.512965369182155e-05
+cat__DestinationIp_185.29.134.248,3.512965369182155e-05
+cat__StartAddress_0x00007FFC55ECAAB0,3.512965369182155e-05
+cat__OriginalFileName_HxTsr.exe,3.512965369182155e-05
+cat__OriginalFileName_HelpPane.exe,3.512965369182155e-05
+cat__DestinationIp_12.133.121.27,3.512965369182155e-05
+cat__DestinationIp_104.46.162.224,3.512965369182155e-05
+cat__DestinationIp_104.244.42.3,3.512965369182155e-05
+cat__DestinationIp_104.244.42.200,3.512965369182155e-05
+cat__DestinationIp_104.244.42.195,3.512965369182155e-05
+cat__NewThreadId_5672,3.512965369182155e-05
+cat__NewThreadId_5628,3.512965369182155e-05
+cat__NewThreadId_5492,3.512965369182155e-05
+cat__NewThreadId_5484,3.512965369182155e-05
+cat__DestinationIp_192.0.76.3,3.512965369182155e-05
+cat__Archived_type:  5 part-0032.t-0009.fdv2-t-msedge.net,3.512965369182155e-05
+cat__Archived_type:  5 l-0005.l-dc-msedge.net,3.512965369182155e-05
+cat__OriginalFileName_sppsvc.exe,3.512965369182155e-05
+cat__DestinationIp_20.189.173.1,3.512965369182155e-05
+cat__DestinationIp_20.120.124.64,3.512965369182155e-05
+cat__DestinationIp_20.87.44.201,3.512965369182155e-05
+cat__DestinationIp_20.86.249.62,3.512965369182155e-05
+cat__DestinationIp_20.82.217.86,3.512965369182155e-05
+cat__DestinationIp_20.54.89.106,3.512965369182155e-05
+cat__DestinationIp_20.54.103.203,3.512965369182155e-05
+cat__DestinationIp_20.50.201.200,3.512965369182155e-05
+cat__DestinationIp_104.208.16.88,3.512965369182155e-05
+cat__DestinationIp_2.19.106.148,3.512965369182155e-05
+cat__DestinationIp_199.232.189.140,3.512965369182155e-05
+cat__DestinationIp_198.148.27.143,3.512965369182155e-05
+cat__DestinationIp_151.101.14.137,3.512965369182155e-05
+cat__DestinationIp_192.168.1.9,3.512965369182155e-05
+cat__DestinationIp_20.42.65.84,3.512965369182155e-05
+cat__DestinationIp_20.42.128.105,3.512965369182155e-05
+cat__DestinationIp_20.199.120.182,3.512965369182155e-05
+cat__DestinationIp_20.190.160.12,3.512965369182155e-05
+cat__DestinationIp_20.190.159.19,3.512965369182155e-05
+cat__DestinationIp_20.189.173.9,3.512965369182155e-05
+cat__DestinationIp_20.189.173.4,3.512965369182155e-05
+cat__DestinationIp_20.189.173.10,3.512965369182155e-05
+cat__NewThreadId_13.107.213.60,3.512965369182155e-05
+cat__NewThreadId_104.16.85.20,3.512965369182155e-05
+cat__NewThreadId_104.16.173.188,3.512965369182155e-05
+cat__DestinationIp_152.195.15.58,3.512965369182155e-05
+cat__DestinationIp_151.139.242.6,3.512965369182155e-05
+cat__DestinationIp_151.139.242.16,3.512965369182155e-05
+cat__DestinationIp_194.63.247.211,3.512965369182155e-05
+cat__DestinationIp_13.89.179.10,3.512965369182155e-05
+cat__DestinationIp_13.78.111.198,3.512965369182155e-05
+cat__Archived_52.85.158.103,3.512965369182155e-05
+cat__Archived_52.85.158.100,3.512965369182155e-05
+cat__Archived_52.30.235.132,3.512965369182155e-05
+cat__Archived_52.30.109.223,3.512965369182155e-05
+cat__Archived_52.217.99.52,3.512965369182155e-05
+cat__Archived_52.213.198.198,3.512965369182155e-05
+cat__Archived_52.210.252.249,3.512965369182155e-05
+cat__Archived_52.111.231.2,3.512965369182155e-05
+cat__StartModule_44.240.84.34,3.512965369182155e-05
+cat__Description_Windows Features,3.512965369182155e-05
+cat__Description_Windows Defender application,3.512965369182155e-05
+cat__IsExecutable_type:  5 elb-aws-fr-zagreb-1702672115.eu-central-1.elb.amazonaws.com,3.512965369182155e-05
+cat__IsExecutable_type:  5 e4373.x.akamaiedge.net,3.512965369182155e-05
+cat__NewThreadId_5472,3.512965369182155e-05
+cat__IsExecutable_type:  5 e35058.api11.akamaiedge.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 e14801.x.akamaiedge.net,3.512965369182155e-05
+cat__OriginalFileName_VBoxDrvInst.exe,3.512965369182155e-05
+cat__Description_Scripted Diagnostics Native Host,3.512965369182155e-05
+cat__NewThreadId_54.190.100.202,3.512965369182155e-05
+cat__NewThreadId_5324,3.512965369182155e-05
+cat__NewThreadId_5204,3.512965369182155e-05
+cat__NewThreadId_52.217.142.89,3.512965369182155e-05
+cat__NewThreadId_52.202.136.7,3.512965369182155e-05
+cat__NewThreadId_3692,3.512965369182155e-05
+cat__StartAddress_54.200.194.178,3.512965369182155e-05
+cat__StartAddress_::ffff:13.107.227.60,3.512965369182155e-05
+cat__StartModule_2.21.69.80,3.512965369182155e-05
+cat__IsExecutable_8.2.108.194,3.512965369182155e-05
+cat__IsExecutable_63.32.34.156,3.512965369182155e-05
+cat__IsExecutable_type:  5 e35058.api12.akamaiedge.net,3.512965369182155e-05
+cat__Archived_23.45.238.149,3.512965369182155e-05
+cat__DestinationIp_178.250.2.150,3.512965369182155e-05
+cat__DestinationIp_178.250.2.146,3.512965369182155e-05
+cat__DestinationIp_178.250.2.138,3.512965369182155e-05
+cat__DestinationIp_172.64.154.235,3.512965369182155e-05
+cat__DestinationIp_17.57.146.22,3.512965369182155e-05
+cat__DestinationIp_17.57.146.171,3.512965369182155e-05
+cat__OriginalFileName_FINDSTR.EXE,3.512965369182155e-05
+cat__OriginalFileName_DismHost.exe,3.512965369182155e-05
+cat__Description_User OOBE Broker,3.512965369182155e-05
+cat__Description_Terminates Processes,3.512965369182155e-05
+cat__Archived_50.17.211.243,3.512965369182155e-05
+cat__Archived_44.239.41.64,3.512965369182155e-05
+cat__Archived_44.237.181.29,3.512965369182155e-05
+cat__Archived_34.249.131.122,3.512965369182155e-05
+cat__DestinationIp_131.253.33.254,3.512965369182155e-05
+cat__IsExecutable_::ffff:52.85.221.68,3.512965369182155e-05
+cat__IsExecutable_type:  5 a1887.dscq.akamai.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 aijscdn2.afd.azureedge.net,3.512965369182155e-05
+cat__IsExecutable_type:  5 amcdnmsftuswe.afd.azureedge.net,3.512965369182155e-05
+cat__Product_Microsoft Office,3.512965369182155e-05
+cat__NewThreadId_5820,3.512965369182155e-05
+cat__NewThreadId_5908,3.512965369182155e-05
+cat__Archived_34.246.89.168,3.512965369182155e-05
+cat__NewThreadId_6060,3.512965369182155e-05
+cat__NewThreadId_6104,3.512965369182155e-05
+cat__NewThreadId_6152,3.512965369182155e-05
+cat__NewThreadId_6164,3.512965369182155e-05
+cat__NewThreadId_6412,3.512965369182155e-05
+cat__Description_Oracle VM VirtualBox Guest Additions,3.512965369182155e-05
+cat__Archived_3.123.145.89,3.512965369182155e-05
+cat__Archived_34.242.173.183,3.512965369182155e-05
+cat__NewThreadId_6056,3.512965369182155e-05
+cat__DestinationIp_77.111.247.17,3.512965369182155e-05
+cat__DestinationIp_77.111.246.40,3.512965369182155e-05
+cat__DestinationIp_72.251.249.9,3.512965369182155e-05
+cat__DestinationIp_72.251.249.14,3.512965369182155e-05
+cat__DestinationIp_72.251.237.97,3.512965369182155e-05
+cat__DestinationIp_69.169.85.6,3.512965369182155e-05
+cat__DestinationIp_65.52.67.156,3.512965369182155e-05
+cat__DestinationIp_52.249.36.204,3.512965369182155e-05
+cat__DestinationIp_52.236.186.217,3.512965369182155e-05
+cat__DestinationIp_52.236.186.216,3.512965369182155e-05
+cat__DestinationIp_52.233.193.153,3.512965369182155e-05
+cat__DestinationIp_52.188.50.245,3.512965369182155e-05
+cat__DestinationHostname_a2-19-106-148.deploy.static.akamaitechnologies.com,3.512965369182155e-05
+cat__DestinationIp_104.21.53.81,3.512965369182155e-05
+cat__StartAddress_0x00007FF88813B880,3.512965369182155e-05
+cat__Archived_type:  5 part-0032.t-0009.t-msedge.net,3.512965369182155e-05
+cat__NewThreadId_::ffff:13.107.238.60,3.512965369182155e-05
+cat__NewThreadId_::ffff:13.107.219.60,3.512965369182155e-05
+cat__NewThreadId_::ffff:13.107.213.60,3.512965369182155e-05
+cat__NewThreadId_920,3.512965369182155e-05
+cat__NewThreadId_7292,3.512965369182155e-05
+cat__NewThreadId_7188,3.512965369182155e-05
+cat__NewThreadId_6616,3.512965369182155e-05
+cat__DestinationIp_104.208.16.89,3.512965369182155e-05
+cat__DestinationIp_52.178.103.218,3.512965369182155e-05
+cat__DestinationIp_52.169.118.3,3.512965369182155e-05
+cat__DestinationIp_52.168.112.67,3.512965369182155e-05
+cat__DestinationIp_52.113.199.175,3.512965369182155e-05
+cat__DestinationIp_52.113.195.132,3.512965369182155e-05
+cat__DestinationIp_52.109.8.22,3.512965369182155e-05
+cat__DestinationIp_52.109.8.20,3.512965369182155e-05
+cat__StartAddress_0x00000296C4490000,3.512965369182155e-05
+cat__Archived_52.85.158.25,3.512965369182155e-05
+cat__Archived_52.85.158.21,3.512965369182155e-05
+cat__Archived_52.85.158.17,3.512965369182155e-05
+cat__Description_GrooveMonitor Utility,3.512965369182155e-05
+cat__Description_Find String (QGREP) Utility,3.512965369182155e-05
+cat__DestinationIp_104.244.42.131,3.512965369182155e-05
+cat__DestinationIp_104.244.42.129,3.512965369182155e-05
+cat__DestinationIp_104.22.74.240,3.512965369182155e-05
+cat__DestinationIp_104.22.68.131,3.512965369182155e-05
+cat__Archived_212.205.126.41,3.512965369182155e-05
+cat__Archived_212.205.126.32,3.512965369182155e-05
+cat__Archived_212.205.126.138,3.512965369182155e-05
+cat__Archived_212.205.126.107,3.512965369182155e-05
+cat__DestinationHostname_a184-31-86-154.deploy.static.akamaitechnologies.com,3.512965369182155e-05
+cat__DestinationHostname_a104-122-196-105.deploy.static.akamaitechnologies.com,3.512965369182155e-05
+cat__DestinationIp_8.2.110.165,3.512965369182155e-05
+cat__Description_Notepad,3.512965369182155e-05
+cat__OriginalFileName_sdiagnhost.exe,3.512965369182155e-05
+cat__NewThreadId_1932,3.512965369182155e-05
+cat__NewThreadId_18.214.181.122,3.512965369182155e-05
+cat__NewThreadId_1740,3.512965369182155e-05
+cat__NewThreadId_1580,3.512965369182155e-05
+cat__DestinationIp_95.100.210.141,3.512965369182155e-05
+cat__DestinationIp_81.17.55.100,3.512965369182155e-05
+cat__DestinationIp_8.241.78.252,3.512965369182155e-05
+cat__DestinationHostname_a23-57-82-40.deploy.static.akamaitechnologies.com,3.512965369182155e-05
+cat__DestinationHostname_a23-210-253-239.deploy.static.akamaitechnologies.com,3.512965369182155e-05
+cat__DestinationHostname_a2-21-69-161.deploy.static.akamaitechnologies.com,3.512965369182155e-05
+cat__Archived_23.45.108.150,3.512965369182155e-05
+cat__DestinationIp_52.109.88.77,3.512965369182155e-05
+cat__DestinationIp_52.109.88.36,3.512965369182155e-05
+cat__OriginalFileName_msedgewebview2.exe,3.512965369182155e-05
+cat__DestinationIp_212.205.126.128,3.512965369182155e-05
+cat__DestinationIp_212.205.126.113,3.512965369182155e-05
+cat__DestinationIp_212.205.126.106,3.512965369182155e-05
+cat__DestinationIp_208.92.55.231,3.512965369182155e-05
+cat__DestinationIp_206.19.49.24,3.512965369182155e-05
+cat__DestinationIp_204.79.197.254,3.512965369182155e-05
+cat__DestinationIp_40.79.141.154,3.512965369182155e-05
+cat__DestinationIp_40.70.161.102,3.512965369182155e-05
+cat__DestinationIp_40.126.32.137,3.512965369182155e-05
+cat__DestinationIp_40.126.31.72,3.512965369182155e-05
+cat__DestinationIp_40.126.31.68,3.512965369182155e-05
+cat__DestinationIp_40.125.120.53,3.512965369182155e-05
+cat__DestinationIp_104.18.21.226,3.512965369182155e-05
+cat__DestinationIp_104.16.110.154,3.512965369182155e-05
+cat__DestinationIp_104.122.196.105,3.512965369182155e-05
+cat__DestinationIp_52.109.76.74,3.512965369182155e-05
+cat__DestinationIp_13.69.239.73,3.512965369182155e-05
+cat__DestinationIp_13.69.106.88,3.512965369182155e-05
+cat__DestinationIp_13.69.106.217,3.512965369182155e-05
+cat__DestinationIp_13.107.6.254,3.512965369182155e-05
+cat__DestinationIp_13.107.6.175,3.512965369182155e-05
+cat__DestinationIp_13.107.5.91,3.512965369182155e-05
+cat__DestinationIp_13.107.136.9,3.512965369182155e-05
+cat__DestinationIp_13.105.28.32,3.512965369182155e-05
+cat__DestinationIp_20.42.72.131,3.512965369182155e-05
+cat__DestinationIp_20.42.65.88,3.512965369182155e-05
+cat__DestinationIp_23.57.82.40,3.512965369182155e-05
+cat__DestinationIp_23.210.253.239,3.512965369182155e-05
+cat__Archived_type:  5 t-9999.t-msedge.net,3.512965369182155e-05
+cat__Archived_type:  5 shed.dual-low.part-0032.t-0009.fdv2-t-msedge.net,3.512965369182155e-05
+cat__Archived_type:  5 q-t-9999.q-t.dns.azurefd.net,3.512965369182155e-05
+cat__DestinationIp_13.74.111.192,3.512965369182155e-05
+cat__DestinationIp_52.109.76.26,3.512965369182155e-05
+cat__DestinationIp_52.109.76.141,3.512965369182155e-05
+cat__DestinationIp_52.109.68.93,3.512965369182155e-05
+cat__DestinationIp_52.109.68.58,3.512965369182155e-05
+cat__DestinationIp_52.109.56.28,3.512965369182155e-05
+cat__DestinationIp_52.184.217.37,3.512965369182155e-05
+cat__DestinationIp_52.184.216.226,3.512965369182155e-05
+cat__DestinationIp_52.184.212.181,3.512965369182155e-05
+cat__DestinationIp_52.182.143.210,3.512965369182155e-05
+cat__DestinationIp_52.182.143.208,3.512965369182155e-05
+cat__DestinationIp_52.178.17.3,3.512965369182155e-05
+cat__DestinationIp_104.22.55.206,3.512965369182155e-05
+cat__DestinationIp_104.21.85.242,3.512965369182155e-05
+cat__DestinationIp_40.101.69.34,3.512965369182155e-05
+cat__DestinationIp_37.157.5.142,3.512965369182155e-05
+cat__DestinationIp_212.205.126.34,3.512965369182155e-05
+cat__DestinationIp_212.205.126.49,3.512965369182155e-05
+cat__DestinationIp_212.205.126.58,3.512965369182155e-05
+cat__DestinationIp_23.111.9.57,3.512965369182155e-05
+cat__DestinationIp_52.109.88.184,3.512965369182155e-05
+cat__DestinationIp_52.109.88.191,3.512965369182155e-05
+cat__DestinationIp_40.79.197.35,3.512965369182155e-05
+cat__DestinationIp_45.157.66.18,3.512965369182155e-05
+cat__DestinationIp_37.157.3.30,3.512965369182155e-05
+cat__DestinationIp_45.55.41.223,3.512965369182155e-05
+cat__DestinationIp_51.104.136.2,3.512965369182155e-05
+cat__DestinationIp_51.11.192.50,3.512965369182155e-05
+cat__DestinationIp_51.116.253.168,3.512965369182155e-05
+cat__DestinationIp_51.124.78.146,3.512965369182155e-05
+cat__DestinationIp_51.144.253.41,3.512965369182155e-05
+cat__DestinationIp_52.109.16.1,3.512965369182155e-05
+cat__DestinationIp_52.109.2.130,3.512965369182155e-05
+cat__DestinationIp_45.157.66.30,3.512965369182155e-05
+cat__TargetUser_Window Manager\DWM-2,3.452343112738212e-05
+cat__DestinationPortName_bootps,3.452343112738212e-05
+cat__DestinationHostname_ip-10-0-1-1.us-west-2.compute.internal,3.452343112738212e-05
+cat__DestinationHostname_ip-10-0-1-14.us-west-2.compute.internal,3.452343112738212e-05
+cat__TerminalSessionId_4,3.452343112738212e-05
+cat__TerminalSessionId_5,3.452343112738212e-05
+cat__SourceHostname_ip-10-0-1-14.us-west-2.compute.internal,3.452343112738212e-05
+cat__SourcePortName_bootpc,3.452343112738212e-05
+cat__DestinationIp_10.0.1.1,3.452343112738212e-05
+cat__DestinationIp_a00:10e:0:0:0:0:0:0,3.452343112738212e-05
+cat__SourceIp_a00:10f:0:0:c8b0:1faa:58e:ffff,3.452343112738212e-05
+cat__Description_IndexedDb host,3.452343112738212e-05
+cat__Description_Power Profile Helper DLL,3.452343112738212e-05
+cat__Description_Winstation Library,3.452343112738212e-05
+cat__OriginalFileName_POWRPROF.DLL,3.452343112738212e-05
+cat__OriginalFileName_indexeddb.DLL,3.452343112738212e-05
+cat__OriginalFileName_winsta.dll,3.452343112738212e-05
+cat__DestinationIp_20.62.223.48,2.72139412605581e-05
+cat__Description_Cryptography Manager,2.5892160646661462e-05
+cat__DestinationIp_ff02:0:0:0:0:0:1:3,2.5892160646661462e-05
+cat__SourceHostname_WIN-HOST-987,2.5892160646661462e-05
+cat__SourceIp_a00:10e:8ddb:ffff:b8d1:e3de:48e:ffff,2.5892160646661462e-05
+cat__Description_ExecModelClient,2.5892160646661462e-05
+cat__Description_Microsoft Thumbnail Cache,2.5892160646661462e-05
+cat__SourceHostname_ip-10-0-1-255.us-west-2.compute.internal,2.5892160646661462e-05
+cat__Description_Windows Remote Desktop Session Host Server SDK APIs,2.5892160646661462e-05
+cat__Signature_Microsoft Windows Publisher,2.5892160646661462e-05
+cat__DestinationPortName_kerberos,2.5892160646661462e-05
+cat__FileVersion_4.8.3761.0 built by: NET48REL1,2.5892160646661462e-05
+cat__Description_InstallAgent,2.5892160646661462e-05
+cat__FileVersion_4.8.4350.0 built by: NET48REL1LAST_B,2.5892160646661462e-05
+cat__Description_Windows Base Types DLL,2.5892160646661462e-05
+cat__FileVersion_10.0.14393.2608 (rs1_release.181024-1742),2.5892160646661462e-05
+cat__Description_Windows.Cortana.ProxyStub,2.5892160646661462e-05
+cat__Description_Windows KTM Win32 Client DLL,2.5892160646661462e-05
+cat__OriginalFileName_thumbcache.dll,2.5892160646661462e-05
+cat__OriginalFileName_LocationFrameworkPS.dll,2.5892160646661462e-05
+cat__OriginalFileName_Windows.Cortana.ProxyStub.dll,2.5892160646661462e-05
+cat__OriginalFileName_InstallAgent.exe,2.5892160646661462e-05
+cat__Description_Windows Geolocation Framework PS,2.5892160646661462e-05
+cat__OriginalFileName_ExecModelClient.dll,2.5892160646661462e-05
+cat__OriginalFileName_WinTypes.dll,2.5892160646661462e-05
+cat__OriginalFileName_wtsapi32.dll,2.5892160646661462e-05
+cat__OriginalFileName_ktmw32,2.5892160646661462e-05
+cat__OriginalFileName_cryptdll.dll,2.5892160646661462e-05
+cat__GrantedAccess_0x101441,2.5892160646661462e-05
+cat__FileVersion_10.0.14393.2457 (rs1_release_inmarket.180822-1743),2.5892160646661462e-05
+cat__DestinationIp_10.0.0.2,1.7261165309709792e-05
+cat__Description_Microsoft D2D Library,1.7261165309709792e-05
+cat__DestinationIp_10.0.1.255,1.7261165309709792e-05
+cat__OriginalFileName_Windows.UI.XamlHost.dll,1.7261165309709792e-05
+cat__OriginalFileName_reg.exe,1.7261165309709792e-05
+cat__OriginalFileName_system.transactions.dll,1.7261165309709792e-05
+cat__OriginalFileName_system.data.dll,1.7261165309709792e-05
+cat__Description_Resource Policy Client,1.7261165309709792e-05
+cat__OriginalFileName_d2d1,1.7261165309709792e-05
+cat__Description_Registry Console Tool,1.7261165309709792e-05
+cat__Description_Shell Light-weight Utility Library,1.7261165309709792e-05
+cat__Description_Microsoft.CSharp.dll,1.7261165309709792e-05
+cat__OriginalFileName_ResourcePolicyClient.dll,1.7261165309709792e-05
+cat__OriginalFileName_ExecModelProxy.dll,1.7261165309709792e-05
+cat__OriginalFileName_SHLWAPI.DLL,1.7261165309709792e-05
+cat__OriginalFileName_Microsoft.CSharp.dll,1.7261165309709792e-05
+cat__OriginalFileName_Windows.UI.dll,1.7261165309709792e-05
+cat__OriginalFileName_VERSION.DLL,1.7261165309709792e-05
+cat__DestinationIp_e000:fc:1800:0:0:0:4000:0,1.7261165309709792e-05
+cat__FileVersion_4.8.4290.0 built by: NET48REL1LAST_B,1.7261165309709792e-05
+cat__FileVersion_4.8.3761.0,1.7261165309709792e-05
+cat__DestinationHostname_WIN-HOST-987,1.7261165309709792e-05
+cat__FileVersion_10.0.14393.3143 (rs1_release.190725-1725),1.7261165309709792e-05
+cat__Description_Windows Runtime UI Foundation DLL,1.7261165309709792e-05
+cat__SourceUser_ATTACKRANGE\REED_SCHMIDT,1.7261165309709792e-05
+cat__DestinationHostname_ip-10-0-0-2.us-west-2.compute.internal,1.7261165309709792e-05
+cat__Description_ActiveX Interface Marshaling Library,1.7261165309709792e-05
+cat__Description_ExecModelProxy,1.7261165309709792e-05
+cat__DestinationIp_8.240.228.126,1.7261165309709792e-05
+cat__Description_XAML Host,1.7261165309709792e-05
+cat__Description_Version Checking and File Installation Libraries,1.7261165309709792e-05
+cat__Description_Windows Shell Common Dll,1.7261165309709792e-05
+cat__OriginalFileName_ActXPrxy.dll,1.7261165309709792e-05
+cat__OriginalFileName_SHELL32.DLL,1.7261165309709792e-05
+cat__OriginalFileName_ipconfig.exe,1.3973781510394074e-05
+cat__Description_IP Configuration Utility,1.3973781510394074e-05
+cat__Description_Microsoft ASN.1 API,8.630445100262234e-06
+cat__Description_Microsoft Windows Input Switcher,8.630445100262234e-06
+cat__Description_Microsoft .NET Runtime Execution Engine,8.630445100262234e-06
+cat__Description_Hid User Library,8.630445100262234e-06
+cat__Description_Application Compatibility Client Library,8.630445100262234e-06
+cat__FileVersion_4.8.4180.0 built by: NET48REL1LAST_B,8.630445100262234e-06
+cat__Description_Cert Credential Provider,8.630445100262234e-06
+cat__FileVersion_5.0.14393.4350 (rs1_release.210407-2154),8.630445100262234e-06
+cat__FileVersion_5.00 (rs1_release.160715-1616),8.630445100262234e-06
+cat__Description_Microsoft .NET Runtime Common Language Runtime - WorkStation,8.630445100262234e-06
+"cat__Signature_Open Source Developer, Benjamin Delpy",8.630445100262234e-06
+cat__FileVersion_7.2.14393.4169 (rs1_release.210107-1130),8.630445100262234e-06
+cat__Description_Appx Subject Interface Package,8.630445100262234e-06
+cat__Description_Authorization Framework,8.630445100262234e-06
+cat__FileVersion_6.10 (rs1_release.210107-1130),8.630445100262234e-06
+cat__FileVersion_10.0.14393.479 (rs1_release.161110-2025),8.630445100262234e-06
+cat__FileVersion_10.0.14393.3930 (rs1_release.200901-1914),8.630445100262234e-06
+cat__FileVersion_10.0.14393.2879 (rs1_release_inmarket.190313-1855),8.630445100262234e-06
+cat__FileVersion_11.00.14393.4283 (rs1_release.210303-1802),8.630445100262234e-06
+cat__FileVersion_10.0.14393.1737 (rs1_release_inmarket.170914-1249),8.630445100262234e-06
+cat__GrantedAccess_0x147a,8.630445100262234e-06
+cat__Description_Windows NT MARTA provider,8.630445100262234e-06
+cat__Description_Windows Enhanced Storage API,8.630445100262234e-06
+cat__FileVersion_10.0.14393.2515 (rs1_release_1.180830-1044),8.630445100262234e-06
+cat__Description_Credential Providers,8.630445100262234e-06
+cat__FileVersion_10.0.19041.2130 (WinBuild.160101.0800),8.630445100262234e-06
+cat__FileVersion_4.8.4190.0 built by: NET48REL1LAST_B,8.630445100262234e-06
+cat__FileVersion_10.0.14393.2791 (rs1_release.190205-1511),8.630445100262234e-06
+cat__Description_Windows Branding Resources,8.630445100262234e-06
+cat__Description_Windows Gaming Input API,8.630445100262234e-06
+cat__FileVersion_10.0.14393.2848,8.630445100262234e-06
+cat__Description_User Experience Controls Library,8.630445100262234e-06
+cat__Description_TWINUI,8.630445100262234e-06
+cat__Description_TCP/IP Netstat Command,8.630445100262234e-06
+cat__OriginalFileName_WlidCredProvider.dll,8.630445100262234e-06
+cat__OriginalFileName_comctl32.DLL,8.630445100262234e-06
+cat__OriginalFileName_avrt.dll,8.630445100262234e-06
+cat__OriginalFileName_credprovslegacy.dll,8.630445100262234e-06
+cat__OriginalFileName_credprovs.dll,8.630445100262234e-06
+cat__Description_Microsoft Passport Credential Provider,8.630445100262234e-06
+cat__Description_Microsoft Common Language Runtime Class Library,8.630445100262234e-06
+cat__Description_Microsoft Smart Card API,8.630445100262234e-06
+cat__Description_Microsoft XmlLite Library,8.630445100262234e-06
+cat__Description_Microsoft Windows PowerShell Management Commands,8.630445100262234e-06
+cat__Description_Microsoft Windows MRM,8.630445100262234e-06
+cat__Description_Microsoft UI Automation Core,8.630445100262234e-06
+cat__Description_Multimedia Realtime Runtime,8.630445100262234e-06
+cat__Description_Face Credential Provider,8.630445100262234e-06
+cat__SourceIp_fe80:0:0:0:7073:809d:70b7:7bb9,8.630445100262234e-06
+cat__Description_Identity Store,8.630445100262234e-06
+cat__Description_Microsoft Desktop Window Manager,8.630445100262234e-06
+cat__Description_Logon UX Controller,8.630445100262234e-06
+cat__Description_MCI API DLL,8.630445100262234e-06
+cat__Description_MSI Signature SIP Provider,8.630445100262234e-06
+cat__DestinationIp_e000:fc:0:0:0:0:0:0,8.630445100262234e-06
+cat__Description_Direct3D 10 Rasterizer,8.630445100262234e-06
+cat__Description_Direct3D 11 Runtime,8.630445100262234e-06
+cat__Description_DirectX Graphics Infrastructure,8.630445100262234e-06
+cat__Description_Microsoft Enhanced DSS and Diffie-Hellman Cryptographic Provider,8.630445100262234e-06
+cat__Description_Microsoft DirectX Typography Services,8.630445100262234e-06
+cat__Description_Media Foundation Platform DLL,8.630445100262234e-06
+cat__Description_Microsoft Direct Manipulation Component,8.630445100262234e-06
+cat__Description_Multiple Provider Router DLL,8.630445100262234e-06
+cat__Description_Credential Providers Legacy,8.630445100262234e-06
+cat__DestinationIp_8.253.151.249,8.630445100262234e-06
+cat__Description_Credential Vault Client Library,8.630445100262234e-06
+cat__Description_Crypto SIP provider for signing and verifying PowerShell script files (.ps1/.ps1xml),8.630445100262234e-06
+cat__Description_DWMInit,8.630445100262234e-06
+cat__Description_Driver Store API,8.630445100262234e-06
+cat__OriginalFileName_mpr.dll,8.630445100262234e-06
+cat__OriginalFileName_mscoreei.dll,8.630445100262234e-06
+cat__OriginalFileName_net.exe,8.630445100262234e-06
+cat__Description_SAM Library DLL,8.630445100262234e-06
+cat__Description_Run time utility for Internet Explorer,8.630445100262234e-06
+cat__OriginalFileName_hid.dll,8.630445100262234e-06
+cat__OriginalFileName_ntmarta.dll,8.630445100262234e-06
+cat__OriginalFileName_ntasn1.dll,8.630445100262234e-06
+cat__OriginalFileName_ngccredprov.dll,8.630445100262234e-06
+cat__OriginalFileName_pnpts.dll,8.630445100262234e-06
+cat__OriginalFileName_clr.dll,8.630445100262234e-06
+cat__OriginalFileName_mscorlib.dll,8.630445100262234e-06
+cat__OriginalFileName_netstat.exe,8.630445100262234e-06
+cat__Description_Net Command,8.630445100262234e-06
+cat__Description_Net Logon Client DLL,8.630445100262234e-06
+cat__OriginalFileName_pwrshsip.dll,8.630445100262234e-06
+cat__OriginalFileName_rdsdwmdr.dll,8.630445100262234e-06
+cat__OriginalFileName_wldp.dll,8.630445100262234e-06
+cat__Description_MicrosoftÃÂÃÂ® Cabinet File API,8.630445100262234e-06
+cat__Description_MicrosoftÃÂÃÂ® Account Credential Provider,8.630445100262234e-06
+cat__OriginalFileName_winscard.dll,8.630445100262234e-06
+cat__OriginalFileName_udwm.dll,8.630445100262234e-06
+cat__OriginalFileName_winbrand.dll,8.630445100262234e-06
+cat__OriginalFileName_vaultcli.dll,8.630445100262234e-06
+cat__Description_OneCoreUAP Common Proxy Stub,8.630445100262234e-06
+cat__Description_Microsoft Remote Desktop Services Desktop Composition Component,8.630445100262234e-06
+cat__OriginalFileName_AppxSip.dll,8.630445100262234e-06
+cat__OriginalFileName_Apphelp,8.630445100262234e-06
+cat__OriginalFileName_DWrite,8.630445100262234e-06
+cat__Description_System.Configuration.dll,8.630445100262234e-06
+cat__Description_Structured Query,8.630445100262234e-06
+cat__OriginalFileName_MrmCore.dll,8.630445100262234e-06
+cat__OriginalFileName_Microsoft.PowerShell.Security.dll,8.630445100262234e-06
+cat__OriginalFileName_MSISIP.DLL,8.630445100262234e-06
+cat__OriginalFileName_XmlLite.dll,8.630445100262234e-06
+cat__OriginalFileName_globinputhost.dll,8.630445100262234e-06
+cat__OriginalFileName_dxgi.dll,8.630445100262234e-06
+cat__OriginalFileName_authz.dll,8.630445100262234e-06
+cat__OriginalFileName_dssenh.dll,8.630445100262234e-06
+cat__OriginalFileName_mfplat.dll,8.630445100262234e-06
+cat__OriginalFileName_cabinet.dll,8.630445100262234e-06
+cat__OriginalFileName_Windows.Gaming.Input.dll,8.630445100262234e-06
+cat__Description_Realtime WorkQueue DLL,8.630445100262234e-06
+cat__Description_PlugPlay Troubleshooter,8.630445100262234e-06
+cat__Description_Routing Utilities,8.630445100262234e-06
+cat__OriginalFileName_directmanipulation.dll,8.630445100262234e-06
+cat__OriginalFileName_UIAutomationCore.dll,8.630445100262234e-06
+cat__OriginalFileName_LOGONCLI.DLL,8.630445100262234e-06
+cat__OriginalFileName_RTUTILS.DLL,8.630445100262234e-06
+cat__OriginalFileName_RTWorkQ.dll,8.630445100262234e-06
+cat__OriginalFileName_SETUPAPI.DLL,8.630445100262234e-06
+cat__OriginalFileName_SAMLib.DLL,8.630445100262234e-06
+cat__OriginalFileName_TWINUI.dll,8.630445100262234e-06
+cat__OriginalFileName_System.Core.dll,8.630445100262234e-06
+cat__OriginalFileName_System.Xml.dll,8.630445100262234e-06
+cat__OriginalFileName_System.Configuration.dll,8.630445100262234e-06
+cat__OriginalFileName_StructuredQuery.dll,8.630445100262234e-06
+cat__OriginalFileName_WINMM.DLL,8.630445100262234e-06
+cat__Description_Windows Lockdown Policy,8.630445100262234e-06
+cat__Description_Windows Globalization Extension API for Input,8.630445100262234e-06
+cat__Description_Windows Setup API,8.630445100262234e-06
+cat__OriginalFileName_DWMInit.DLL,8.630445100262234e-06
+cat__OriginalFileName_D3D11.dll,8.630445100262234e-06
+cat__OriginalFileName_DRVSTORE.DLL,8.630445100262234e-06
+cat__OriginalFileName_D3D10Warp.dll,8.630445100262234e-06
+cat__Product_Internet Explorer,8.630445100262234e-06
+cat__OriginalFileName_OneCoreUAPCommonProxyStub.dll,8.630445100262234e-06
+cat__OriginalFileName_LogonController.dll,8.630445100262234e-06
+cat__OriginalFileName_CertCredprovider.dll,8.630445100262234e-06
+cat__OriginalFileName_EhStorapi.dll,8.630445100262234e-06
+cat__OriginalFileName_IdStore.dll,8.630445100262234e-06
+cat__OriginalFileName_IeRtUtil.dll,8.630445100262234e-06
+cat__OriginalFileName_InputSwitch.dll,8.630445100262234e-06
+cat__OriginalFileName_FaceCredentialProvider.dll,8.630445100262234e-06
+cat__Product_Microsoft (R) Windows (R) Operating System,8.630445100262234e-06
+cat__OriginalFileName_dllhost.exe,6.387785897421202e-06
+cat__Description_COM Surrogate,6.387785897421202e-06
+cat__Product_Sysinternals PsExec,5.122079722076254e-06
+cat__DestinationIp_52.242.101.226,5.122079722076254e-06
+cat__Description_Execute processes remotely,5.122079722076254e-06
+cat__OriginalFileName_psexec.c,5.122079722076254e-06
+cat__FileVersion_2.2.0.0,1.4262363057337794e-06
+cat__OriginalFileName_mimikatz.exe,1.4262363057337794e-06
+cat__Company_gentilkiwi (Benjamin DELPY),1.4262363057337794e-06
+cat__Description_mimikatz for Windows,1.4262363057337794e-06
+cat__Product_mimikatz,1.4262363057337794e-06
+cat__TargetUser_NT AUTHORITY\LOCAL SERVICE,8.844378786192555e-07
+cat__ParentImage_C:\Windows\System32\cmd.exe,2.447584895176602e-10
+cat__Signed_False,8.153797971012511e-11
+cat__Signature_-,8.153797971012511e-11
