@@ -16,12 +16,12 @@ class Config:
     
    
     LMD_2022_PATH = str(LMD_2022_DIR / "LMD-2022_NormalVsMalicious.csv")
-    LMD_2022_NORMAL_PATH = str(LMD_2022_DIR / "LMD-2022_NormalVsMalicious.csv")
+    LMD_2022_NORMAL_PATH = str(LMD_2022_DIR / "LMD-2022_Normal.csv")
     LMD_2023_EORS_PATH = str(LMD_2023_DIR / "LMD-2023_EoRS.csv")
     LMD_2023_NORMAL_PATH = str(LMD_2023_DIR / "LMD-2023_Normal.csv")
     LMD_2023_TEST_PATH = str(LMD_2023_DIR / "lmd2023_test_file.csv")
     
-
+    LMD_2023_TEST_FULL_PATH = str(LMD_2023_DIR / "LMD-2023_IF_TEST.csv")
     OUTPUT_DIR = str(PROJECT_ROOT / "final_datasets")
 
     
@@ -43,6 +43,9 @@ class Config:
     LSTM_UNITS = 64
     LSTM_EPOCHS = 50
     LSTM_BATCH_SIZE = 32
+
+
+    EMMISSIONS_OUTPUT_DIR = str(PROJECT_ROOT / "emissions")
     
     # Carbon tracking
     UK_REGION = "GB"

@@ -51,7 +51,7 @@ RF_EVAL_PARAMS = dict(
 )
 
 # Original-feature counts to sweep (how many top features to keep)
-FEATURE_COUNTS_TO_TEST = [3, 5, 7, 10, 12, 15, 20, 25, 30, 41]
+FEATURE_COUNTS_TO_TEST = [3, 5, 6, 7, 8,9,10,11,12,13]
 
 
 def h(title: str):

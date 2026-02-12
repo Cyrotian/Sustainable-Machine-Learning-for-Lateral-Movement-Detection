@@ -125,3 +125,16 @@ df3 = process_and_save_dataset(
     selected_features=final_features,
     filter_label=None
 )
+
+# ── Dataset 4: Isolation forest set ──────────────────────────────
+print("\n" + "="*80)
+print("DATASET FOR IF")
+print("="*80)
+
+df3 = process_and_save_dataset(
+    df_path=Config.LMD_2023_TEST_FULL_PATH,
+    output_name=f"lmd2023_test_iso.csv",
+    selected_features=final_features,
+    filter_label=None
+)
+

@@ -13,6 +13,7 @@ env/
 
 data/
 evaluation/
+final_datasets/
 
 # OS / editor junk
 .DS_Store
