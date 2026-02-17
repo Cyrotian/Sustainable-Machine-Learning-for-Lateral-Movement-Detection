@@ -1,258 +1,249 @@
 """
-Feature engineering pipeline for LMD-2022 lateral movement detection.
+feature_engineering.py — Drop bad features + engineer new ones.
 
-Covers:
-  - Pipeline hyperparameters / constants
-  - Section 0: optional stratified subset
-  - Section 1: drop constants, identifiers, leak-prone features
-  - Section 2: feature engineering (Image_Category, port binning, rare-category
-    grouping, LogonId binarisation, ParentProcessId drop)
+PURPOSE: Transform raw Sysmon log columns into a clean feature matrix.
+         Two stages:
+           Section 1: Remove features that would hurt the model
+           Section 2: Engineer domain-specific features from raw columns
+
+RESULT:  ~90 raw columns -> 5 final features
 """
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
 
 
 # ============================================================================
-# PIPELINE HYPERPARAMETERS
+# CONSTANTS
 # ============================================================================
 
 RANDOM_STATE = 42
-LABEL_COL = "isMalicious"
-GROUP_COL = "Computer"
-
-# Set to None to use the full dataset; set to e.g. 50_000 for fast iteration
-SUBSET_N_ROWS = 50_000
-
-TEST_SIZE = 0.20
-
-# Rare-category threshold: categories with fewer than this many rows → "Other"
-RARE_CATEGORY_THRESHOLD = 50
-
-# RF for feature importance ranking (fitted once for importance scores)
-RF_SELECTOR_PARAMS = dict(
-    n_estimators=100,
-    random_state=RANDOM_STATE,
-    class_weight="balanced",
-    n_jobs=-1,
-    max_features="sqrt",
-    min_samples_leaf=2,
-)
-
-# RF for feature-count validation (slightly stronger)
-RF_EVAL_PARAMS = dict(
-    n_estimators=150,
-    random_state=RANDOM_STATE,
-    class_weight="balanced",
-    n_jobs=-1,
-    max_features="sqrt",
-    min_samples_leaf=1,
-)
-
-# Original-feature counts to sweep (how many top features to keep)
-FEATURE_COUNTS_TO_TEST = [3, 5, 6, 7, 8,9,10,11,12,13]
+LABEL_COL = "isMalicious"       # Target variable
+GROUP_COL = "Computer"          # Group column (for group-based splitting)
+SUBSET_N_ROWS = 50_000          # Stratified subset size for feature selection
+RARE_CATEGORY_THRESHOLD = 50    # Categories with <50 rows become "Other_Rare"
 
 
-def h(title: str):
-    """Section header printer."""
+def h(title):
+    """Print a section header."""
     print("\n" + "=" * 80)
     print(title)
     print("=" * 80)
 
 
 # ============================================================================
-# SECTION 0: OPTIONAL STRATIFIED SUBSET
+# SECTION 0: STRATIFIED SUBSET
 # ============================================================================
 
-def create_subset(lmd2022_df: pd.DataFrame,
-                  subset_n_rows: int | None = SUBSET_N_ROWS) -> pd.DataFrame:
+def create_subset(df, subset_n_rows=SUBSET_N_ROWS):
     """
-    Optionally take a stratified subset of the full dataframe.
+    Take a stratified sample of the dataset for feature selection.
 
-    Parameters
-    ----------
-    lmd2022_df : pd.DataFrame
-        Full cleaned dataframe (must contain LABEL_COL and GROUP_COL).
-    subset_n_rows : int or None
-        If not None and less than total rows, take a stratified sample of
-        this size. Use None for the full dataset.
+    WHY NOT use the full dataset?
+      With GroupShuffleSplit on only a few computers, the full dataset
+      can produce validation splits where the held-out computer has
+      completely different patterns. A 50k stratified subset gives a
+      better-behaved split for ranking features.
 
-    Returns
-    -------
-    pd.DataFrame
-        The (possibly subsetted) dataframe, reset-indexed.
+    WHY STRATIFIED?
+      A random subset might accidentally drop all malicious rows
+      (since they're the minority class). Stratified sampling
+      preserves the original class ratio.
+
+    Set subset_n_rows=None to use the full dataset.
     """
-    h("SECTION 0: LOAD DATA")
+    h("SECTION 0: STRATIFIED SUBSET")
 
-    assert LABEL_COL in lmd2022_df.columns, f"Missing label column: {LABEL_COL}"
-    assert GROUP_COL in lmd2022_df.columns, f"Missing group column: {GROUP_COL}"
+    # Convert label to numeric if stored as string
+    if df[LABEL_COL].dtype == "object":
+        df[LABEL_COL] = pd.to_numeric(df[LABEL_COL], errors="coerce")
+        df = df[df[LABEL_COL].notna()].copy()
+        df[LABEL_COL] = df[LABEL_COL].astype(int)
 
+    total_rows = len(df)
 
-    if lmd2022_df[LABEL_COL].dtype == "object":
-        lmd2022_df[LABEL_COL] = pd.to_numeric(df[LABEL_COL], errors='coerce')
-        lmd2022_df = df[df[LABEL_COL].notna()].copy()
-        lmd2022_df[LABEL_COL] = lmd2022_df[LABEL_COL].astype(int)
+    if subset_n_rows is not None and subset_n_rows < total_rows:
+        from sklearn.model_selection import train_test_split
 
-    n_total = len(lmd2022_df)
-
-    if subset_n_rows is not None and subset_n_rows < n_total:
-        _, df = train_test_split(
-            lmd2022_df,
+        # train_test_split with stratify keeps the class ratio intact
+        # We throw away the first half and keep the subset
+        _, subset = train_test_split(
+            df,
             test_size=subset_n_rows,
             random_state=RANDOM_STATE,
-            stratify=lmd2022_df[LABEL_COL],
+            stratify=df[LABEL_COL],
         )
-        df = df.reset_index(drop=True)
-        print(f"Stratified subset: {len(df):,} rows from {n_total:,}")
+        df = subset.reset_index(drop=True)
+        print("Stratified subset:", len(df), "rows from", total_rows)
     else:
-        df = lmd2022_df.copy().reset_index(drop=True)
-        print(f"Using full dataset: {len(df):,} rows")
-
-    print(f"\nLabel distribution:")
-    print(df[LABEL_COL].value_counts())
-    print((df[LABEL_COL].value_counts(normalize=True) * 100).round(2))
-    print(f"\nComputers: {df[GROUP_COL].nunique()}")
+        df = df.reset_index(drop=True)
+        print("Using full dataset:", len(df), "rows")
 
     return df
 
 
 # ============================================================================
-# SECTION 1: DROP CONSTANTS, IDENTIFIERS, AND LEAK-PRONE FEATURES
+# SECTION 1: DROP BAD FEATURES
 # ============================================================================
 
-def drop_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str], int]:
+def drop_features(df):
     """
-    Drop constant, identifier, leak-prone, and redundant features.
+    Remove features that would hurt model performance. Four categories:
 
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Dataframe after optional subsetting (must contain LABEL_COL and GROUP_COL).
+    1a. NEAR-ZERO VARIANCE: >99.9% of values are the same.
+        No discriminative power.
 
-    Returns
-    -------
-    df_clean : pd.DataFrame
-        Dataframe with problematic columns removed.
-    all_drops : list[str]
-        Names of all dropped columns.
-    cols_before : int
-        Number of feature columns before dropping (excludes label + group).
+    1b. METADATA / IDENTIFIERS: Unique per-row values.
+        Model would memorise specific log entries instead of learning patterns.
+
+    1c. HIGH-CARDINALITY LEAK RISK: Free-text or hash fields.
+        Too many unique values + risk of data leakage.
+
+    1d. REDUNDANT: Information already captured by another feature.
+
+    Returns: (cleaned_df, list_of_dropped_columns, original_column_count)
     """
-    h("SECTION 1: FEATURE REMOVAL (STATISTICALLY JUSTIFIED)")
+    h("SECTION 1: FEATURE REMOVAL")
 
-    # ── 1a. Constant / near-constant (>99.9% same value) ───────────────────
+    # ── 1a. Find near-zero variance columns ────────────────────────────
+    # If one value appears in >99.9% of rows, the column is useless.
     near_zero_cols = []
     for col in df.columns:
-        if col in [LABEL_COL, GROUP_COL]:
+        if col == LABEL_COL or col == GROUP_COL:
             continue
-        top_freq = df[col].value_counts(dropna=False, normalize=True).iloc[0]
-        if top_freq > 0.999:
+        frequencies = df[col].value_counts(dropna=False, normalize=True)
+        most_common_frequency = frequencies.iloc[0]
+        if most_common_frequency > 0.999:
             near_zero_cols.append(col)
 
-    print(f"\n1a. Near-zero variance ({len(near_zero_cols)} features):")
-    for c in sorted(near_zero_cols):
-        print(f"    {c}")
+    print("1a. Near-zero variance columns:", len(near_zero_cols))
 
-    # ── 1b. Metadata / identifiers ─────────────────────────────────────────
+    # ── 1b. Metadata / identifiers (hardcoded list) ───────────────────
+    # These are unique per-row or per-event — the model would just
+    # memorise them instead of learning real patterns.
     metadata_cols = [
         "SystemTime", "UtcTime", "CreationUtcTime", "PreviousCreationUtcTime",
         "Guid", "ProcessGuid", "SourceProcessGUID", "TargetProcessGUID",
         "ParentProcessGuid", "SourceProcessGuid", "TargetProcessGuid", "LogonGuid",
         "ProcessID", "ProcessId", "ThreadID", "Execution_ProcessID", "EventRecordID",
         "SourceProcessId", "SourceThreadId", "TargetProcessId",
-        "User", "UserID",
-        "Name", "Version", "StartFunction",
+        "User", "UserID", "Name", "Version", "StartFunction",
     ]
+    print("1b. Metadata / identifiers:", len(metadata_cols))
 
-    print(f"\n1b. Metadata / identifiers ({len(metadata_cols)} features):")
-    for c in sorted(metadata_cols):
-        print(f"    {c}")
-
-    # ── 1c. High-cardinality / leak risk ───────────────────────────────────
+    # ── 1c. High-cardinality / leak risk (hardcoded list) ─────────────
+    # Free-text fields with thousands of unique values.
+    # CommandLine is especially dangerous — the model could learn
+    # to detect specific commands rather than general attack patterns.
     leak_cols = [
-        "CommandLine", "ParentCommandLine",
-        "Hashes", "Hash",
-        "CallTrace",
-        "TargetFilename", "TargetObject",
-        "Details", "Contents",
-        "QueryResults",
-        "ConfigurationFileHash",
+        "CommandLine", "ParentCommandLine", "Hashes", "Hash", "CallTrace",
+        "TargetFilename", "TargetObject", "Details", "Contents",
+        "QueryResults", "ConfigurationFileHash",
     ]
+    print("1c. High-cardinality leak risk:", len(leak_cols))
 
-    print(f"\n1c. High-cardinality leak risk ({len(leak_cols)} features):")
-    for c in sorted(leak_cols):
-        print(f"    {c}")
+    # ── 1d. Redundant columns ─────────────────────────────────────────
+    # Task = same info as EventID
+    # SignatureStatus = same info as Signed
+    # DestinationIsIpv6 = redundant with IP address format
+    redundant_cols = ["Task", "SignatureStatus", "DestinationIsIpv6"]
+    print("1d. Redundant:", len(redundant_cols))
 
-    # ── 1d. Redundant features ─────────────────────────────────────────────
-    redundant_cols = ["Task"]
-    print(f"\n1d. Redundant ({len(redundant_cols)} features): {redundant_cols}")
+    # ── Combine all columns to drop ───────────────────────────────────
+    all_to_drop = near_zero_cols + metadata_cols + leak_cols + redundant_cols
 
-    # ── 1e. Redundant within signing group ─────────────────────────────────
-    signing_redundant = ["SignatureStatus"]
+    # Remove duplicates
+    all_to_drop = list(set(all_to_drop))
 
-    # ── 1f. Redundant IPv6 flags ───────────────────────────────────────────
-    ipv6_redundant = ["DestinationIsIpv6"]
+    # Only drop columns that actually exist and aren't the label/group
+    final_drops = []
+    for col in all_to_drop:
+        if col in df.columns and col != LABEL_COL and col != GROUP_COL:
+            final_drops.append(col)
 
-    print(f"\n1e–f. Redundant within groups ({len(signing_redundant) + len(ipv6_redundant)} features):")
-    print(f"    Signing: {signing_redundant}")
-    print(f"    IPv6:    {ipv6_redundant}")
-
-    # ── Apply all drops ────────────────────────────────────────────────────
-    all_drops = sorted(set(
-        near_zero_cols + metadata_cols + leak_cols +
-        redundant_cols + signing_redundant + ipv6_redundant
-    ))
-    all_drops = [c for c in all_drops if c in df.columns and c not in [LABEL_COL, GROUP_COL]]
-
-    cols_before = len(df.columns) - 2  # exclude label + group
-    df_clean = df.drop(columns=all_drops)
+    cols_before = len(df.columns) - 2  # minus label and group
+    df_clean = df.drop(columns=final_drops)
     cols_after = len(df_clean.columns) - 2
 
-    print(f"\nFeatures before: {cols_before}")
-    print(f"Features after:  {cols_after}")
-    print(f"Total dropped:   {len(all_drops)}")
+    print("\nFeatures before:", cols_before)
+    print("Features after: ", cols_after)
+    print("Total dropped:  ", len(final_drops))
 
-    return df_clean, all_drops, cols_before
+    return df_clean, final_drops, cols_before
 
 
 # ============================================================================
 # SECTION 2: FEATURE ENGINEERING
 # ============================================================================
 
-# ── Image categorisation helpers ───────────────────────────────────────────
+# Known attack tools — used to categorise executable paths
 ATTACK_TOOLS = ["psexec", "mimikatz", "procdump", "atomicredteam",
                 "wmic", "powershell", "cmd.exe"]
-INFRA = ["splunk", "streamfwd"]
+INFRA_TOOLS = ["splunk", "streamfwd"]
 
 
-def categorise_image(path: str) -> str:
-    """Categorise an executable image path into a security-relevant bucket."""
+def categorise_image(path):
+    """
+    Categorise an executable path into a security-relevant bucket.
+
+    WHY: The raw "Image" column has thousands of unique file paths.
+    A model can't learn from raw paths — but it CAN learn that
+    "AttackTool" executables are suspicious.
+
+    Categories:
+      AttackTool   = known offensive tools (mimikatz, psexec, etc.)
+      Infra        = monitoring infrastructure (splunk, etc.)
+      System32     = standard Windows system executables
+      UserProfile  = executables in user folders (unusual for system processes)
+      Temp         = executables in temp folders (common for malware)
+      Other        = everything else
+    """
     s = str(path).lower()
-    if any(t in s for t in ATTACK_TOOLS):
-        return "AttackTool"
-    if any(t in s for t in INFRA):
-        return "Infra"
+
+    for tool in ATTACK_TOOLS:
+        if tool in s:
+            return "AttackTool"
+
+    for tool in INFRA_TOOLS:
+        if tool in s:
+            return "Infra"
+
     if "\\windows\\system32\\" in s:
         return "System32"
+
     if "\\users\\" in s:
         return "UserProfile"
-    if "\\temp\\" in s or "\\appdata\\local\\temp\\" in s:
+
+    if "\\temp\\" in s:
         return "Temp"
+
     return "Other"
 
 
-def bin_port(port_series: pd.Series) -> pd.Series:
-    """Bin port numbers into security-relevant categories."""
-    port = pd.to_numeric(port_series, errors="coerce").fillna(0).astype(int)
-    return pd.cut(
+def bin_port(port_series):
+    """
+    Bin raw port numbers (0-65535) into 4 security-meaningful categories.
+
+    WHY: Raw port numbers have no ordinal meaning for ML.
+    But the PORT RANGE tells you a lot:
+      NotPopulated (0)        = no network activity for this event
+      WellKnown (1-1023)      = standard services (HTTP=80, SMB=445, etc.)
+      Registered (1024-49151) = application-specific ports
+      Ephemeral (49152+)      = temporary client-side ports
+    """
+    port = pd.to_numeric(port_series, errors="coerce")
+    port = port.fillna(0)
+    port = port.astype(int)
+
+    binned = pd.cut(
         port,
         bins=[-1, 0, 1023, 49151, 65536],
         labels=["NotPopulated", "WellKnown", "Registered", "Ephemeral"],
-    ).astype(str)
+    )
+    return binned.astype(str)
 
 
-# High-cardinality categoricals to group rare values
+# Columns with too many unique categories to use directly
 HIGH_CARD_CATEGORICALS = [
     "ImageLoaded",
     "ParentImage",
@@ -263,72 +254,82 @@ HIGH_CARD_CATEGORICALS = [
 ]
 
 
-def engineer_features(
-    df_clean: pd.DataFrame,
-    rare_threshold: int = RARE_CATEGORY_THRESHOLD,
-) -> tuple[pd.DataFrame, pd.Series, pd.Series]:
+def engineer_features(df_clean, rare_threshold=RARE_CATEGORY_THRESHOLD):
     """
     Apply all feature engineering transforms.
 
-    Parameters
-    ----------
-    df_clean : pd.DataFrame
-        Dataframe after feature removal (must contain LABEL_COL and GROUP_COL).
-    rare_threshold : int
-        Categories with fewer than this many rows are grouped into "Other_Rare".
+    ALL transforms must run even though only 5 features are ultimately
+    selected — because the feature SELECTION sweep (Sections 3-9)
+    evaluates all ~35 features and needs them properly engineered
+    to produce valid rankings and a valid sweep curve.
 
-    Returns
-    -------
-    X : pd.DataFrame
-        Engineered feature matrix (no label or group columns).
-    y : pd.Series
-        Binary label (0/1).
-    groups : pd.Series
-        Computer group identifiers.
+    Transforms:
+      2a. Image path -> Image_Category (6 security buckets)
+      2b. Port numbers -> 4 bins each
+      2c. Rare category grouping for high-cardinality categoricals
+      2d. LogonId -> binary populated flag
+      2e. Drop ParentProcessId (identifier)
+
+    Returns:
+      X      = feature matrix (no label, no group column)
+      y      = binary label series (0/1)
+      groups = Computer ID series (for group-based splitting)
     """
     h("SECTION 2: FEATURE ENGINEERING")
 
+    # Separate label and group from features
     y = df_clean[LABEL_COL].astype(int)
     groups = df_clean[GROUP_COL].astype(str)
     X = df_clean.drop(columns=[LABEL_COL, GROUP_COL], errors="ignore")
 
-    # ── 2a. Image → Image_Category ─────────────────────────────────────────
+    # ── 2a. Image path -> 6 security categories ──────────────────────
     if "Image" in X.columns:
-        X["Image_Category"] = X["Image"].map(categorise_image).astype(str)
+        X["Image_Category"] = X["Image"].apply(categorise_image)
+        X["Image_Category"] = X["Image_Category"].astype(str)
         X = X.drop(columns=["Image"])
-        print("✓ Image → Image_Category (6 categories)")
+        print("Done: Image -> Image_Category (6 categories)")
 
-    # ── 2b. Port binning ───────────────────────────────────────────────────
-    for port_col in ["SourcePort", "DestinationPort"]:
-        if port_col in X.columns:
-            X[port_col + "_Bin"] = bin_port(X[port_col])
-            X = X.drop(columns=[port_col])
-            print(f"✓ {port_col} → {port_col}_Bin (4 bins)")
+    # ── 2b. Port numbers -> 4 bins each ──────────────────────────────
+    if "SourcePort" in X.columns:
+        X["SourcePort_Bin"] = bin_port(X["SourcePort"])
+        X = X.drop(columns=["SourcePort"])
+        print("Done: SourcePort -> SourcePort_Bin (4 bins)")
 
-    # ── 2c. Rare-category grouping ─────────────────────────────────────────
+    if "DestinationPort" in X.columns:
+        X["DestinationPort_Bin"] = bin_port(X["DestinationPort"])
+        X = X.drop(columns=["DestinationPort"])
+        print("Done: DestinationPort -> DestinationPort_Bin (4 bins)")
+
+    # ── 2c. Group rare categories -> "Other_Rare" ────────────────────
+    # For columns like QueryName with 5000+ unique DNS names,
+    # group anything appearing <50 times into one "Other_Rare" bucket.
     for col in HIGH_CARD_CATEGORICALS:
         if col not in X.columns:
             continue
-        vc = X[col].value_counts()
-        rare_cats = vc[vc < rare_threshold].index
-        n_before = X[col].nunique()
-        X[col] = X[col].where(~X[col].isin(rare_cats), other="Other_Rare")
-        n_after = X[col].nunique()
-        print(f"✓ {col}: {n_before} → {n_after} categories (grouped {len(rare_cats)} rare)")
 
-    # ── 2d. LogonId → binary populated flag ────────────────────────────────
+        counts = X[col].value_counts()
+        rare_categories = counts[counts < rare_threshold].index
+        X[col] = X[col].where(~X[col].isin(rare_categories), other="Other_Rare")
+        print("Done:", col, "- grouped", len(rare_categories), "rare categories")
+
+    # ── 2d. LogonId -> binary flag ────────────────────────────────────
     if "LogonId" in X.columns:
-        X["LogonId_Populated"] = (X["LogonId"].astype(str) != "0").astype(int)
+        is_populated = X["LogonId"].astype(str) != "0"
+        X["LogonId_Populated"] = is_populated.astype(int)
         X = X.drop(columns=["LogonId"])
-        print("✓ LogonId → LogonId_Populated (binary)")
+        print("Done: LogonId -> LogonId_Populated (binary)")
 
-    # ── 2e. Drop ParentProcessId (identifier) ─────────────────────────────
+    # ── 2e. Drop ParentProcessId (it's just an identifier) ───────────
     if "ParentProcessId" in X.columns:
         X = X.drop(columns=["ParentProcessId"])
-        print("✓ Dropped ParentProcessId (identifier, 544 unique)")
+        print("Done: Dropped ParentProcessId (identifier)")
 
-    print(f"\nFinal X shape: {X.shape}")
-    print(f"Categorical: {X.select_dtypes(exclude=['number']).shape[1]}")
-    print(f"Numeric:     {X.select_dtypes(include=['number']).shape[1]}")
+    # ── Summary ───────────────────────────────────────────────────────
+    num_categorical = X.select_dtypes(exclude=["number"]).shape[1]
+    num_numeric = X.select_dtypes(include=["number"]).shape[1]
+
+    print("\nFinal X shape:", X.shape)
+    print("Categorical columns:", num_categorical)
+    print("Numeric columns:    ", num_numeric)
 
     return X, y, groups

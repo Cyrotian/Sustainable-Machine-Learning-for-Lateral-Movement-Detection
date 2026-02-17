@@ -7,9 +7,7 @@ class Config:
     CONFIG_DIR = Path(__file__).parent.resolve(strict=True)  # .../src/
     PROJECT_ROOT = Path("/home/mike/Documents/Sustainable-Machine-Learning-for-Lateral-Movement-Detection")
 
-    
-    
-
+   
     DATA_DIR = PROJECT_ROOT / "data"
     LMD_2022_DIR = DATA_DIR / "lmd2022"
     LMD_2023_DIR = DATA_DIR / "lmd2023"
@@ -20,9 +18,13 @@ class Config:
     LMD_2023_EORS_PATH = str(LMD_2023_DIR / "LMD-2023_EoRS.csv")
     LMD_2023_NORMAL_PATH = str(LMD_2023_DIR / "LMD-2023_Normal.csv")
     LMD_2023_TEST_PATH = str(LMD_2023_DIR / "lmd2023_test_file.csv")
+
+
+    LMD_2023_COMBINED_PATH = str(LMD_2023_DIR / "lmd2023_test.csv")
     
-    LMD_2023_TEST_FULL_PATH = str(LMD_2023_DIR / "LMD-2023_IF_TEST.csv")
+    LMD_2023_TEST_ISOLATION_FOREST = str(LMD_2023_DIR / "LMD-2023_IF_TEST.csv")
     OUTPUT_DIR = str(PROJECT_ROOT / "final_datasets")
+    OUTPUT_FILE = str(PROJECT_ROOT / "test_dataset.csv")
 
     
     
@@ -43,7 +45,6 @@ class Config:
     LSTM_UNITS = 64
     LSTM_EPOCHS = 50
     LSTM_BATCH_SIZE = 32
-
 
     EMMISSIONS_OUTPUT_DIR = str(PROJECT_ROOT / "emissions")
     

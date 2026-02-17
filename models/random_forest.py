@@ -14,7 +14,8 @@ class RandomForestModel:
             n_estimators=n_estimators,
             max_depth=max_depth,
             random_state=random_state,
-            n_jobs=-1
+            n_jobs=-1,
+            class_weight="balanced"
         )
         self.label_encoders = {}
         self.metrics = {}
