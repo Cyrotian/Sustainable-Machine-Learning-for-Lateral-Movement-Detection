@@ -152,6 +152,7 @@ def random_forest():
         print("  Run " + str(i + 1) + "/10 |",
               "F1:", round(result["f1"], 4), "|",
               "Time:", round(result["inference_time"], 3), "s |",
+              "fpr:", round(result["fpr"], 6), "|",
               "Emissions:", round(result["emissions"], 8), "kg CO2")
 
     summary = random_forest_model.get_inference_summary()
@@ -205,6 +206,7 @@ def lightgbm():
             "F1:", round(result["f1"], 4), "|",
             "Prec:", round(result["precision"], 4), "|",
             "Rec:", round(result["recall"], 4), "|",
+            "fpr:", round(result["fpr"], 6), "|",
             "Time:", round(result["inference_time"], 3), "s |",
             "Emissions:", round(result["emissions"], 8), "kg CO2",
         )
@@ -289,6 +291,7 @@ def lstm():
             f"F1: {result['f1']:.4f} | "
             f"Prec: {result['precision']:.4f} | "
             f"Rec: {result['recall']:.4f} | "
+            f"fpr: {result['fpr']:.6f} | "
             f"Time: {result['inference_time']:.3f}s | "
             f"Emissions: {result['emissions']:.8f} kg CO2"
         )
@@ -303,6 +306,6 @@ def lstm():
 
 if __name__ == "__main__":
         #preprocess()
-        lightgbm()
+        #lightgbm()
         #random_forest()
-        #lstm()
+        lstm()

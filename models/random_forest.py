@@ -1,6 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.tree import plot_tree
 from codecarbon import EmissionsTracker
 import matplotlib.pyplot as plt
@@ -75,12 +75,13 @@ class RandomForestModel:
     def evaluate(self, X_test, y_test):
         """Quick evaluation with no tracking - sanity check only."""
         predictions = self.predict(X_test)
-
+        tn, fp, _, _ = confusion_matrix(y_test, predictions).ravel()
         self.metrics = {
             'accuracy':  accuracy_score(y_test, predictions),
             'precision': precision_score(y_test, predictions, zero_division=0),
             'recall':    recall_score(y_test, predictions, zero_division=0),
-            'f1':        f1_score(y_test, predictions, zero_division=0)
+            'f1':        f1_score(y_test, predictions, zero_division=0),
+            "fpr": float(fp / (fp + tn)) if (fp + tn) > 0 else 0.0,
         }
 
         return self.metrics
@@ -104,7 +105,7 @@ class RandomForestModel:
         emissions = tracker.stop()
 
         inference_time = end_time - start_time
-
+        tn, fp, _, _ = confusion_matrix(y_true, predictions).ravel()
         result = {
             'inference_time': inference_time,
             'emissions':      emissions,
@@ -112,6 +113,7 @@ class RandomForestModel:
             'accuracy':       accuracy_score(y_true, predictions),
             'precision':      precision_score(y_true, predictions, zero_division=0),
             'recall':         recall_score(y_true, predictions, zero_division=0),
+            "fpr":            float(fp / (fp + tn)) if (fp + tn) > 0 else 0.0,
         }
 
         self.inference_results.append(result)
@@ -123,7 +125,7 @@ class RandomForestModel:
             print("No inference runs recorded yet.")
             return None
 
-        keys = ['inference_time', 'emissions', 'f1', 'accuracy', 'precision', 'recall']
+        keys = ['inference_time', 'emissions', 'f1', 'accuracy', 'precision', 'recall', 'fpr'] 
         summary = {}
 
         for key in keys:

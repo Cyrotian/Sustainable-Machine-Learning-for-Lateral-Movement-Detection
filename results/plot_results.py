@@ -19,6 +19,7 @@ CHARTS GENERATED:
     9.  Precision vs Recall Scatter
    10.  Recall Comparison
    11.  Combined Overview (Performance + Cost in one figure)
+   12.  False Positive Rate (FPR) Comparison
 
 USAGE:
   python plot_all.py
@@ -110,6 +111,8 @@ if has_perf:
             'recall':         row['recall_mean'],
             'recall_std':     row.get('recall_std', 0),
             'accuracy':       row.get('accuracy_mean', 0),
+            'fpr':            row.get('fpr_mean', 0),
+            'fpr_std':        row.get('fpr_std', 0)
         }
 else:
     print("  WARNING: model_metrics.csv not found — skipping performance charts (7-11).")
@@ -387,6 +390,23 @@ if has_perf:
     plt.savefig('figures/chart11_combined_overview.png', dpi=300, bbox_inches='tight'); plt.close()
     print("  Chart 11: Combined Overview")
 
+# ─── CHART 12: False Positive Rate (FPR) ─────────────────────────────
+    fig, ax = plt.subplots(figsize=(8, 5))
+    vals = [perf_dict[m]['fpr'] for m in MODEL_ORDER]
+    errs = [perf_dict[m]['fpr_std'] for m in MODEL_ORDER]
+    bars = ax.bar(MODEL_ORDER, vals, yerr=errs, color=colors, width=0.5,
+                  edgecolor='white', linewidth=1.2, capsize=6, error_kw={'linewidth': 2})
+    for bar, val in zip(bars, vals):
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(vals) * 0.03,
+                f'{val:.6f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
+    ax.set_title('False Positive Rate by Model on LMD-2023\n(Proportion of benign traffic misclassified as attacks)',
+                 fontsize=13, fontweight='bold', pad=15)
+    ax.set_ylabel('False Positive Rate', fontsize=11)
+    ax.set_xlabel('Model', fontsize=11)
+    ax.set_ylim(0, max(vals) * 1.35 if max(vals) > 0 else 0.01)
+    style_ax(ax); plt.tight_layout()
+    plt.savefig('figures/chart12_fpr_comparison.png', dpi=300, bbox_inches='tight'); plt.close()
+    print("  Chart 12: FPR Comparison")
 
 # ═════════════════════════════════════════════════════════════════════════════
 # SUMMARY TABLES
@@ -416,14 +436,17 @@ if has_perf:
     print("\n" + "="*90)
     print("PERFORMANCE SUMMARY (mean \u00b1 std across 10 inference runs)")
     print("="*90)
-    print(f"{'Model':<20} {'F1':<22} {'Precision':<22} {'Recall'}")
-    print("-"*90)
+    print(f"{'Model':<20} {'F1':<22} {'Precision':<22} {'Recall':<22} {'FPR'}")
+    print("-"*110)
     for model in MODEL_ORDER:
         m = perf_dict[model]
         print(f"{model:<20} "
               f"{m['f1']:.4f} \u00b1 {m['f1_std']:.4f}     "
               f"{m['precision']:.4f} \u00b1 {m['precision_std']:.4f}     "
-              f"{m['recall']:.4f} \u00b1 {m['recall_std']:.4f}")
+              f"{m['recall']:.4f} \u00b1 {m['recall_std']:.4f}     "
+              f"{m['fpr']:.4f} \u00b1 {m['fpr_std']:.4f}")
 
-chart_count = 11 if has_perf else 6
+chart_count = 12 if has_perf else 6
 print(f"\nAll {chart_count} charts saved to figures/")
+
+

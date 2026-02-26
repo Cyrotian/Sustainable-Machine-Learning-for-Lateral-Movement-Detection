@@ -17,7 +17,7 @@ class Config:
     LMD_2022_NORMAL_PATH = str(LMD_2022_DIR / "LMD-2022_Normal.csv")
     LMD_2023_EORS_PATH = str(LMD_2023_DIR / "LMD-2023_EoRS.csv")
     LMD_2023_NORMAL_PATH = str(LMD_2023_DIR / "LMD-2023_Normal.csv")
-    LMD_2023_TEST_PATH = str(LMD_2023_DIR / "lmd2023_test_file.csv")
+    LMD_2023_TEST_PATH = str(LMD_2023_DIR / "LMD-2023_EoRS_Test.csv")
 
 
     LMD_2023_COMBINED_PATH = str(LMD_2023_DIR / "lmd2023_test.csv")

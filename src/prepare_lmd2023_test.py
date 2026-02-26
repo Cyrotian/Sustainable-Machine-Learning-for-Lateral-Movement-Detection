@@ -43,7 +43,7 @@ def prepare_lmd2023_test():
     print("=" * 80)
 
     # Load the combined CSV (all 3 classes)
-    input_path = Config.LMD_2023_COMBINED_PATH
+    input_path = Config.LMD_2023_TEST_PATH
     print("\nLoading:", input_path)
     df = pd.read_csv(input_path, low_memory=False)
 

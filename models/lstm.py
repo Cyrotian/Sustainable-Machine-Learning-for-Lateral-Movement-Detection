@@ -22,7 +22,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
 from codecarbon import EmissionsTracker
 import pandas as pd
 from sklearn.utils.class_weight import compute_class_weight
@@ -175,6 +175,12 @@ class LSTMModel:
         class_weights = dict(zip(classes, weights))
         print("  Class weights:", class_weights)
 
+        early_stop = keras.callbacks.EarlyStopping(
+            monitor='val_loss',
+            patience=3,
+            restore_best_weights=True
+        )
+
         carbon_tracker.start()
 
         history = self.model.fit(
@@ -183,6 +189,7 @@ class LSTMModel:
             epochs=self.config.get("epochs", 10),
             batch_size=self.config.get("batch_size", ),
             class_weight=class_weights,
+            callbacks=[early_stop],
             verbose=1
         )
 
@@ -193,7 +200,7 @@ class LSTMModel:
     def predict_from_sequences(self, X_seq):
         """Predict on pre-built sequences."""
         probs = self.model.predict(X_seq, verbose=0)
-        return (probs > 0.2).astype(int).flatten()
+        return (probs > 0.5).astype(int).flatten()
 
     def evaluate(self, df_test, feature_cols, label_col="isMalicious",
                  group_col="Computer"):
@@ -211,11 +218,13 @@ class LSTMModel:
 
         predictions = self.predict_from_sequences(X_test)
 
+        tn, fp, _, _ = confusion_matrix(y_test, predictions).ravel()
         self.metrics = {
             "accuracy": accuracy_score(y_test, predictions),
             "f1": f1_score(y_test, predictions, zero_division=0),
             "precision": precision_score(y_test, predictions, zero_division=0),
             "recall": recall_score(y_test, predictions, zero_division=0),
+            "fpr": float(fp / (fp + tn)) if (fp + tn) > 0 else 0.0,
         }
 
         return self.metrics
@@ -245,6 +254,7 @@ class LSTMModel:
         predictions = (probs > 0.5).astype(int).flatten()
         inference_time = end_time - start_time
 
+        tn, fp, _, _ = confusion_matrix(y_seq, predictions).ravel()
         result = {
             "inference_time": inference_time,
             "emissions": emissions,
@@ -252,6 +262,7 @@ class LSTMModel:
             "accuracy": accuracy_score(y_seq, predictions),
             "precision": precision_score(y_seq, predictions, zero_division=0),
             "recall": recall_score(y_seq, predictions, zero_division=0),
+            "fpr": fp / (fp + tn) if (fp + tn) > 0 else 0.0,
         }
 
         self.inference_results.append(result)
@@ -263,7 +274,7 @@ class LSTMModel:
             print("No inference runs recorded yet.")
             return None
 
-        keys = ["inference_time", "emissions", "f1", "accuracy", "precision", "recall"]
+        keys = ["inference_time", "emissions", "f1", "accuracy", "precision", "recall", "fpr"]
         summary = {}
 
         for key in keys:

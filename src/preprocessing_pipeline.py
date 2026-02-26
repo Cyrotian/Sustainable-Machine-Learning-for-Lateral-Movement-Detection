@@ -248,7 +248,7 @@ def process_dataset_with_sequence_cols(csv_path, selected_features, filter_label
 # MAIN: Create all datasets
 # ============================================================================
 
-def create_all_datasets(features_csv_path="src/05_final_selected_features.csv"):
+def create_all_datasets(features_csv_path="05_final_selected_features.csv"):
     """
     Create all final datasets.
 

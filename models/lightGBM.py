@@ -1,6 +1,6 @@
 from lightgbm import LGBMClassifier
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from codecarbon import EmissionsTracker
 import numpy as np
 import time
@@ -87,11 +87,13 @@ class LightGBMModel:
     def evaluate(self, X_test, y_test):
         preds = self.predict(X_test)
 
+        tn, fp, _, _ = confusion_matrix(y_test, preds).ravel()
         self.metrics = {
             "accuracy": accuracy_score(y_test, preds),
             "precision": precision_score(y_test, preds, zero_division=0),
             "recall": recall_score(y_test, preds, zero_division=0),
             "f1": f1_score(y_test, preds, zero_division=0),
+            "fpr": float(fp / (fp + tn)) if (fp + tn) > 0 else 0.0,
         }
         return self.metrics
 
@@ -112,6 +114,7 @@ class LightGBMModel:
         end_time = time.perf_counter()
         emissions = tracker.stop()
 
+        tn, fp, _, _ = confusion_matrix(y_true, preds).ravel()
         result = {
             "inference_time": end_time - start_time,
             "emissions": emissions,
@@ -119,6 +122,7 @@ class LightGBMModel:
             "accuracy": accuracy_score(y_true, preds),
             "precision": precision_score(y_true, preds, zero_division=0),
             "recall": recall_score(y_true, preds, zero_division=0),
+            "fpr": float(fp / (fp + tn)) if (fp + tn) > 0 else 0.0,
         }
 
         self.inference_results.append(result)
@@ -131,7 +135,7 @@ class LightGBMModel:
             print("No inference runs recorded yet.")
             return None
 
-        keys = ["inference_time", "emissions", "f1", "accuracy", "precision", "recall"]
+        keys = ["inference_time", "emissions", "f1", "accuracy", "precision", "recall", "fpr"]
         summary = {}
 
         for key in keys:
