@@ -4,7 +4,7 @@ from pathlib import Path
 
 class Config:
 
-    CONFIG_DIR = Path(__file__).parent.resolve(strict=True)  # .../src/
+    CONFIG_DIR = Path(__file__).parent.resolve(strict=True) 
     PROJECT_ROOT = Path("/home/mike/Documents/Sustainable-Machine-Learning-for-Lateral-Movement-Detection")
 
    
