@@ -56,7 +56,7 @@ class LightGBMModel:
         tracker.start()
         start_time = time.perf_counter()
 
-        # Optional early stopping if you provide validation data
+
         if X_val is not None and y_val is not None:
             X_val_enc = self._encode(X_val, fit=False)
             self.model.fit(
@@ -65,7 +65,6 @@ class LightGBMModel:
                 eval_metric="binary_logloss",
                 callbacks=[
                     # stops if no improvement for 50 rounds
-                    # (requires n_estimators to be "large enough")
                     __import__("lightgbm").early_stopping(50, verbose=False)
                 ]
             )

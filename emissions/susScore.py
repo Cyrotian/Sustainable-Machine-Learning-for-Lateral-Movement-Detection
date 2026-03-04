@@ -273,7 +273,7 @@ def print_summary(df, scenarios=SCENARIOS):
 # MAIN
 # ============================================================================
 
-def run_sustainability_analysis(csv_path="results/inference_summary.csv",
+def run_sustainability_analysis(csv_path="model_metrics.csv",
                                  output_dir="figures"):
     """Run the full Sustainability Score analysis."""
     print("Loading inference results from:", csv_path)
