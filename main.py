@@ -103,13 +103,7 @@ def preprocess():
     print("=" * 80)
 
     plot_all(raw_df, results, output_dir="plots")
-
-    print("\n" + "=" * 80)
-    print("STEP 5: Prepare LMD-2023 test set (3-class -> binary, imbalanced)")
-    print("=" * 80)
-
-    from src.prepare_lmd2023_test import prepare_lmd2023_test
-    prepare_lmd2023_test()
+ 
 
     print("\n" + "=" * 80)
     print("STEP 6: Create final datasets for all models")
@@ -307,5 +301,5 @@ def lstm():
 if __name__ == "__main__":
         #preprocess()
         #lightgbm()
-        #random_forest()
-        lstm()
+        random_forest()
+        #lstm()

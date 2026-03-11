@@ -4,17 +4,6 @@ preprocessing_pipeline.py — Create all final datasets for model training/testi
 PURPOSE: Take raw LMD CSVs, extract the 5 selected features, apply minimal
          transforms, and save ready-to-use CSVs for each model.
 
-         We already know which 5 features we want from feature selection,
-         so there's no need to run the full drop_features + engineer_features
-         pipeline. Just grab the columns, apply two transforms, done.
-
-THE 5 DATASETS:
-  1. isolation_forest_train.csv        = LMD-2022, normal-only (IF training)
-  2. supervised_learning_dataset.csv   = LMD-2022, both classes (RF/LSTM training)
-  3. lmd2023_test_dataset.csv          = LMD-2023, imbalanced ~92/8 (ALL models)
-  4. lstm_train_sequenced.csv          = LMD-2022 + Computer & time (LSTM training)
-  5. lstm_test_sequenced.csv           = LMD-2023 + Computer & time (LSTM testing)
-
 TRANSFORMS APPLIED:
   - Image -> Image_Category (6 security-relevant buckets)
   - SourceImage rare category grouping (<50 occurrences -> "Other_Rare")
@@ -270,24 +259,20 @@ def create_all_datasets(features_csv_path="05_final_selected_features.csv"):
     print("Selected features:", final_features)
     print("=" * 80)
 
-    # Dataset 1: IF training (LMD-2022, normal-only)
-    df = process_dataset(Config.LMD_2022_PATH, final_features, filter_label=0)
-    df.to_csv(output_folder / "isolation_forest_train.csv", index=False)
-
-    # Dataset 2: RF + LSTM training (LMD-2022, both classes)
+    # Dataset 1: RF + LSTM training (LMD-2022, both classes)
     df = process_dataset(Config.LMD_2022_PATH, final_features, filter_label=None)
     df.to_csv(output_folder / "supervised_learning_dataset.csv", index=False)
 
-    # Dataset 3: SHARED test set (LMD-2023, imbalanced binary, ALL models)
+    # Dataset 2: SHARED test set (LMD-2023, ALL models)
     df = process_dataset(Config.LMD_2023_TEST_PATH, final_features, filter_label=None)
     df.to_csv(output_folder / "lmd2023_test_dataset.csv", index=False)
 
-    # Dataset 4: LSTM training (with sequence columns)
+    # Dataset 3: LSTM training (with sequence columns)
     df = process_dataset_with_sequence_cols(
         Config.LMD_2022_PATH, final_features, filter_label=None)
     df.to_csv(output_folder / "lstm_train_sequenced.csv", index=False)
 
-    # Dataset 5: LSTM testing (with sequence columns)
+    # Dataset 4: LSTM testing (with sequence columns)
     df = process_dataset_with_sequence_cols(
         Config.LMD_2023_TEST_PATH, final_features, filter_label=None)
     df.to_csv(output_folder / "lstm_test_sequenced.csv", index=False)

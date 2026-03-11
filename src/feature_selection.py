@@ -33,7 +33,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import f1_score, classification_report
 
-from feature_engineering import h
+from src.feature_engineering import h
 
 # Constants
 RANDOM_STATE = 42

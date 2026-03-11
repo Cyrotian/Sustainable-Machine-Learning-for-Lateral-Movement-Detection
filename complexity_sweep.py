@@ -26,6 +26,7 @@ from codecarbon import EmissionsTracker
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
 from sklearn.utils.class_weight import compute_class_weight
+from sklearn.linear_model import LinearRegression
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -328,7 +329,7 @@ def sweep_lstm(results):
     train_df = pd.read_csv(LSTM_TRAIN_CSV, low_memory=False)
     test_df = pd.read_csv(LSTM_TEST_CSV, low_memory=False)
 
-    # Split training into train/val by Computer (matching your lstm runner)
+    # Split training into train/val by Computer
     computers = train_df["Computer"].unique()
     n_val = max(1, int(len(computers) * 0.2))
     rng = np.random.default_rng(RANDOM_STATE)
@@ -446,7 +447,7 @@ if __name__ == "__main__":
     os.makedirs("results", exist_ok=True)
     results = []
 
-    # Load and encode supervised data (once, shared by RF and LightGBM)
+    # Load and encode supervised data for RF and LightGBM sweeps
     X_train, y_train, X_test, y_test = load_supervised_data()
     X_train_enc, X_test_enc, encoders = encode_data(X_train, X_test)
 
