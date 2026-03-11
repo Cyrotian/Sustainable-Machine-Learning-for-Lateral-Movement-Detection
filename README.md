@@ -20,8 +20,8 @@ A key empirical finding is that tree-based models (Random Forest, LightGBM) achi
 
 | Dataset | Description |
 |---|---|
-| **LMD-2022** | Lateral Movement Detection dataset — used for training |
-| **LMD-2023** | Updated Lateral Movement Detection dataset — used for testing |
+| **LMD-2022** | Lateral Movement Detection dataset - used for training |
+| **LMD-2023** | Updated Lateral Movement Detection dataset - used for testing |
 
 The cross-year train/test split tests genuine temporal generalisation, guarding against the testbed leakage artefacts common in prior work (e.g., Smiliotopoulos et al., 2023).
 
