@@ -54,8 +54,8 @@ LSTM_BATCH_SIZE = 256
 LSTM_EPOCHS = 10
 LSTM_PATIENCE = 3
 
-FEATURE_COLS = ["Image_Category", "GrantedAccess", "RuleName",
-                "Signed", "SourceImage"]
+features_df = pd.read_csv("src/05_final_selected_features.csv")
+FEATURE_COLS = features_df["Feature"].tolist()
 
 
 # ============================================================================

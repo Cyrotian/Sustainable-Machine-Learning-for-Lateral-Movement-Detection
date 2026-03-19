@@ -127,7 +127,7 @@ def drop_features(df):
         "ParentProcessGuid", "SourceProcessGuid", "TargetProcessGuid", "LogonGuid",
         "ProcessID", "ProcessId", "ThreadID", "Execution_ProcessID", "EventRecordID",
         "SourceProcessId", "SourceThreadId", "TargetProcessId",
-        "User", "UserID", "Name", "Version", "StartFunction",
+        "User", "UserID", "Name", "Version", "StartFunction"
     ]
     print("1b. Metadata / identifiers:", len(metadata_cols))
 
@@ -177,10 +177,9 @@ def drop_features(df):
 # ============================================================================
 
 # Known attack tools — used to categorise executable paths
-ATTACK_TOOLS = ["psexec", "mimikatz", "procdump", "atomicredteam",
-                "wmic", "powershell", "cmd.exe"]
-INFRA_TOOLS = ["splunk", "streamfwd"]
-
+ATTACK_TOOLS = [ "mimikatz", "mimidrv", "lazagne","wcry", "wannacry", "smbexec", 
+                "psexec", "psexesvc"]
+INFRA_TOOLS = ["splunk", "streamfwd", "sysmon"]
 
 def categorise_image(path):
     """

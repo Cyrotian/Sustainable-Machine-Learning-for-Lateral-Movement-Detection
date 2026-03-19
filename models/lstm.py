@@ -132,7 +132,7 @@ class LSTMModel:
               label_col="isMalicious", group_col="Computer"):
         """
         Train LSTM on sequenced data.
-
+FileNotFoundError: [Errno 2] No such file or directory: 'model_metrics.csv'
         Args:
           df_train: DataFrame with features + label + Computer + SystemTime
           df_val:   DataFrame for validation
@@ -204,7 +204,6 @@ class LSTMModel:
 
     def evaluate(self, df_test, feature_cols, label_col="isMalicious",
                  group_col="Computer"):
-        """Quick evaluation - sanity check only, no tracking."""
         # Encode + scale
         df_test_enc = self._encode(df_test[feature_cols], fit=False)
         test_scaled = self._scale(df_test_enc, fit=False)

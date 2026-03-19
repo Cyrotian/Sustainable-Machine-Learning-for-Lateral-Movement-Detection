@@ -6,10 +6,10 @@ NOTE: This file is a ONE-TIME pipeline. It was run once to determine
       It is NOT imported by the final dataset creation pipeline.
       It's kept here for reproducibility and to explain the methodology.
 
-PURPOSE: Start with ~35 engineered features, use two ranking methods
-         (Mutual Information + Random Forest Importance), then sweep
-         different feature counts to find the fewest features that
-         still achieve peak performance.
+PURPOSE: Start with ~35 engineered features, use three ranking methods
+         (Mutual Information + Random Forest Importance + CatBoost
+         Importance), then sweep different feature counts to find the
+         fewest features that still achieve peak performance.
 
 RESULT:  ~35 features -> 5 features (88% dimensionality reduction)
 
@@ -18,6 +18,7 @@ PIPELINE:
   Section 4: One-hot encode categoricals + remove zero-variance
   Section 5: Rank features by Mutual Information
   Section 6: Rank features by Random Forest Importance
+  Section 6b: Rank features by CatBoost Importance
   Section 7: Aggregate encoded-level scores back to original features
   Section 8: Sweep feature counts (3, 5, 6, ..., 13) and measure F1
   Section 9: Pick optimal count via Pareto criterion
@@ -32,6 +33,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import f1_score, classification_report
+from catboost import CatBoostClassifier
 
 from src.feature_engineering import h
 
@@ -69,6 +71,17 @@ def build_eval_rf():
         min_samples_leaf=1,
     )
     return rf
+
+
+def build_selector_catboost():
+    """CatBoost used for ranking feature importance (500 trees)."""
+    cb = CatBoostClassifier(
+        iterations=500,
+        random_seed=RANDOM_STATE,
+        auto_class_weights="Balanced",
+        verbose=0,
+    )
+    return cb
 
 
 # ============================================================================
@@ -272,15 +285,61 @@ def compute_rf_importance(X_train_filtered, y_train, feature_names, output_dir="
 
 
 # ============================================================================
+# SECTION 6b: CATBOOST IMPORTANCE
+# ============================================================================
+
+def compute_catboost_importance(X_train_filtered, y_train, feature_names, output_dir="."):
+    """
+    Rank features by CatBoost feature importance (PredictionValuesChange).
+
+    CatBoost uses symmetric (oblivious) decision trees and computes
+    importance as the average change in predicted values when a feature
+    is used for a split. Complements RF Gini importance because CatBoost
+    is less biased toward high-cardinality features and handles the
+    encoded sparse matrix differently.
+
+    The encoded features passed here are the same sparse matrix used for
+    MI and RF, so results are directly comparable at the encoded level.
+
+    Returns: DataFrame with Feature and CB_Importance columns.
+    """
+    h("SECTION 6b: CATBOOST IMPORTANCE RANKING")
+
+    cb = build_selector_catboost()
+
+    # CatBoost expects a dense array
+    if hasattr(X_train_filtered, "toarray"):
+        X_dense = X_train_filtered.toarray()
+    else:
+        X_dense = np.asarray(X_train_filtered)
+
+    cb.fit(X_dense, y_train)
+
+    importances = cb.get_feature_importance()
+    ranked_indices = np.argsort(importances)[::-1]
+
+    cb_df = pd.DataFrame({
+        "Feature": feature_names[ranked_indices],
+        "CB_Importance": importances[ranked_indices],
+    })
+    cb_df = cb_df.reset_index(drop=True)
+
+    cb_df.to_csv(output_dir + "/02b_catboost_importance_ranking.csv", index=False)
+    return cb_df
+
+
+# ============================================================================
 # SECTION 7: AGGREGATE TO ORIGINAL FEATURES
 # ============================================================================
 
-def aggregate_to_original(imp_df, mi_df, output_dir="."):
+def aggregate_to_original(imp_df, mi_df, cb_df=None, output_dir="."):
     """
     Sum encoded-level scores back to original features.
 
     Example: cat__Image_Category_AttackTool (0.15) +
              cat__Image_Category_System32 (0.08) = Image_Category (0.23)
+
+    cb_df: optional CatBoost importance DataFrame (from Section 6b).
 
     Returns: Summary DataFrame with one row per original feature.
     """
@@ -321,6 +380,25 @@ def aggregate_to_original(imp_df, mi_df, output_dir="."):
     mi_agg = mi_agg.reset_index()
 
     summary = rf_agg.merge(mi_agg, on="Original_Feature", how="outer")
+
+    # Merge CatBoost importance if provided
+    if cb_df is not None:
+        cb_copy = cb_df.copy()
+        cb_originals = []
+        for name in cb_copy["Feature"]:
+            cb_originals.append(get_original_feature(name))
+        cb_copy["Original_Feature"] = cb_originals
+
+        cb_grouped = cb_copy.groupby("Original_Feature")["CB_Importance"]
+        cb_agg = cb_grouped.agg(["sum", "max"])
+        cb_agg = cb_agg.rename(columns={
+            "sum": "CB_Importance_Sum",
+            "max": "CB_Importance_Max",
+        })
+        cb_agg = cb_agg.reset_index()
+
+        summary = summary.merge(cb_agg, on="Original_Feature", how="outer")
+
     summary = summary.fillna(0)
     summary = summary.sort_values("RF_Importance_Sum", ascending=False)
     summary = summary.reset_index(drop=True)
@@ -467,7 +545,8 @@ def run_feature_selection_pipeline(X, y, groups, output_dir="."):
     X_train_f, X_val_f, feat_names, preprocess = encode_and_filter(X_train, X_val)
     mi_df = compute_mutual_information(X_train_f, y_train, feat_names, output_dir)
     imp_df = compute_rf_importance(X_train_f, y_train, feat_names, output_dir)
-    summary = aggregate_to_original(imp_df, mi_df, output_dir)
+    cb_df = compute_catboost_importance(X_train_f, y_train, feat_names, output_dir)
+    summary = aggregate_to_original(imp_df, mi_df, cb_df, output_dir)
     sweep_df, ranked = feature_count_sweep(
         summary, X_train_f, X_val_f, y_train, y_val, feat_names, output_dir)
     final_features, optimal_n, threshold = select_optimal_features(
@@ -482,4 +561,5 @@ def run_feature_selection_pipeline(X, y, groups, output_dir="."):
         "sweep_df": sweep_df,
         "mi_df": mi_df,
         "imp_df": imp_df,
+        "cb_df": cb_df,
     }

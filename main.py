@@ -196,7 +196,7 @@ def lightgbm():
     for i in range(10):
         result = lightgbm_model.inference_with_metrics(X_test, y_test)
         print(
-            "  Run " + str(i + 1) + "/10 |",
+            "Run " + str(i + 1) + "/10 |",
             "F1:", round(result["f1"], 4), "|",
             "Prec:", round(result["precision"], 4), "|",
             "Rec:", round(result["recall"], 4), "|",
@@ -223,9 +223,9 @@ def lstm():
     train_df = pd.read_csv("final_datasets/lstm_train_sequenced.csv", low_memory=False)
     test_df = pd.read_csv("final_datasets/lstm_test_sequenced.csv", low_memory=False)
 
-    # The 5 model features (Computer and SystemTime are metadata, not features)
-    feature_cols = ["Image_Category", "GrantedAccess", "RuleName",
-                    "Signed", "SourceImage"]
+    # Load model features from feature selection output (excludes metadata cols)
+    features_df = pd.read_csv("src/05_final_selected_features.csv")
+    feature_cols = features_df["Feature"].tolist()
 
     # Split training data into train/val BY COMPUTER to avoid leakage
     computers = train_df["Computer"].unique()
@@ -300,6 +300,6 @@ def lstm():
 
 if __name__ == "__main__":
         #preprocess()
-        #lightgbm()
-        random_forest()
         #lstm()
+        #random_forest()
+        lightgbm()

@@ -8,7 +8,8 @@ CHARTS:
   1. Class distribution pie chart
   2. EventID bar chart (Normal vs Malicious)
   3. MI bar chart (top encoded features)
-  4. RF vs MI importance (side-by-side, original features)
+  4. RF vs MI vs CatBoost importance (three-panel, original features)
+  4b. CatBoost importance bar chart (top encoded features)
   5. F1 vs feature count (key sustainability chart)
   6. Overfit gap
   7. Per-class F1
@@ -86,8 +87,6 @@ def plot_class_distribution(df, save_path=None):
 def plot_event_counts(df, save_path=None):
     """
     Horizontal bar chart: Sysmon EventID frequency, Normal vs Malicious.
-    VIVA: "ProcessAccess (10) and CreateRemoteThread (8) are heavily
-           represented in malicious activity — typical lateral movement signals."
     """
     events = df[["EventID", "isMalicious"]].copy()
 
@@ -146,15 +145,19 @@ def plot_mi_encoded(mi_df, top_n=30, save_path=None):
 
 
 # ============================================================================
-# CHART 4: RF vs MI Importance (Original Features)
+# CHART 4: RF vs MI vs CatBoost Importance (Original Features)
 # ============================================================================
 
 def plot_original_feature_importance(summary, top_n=25, save_path=None):
     """
-    Side-by-side: RF importance (left) vs MI score (right).
-    VIVA: "Both methods agree on the top features — the ranking is robust."
+    Side-by-side panels: RF (left), MI (centre), CatBoost (right, if available).
+    VIVA: "All three methods agree on the top features — the ranking is robust."
     """
-    fig, axes = plt.subplots(1, 2, figsize=(16, 8))
+    has_cb = "CB_Importance_Sum" in summary.columns
+
+    n_panels = 3 if has_cb else 2
+    fig_width = 24 if has_cb else 16
+    fig, axes = plt.subplots(1, n_panels, figsize=(fig_width, 8))
 
     # Left: RF
     top_rf = summary.head(top_n)
@@ -167,7 +170,7 @@ def plot_original_feature_importance(summary, top_n=25, save_path=None):
     axes[0].set_xlabel("RF Importance")
     axes[0].set_title("Random Forest Importance")
 
-    # Right: MI
+    # Centre: MI
     top_mi = summary.sort_values("MI_Score_Sum", ascending=False).head(top_n)
     mi_names = top_mi["Original_Feature"].values
     mi_scores = top_mi["MI_Score_Sum"].values
@@ -178,12 +181,51 @@ def plot_original_feature_importance(summary, top_n=25, save_path=None):
     axes[1].set_xlabel("MI Score")
     axes[1].set_title("Mutual Information")
 
-    fig.suptitle("Feature Importance",
+    # Right: CatBoost (optional)
+    if has_cb:
+        top_cb = summary.sort_values("CB_Importance_Sum", ascending=False).head(top_n)
+        cb_names = top_cb["Original_Feature"].values
+        cb_scores = top_cb["CB_Importance_Sum"].values
+
+        axes[2].barh(range(len(top_cb)), cb_scores[::-1], color="#4CAF50")
+        axes[2].set_yticks(range(len(top_cb)))
+        axes[2].set_yticklabels(cb_names[::-1], fontsize=9)
+        axes[2].set_xlabel("CatBoost Importance")
+        axes[2].set_title("CatBoost Importance")
+
+    fig.suptitle("Feature Importance: Method Comparison",
                  fontsize=14, fontweight="bold")
     fig.tight_layout()
 
     if save_path is not None:
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.close()
+    print("Saved:", save_path)
+
+
+# ============================================================================
+# CHART 4b: CatBoost Importance (Encoded Features)
+# ============================================================================
+
+def plot_cb_encoded(cb_df, top_n=30, save_path=None):
+    """Bar chart of top encoded features by CatBoost importance score."""
+    if top_n > len(cb_df):
+        top_n = len(cb_df)
+
+    top_features = cb_df.head(top_n)
+    names = top_features["Feature"].values
+    scores = top_features["CB_Importance"].values
+
+    plt.figure(figsize=(12, 7))
+    positions = range(top_n)
+    plt.barh(positions, scores[::-1], color="#4CAF50")
+    plt.yticks(positions, names[::-1], fontsize=7)
+    plt.xlabel("CatBoost Importance Score")
+    plt.title("Top " + str(top_n) + " Encoded Features by CatBoost Importance")
+    plt.tight_layout()
+
+    if save_path is not None:
+        plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.close()
     print("Saved:", save_path)
 
@@ -315,6 +357,17 @@ def plot_all(raw_df, results, output_dir="."):
         results["summary"],
         save_path=output_dir + "/04_original_feature_importance.png",
     )
+
+    # CatBoost encoded chart (only if cb_df present in results)
+    cb_df = results.get("cb_df")
+    n_charts = 7
+    if cb_df is not None:
+        plot_cb_encoded(
+            cb_df,
+            save_path=output_dir + "/04b_catboost_encoded_features.png",
+        )
+        n_charts = 8
+
     plot_performance_vs_features(
         results["sweep_df"],
         results["OPTIMAL_N"],
@@ -331,5 +384,5 @@ def plot_all(raw_df, results, output_dir="."):
         save_path=output_dir + "/07_per_class_f1.png",
     )
 
-    print("\nAll", 7, "charts saved to:", output_dir)
+    print("\nAll", n_charts, "charts saved to:", output_dir)
 
