@@ -203,7 +203,7 @@ FileNotFoundError: [Errno 2] No such file or directory: 'model_metrics.csv'
         return (probs > 0.5).astype(int).flatten()
 
     def evaluate(self, df_test, feature_cols, label_col="isMalicious",
-                 group_col="Computer"):
+                 group_col="Computer"):  
         # Encode + scale
         df_test_enc = self._encode(df_test[feature_cols], fit=False)
         test_scaled = self._scale(df_test_enc, fit=False)

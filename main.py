@@ -301,5 +301,5 @@ def lstm():
 if __name__ == "__main__":
         #preprocess()
         #lstm()
-        #random_forest()
-        lightgbm()
+        random_forest()
+        #lightgbm()

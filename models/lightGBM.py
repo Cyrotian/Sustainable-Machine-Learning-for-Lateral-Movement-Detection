@@ -7,7 +7,7 @@ import time
 
 
 class LightGBMModel:
-    def __init__(self,n_estimators=500,learning_rate=0.05,num_leaves=31,max_depth=-1,random_state=42):
+    def __init__(self,n_estimators=100,learning_rate=0.05,num_leaves=31,max_depth=-1,random_state=42):
         self.model = LGBMClassifier(
             n_estimators=n_estimators,
             learning_rate=learning_rate,

@@ -100,40 +100,6 @@ def compute_sustainability_scores(df, scenarios=SCENARIOS):
     return df
 
 
-# ============================================================================
-# PARETO DOMINANCE CHECK
-# ============================================================================
-
-def check_pareto_dominance(df):
-    """
-    Check which models are Pareto dominated.
-
-    Model i dominates model j if:
-      - i is >= j on ALL normalised dimensions
-      - i is strictly > j on AT LEAST ONE dimension
-    """
-    norm_cols = ["f1_norm", "time_norm", "emissions_norm", "fpr_norm"]
-    models = df["model"].tolist()
-    dominated = set()
-
-    for i in range(len(models)):
-        for j in range(len(models)):
-            if i == j:
-                continue
-            vals_i = df.iloc[i][norm_cols].values
-            vals_j = df.iloc[j][norm_cols].values
-
-            if all(vals_i >= vals_j) and any(vals_i > vals_j):
-                dominated.add(models[j])
-
-    frontier = [m for m in models if m not in dominated]
-
-    print("Pareto Analysis:")
-    print(f"  Dominated models: {dominated if dominated else 'None'}")
-    print(f"  Pareto frontier:  {frontier}")
-
-    return frontier, dominated
-
 
 # ============================================================================
 # VISUALISATION
@@ -180,40 +146,6 @@ def plot_sustainability_scores(df, scenarios=SCENARIOS, output_dir="figures"):
                 dpi=300, bbox_inches="tight")
     plt.close()
     print(f"  Chart saved to {output_dir}/sustainability_score_comparison.png")
-
-
-def plot_normalised_radar(df, output_dir="figures"):
-    """Generate radar chart showing each model's normalised profile."""
-    os.makedirs(output_dir, exist_ok=True)
-
-    categories = ["F1-Score", "Speed", "Low CO₂", "Low FPR"]
-    norm_cols = ["f1_norm", "time_norm", "emissions_norm", "fpr_norm"]
-
-    angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
-    angles += angles[:1]
-
-    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
-
-    for _, row in df.iterrows():
-        values = [row[c] for c in norm_cols]
-        values += values[:1]
-        color = MODEL_COLORS.get(row["model"], "#888888")
-        ax.plot(angles, values, "o-", linewidth=2, label=row["model"], color=color)
-        ax.fill(angles, values, alpha=0.1, color=color)
-
-    ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, fontsize=11)
-    ax.set_ylim(0, 1.1)
-    ax.set_title("Model Profile: Normalised Dimensions\n"
-                 "(Higher = Better on all axes)",
-                 fontsize=13, fontweight="bold", pad=20)
-    ax.legend(loc="upper right", bbox_to_anchor=(1.3, 1.1), fontsize=10)
-
-    plt.tight_layout()
-    plt.savefig(f"{output_dir}/model_radar_profile.png",
-                dpi=300, bbox_inches="tight")
-    plt.close()
-    print(f"  Chart saved to {output_dir}/model_radar_profile.png")
 
 
 # ============================================================================
@@ -285,15 +217,11 @@ def run_sustainability_analysis(csv_path=os.path.join(_SCRIPT_DIR, "model_metric
     # Compute scores
     df = compute_sustainability_scores(df)
 
-    # Pareto check
-    frontier, dominated = check_pareto_dominance(df)
-
     # Print summary
     print_summary(df)
 
     # Generate charts
     plot_sustainability_scores(df, output_dir=output_dir)
-    plot_normalised_radar(df, output_dir=output_dir)
 
     # Save full results
     os.makedirs("results", exist_ok=True)
