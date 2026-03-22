@@ -21,6 +21,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from sklearn.preprocessing import MinMaxScaler
 
 # ============================================================================
 # CONFIGURATION
@@ -49,11 +50,13 @@ MODEL_COLORS = {
 
 def min_max_normalise(series):
     """Min-max normalise a series to [0, 1]."""
-    min_val = series.min()
-    max_val = series.max()
-    if max_val == min_val:
-        return pd.Series([0.5] * len(series), index=series.index)
-    return (series - min_val) / (max_val - min_val)
+
+    scaler = MinMaxScaler()
+    normalised = pd.Series(
+        scaler.fit_transform(series.to_frame()).flatten(),
+        index=series.index
+    )
+    return normalised
 
 
 def normalise_metrics(df):
@@ -131,7 +134,7 @@ def plot_sustainability_scores(df, scenarios=SCENARIOS, output_dir="figures"):
                     fontweight="bold")
 
     ax.set_title("Sustainability Score by Scenario\n"
-                 "SS = αF1 + β(1−Time) + γ(1−CO₂) + δ(1−FPR)",
+                 "SS = αF1 + β(1−Inference) + γ(1−CO₂) + δ(1−FPR)",
                  fontsize=13, fontweight="bold", pad=15)
     ax.set_ylabel("Sustainability Score", fontsize=11)
     ax.set_xlabel("Scenario", fontsize=11)
