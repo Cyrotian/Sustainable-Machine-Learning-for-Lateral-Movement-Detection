@@ -46,7 +46,7 @@ def preprocess():
       6. Prepare LMD-2023 test set (3-class -> binary, imbalanced)
       7. Create 5 final datasets -> saves CSVs
     """
-    from src.feature_engineering import create_subset, drop_features, engineer_features
+    from src.feature_engineering import  drop_features, engineer_features
     from src.feature_selection import run_feature_selection_pipeline
     from src.plotting import plot_all
     from config import Config
@@ -83,7 +83,6 @@ def preprocess():
 
     # Take a 50k stratified subset for feature selection
     # This produces a better-behaved GroupShuffleSplit than the full dataset
-    df = create_subset(df)
 
     df_clean, dropped, cols_before = drop_features(df)
     X, y, groups = engineer_features(df_clean)
@@ -300,6 +299,6 @@ def lstm():
 
 if __name__ == "__main__":
         #preprocess()
-        #lstm()
+        lstm()
         random_forest()
-        #lightgbm()
+        lightgbm()

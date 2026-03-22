@@ -74,9 +74,9 @@ def build_eval_rf():
 
 
 def build_selector_catboost():
-    """CatBoost used for ranking feature importance (500 trees)."""
+    """CatBoost used for ranking feature importance (1000 trees)."""
     cb = CatBoostClassifier(
-        iterations=500,
+        iterations=1000, #default value is 1000
         random_seed=RANDOM_STATE,
         auto_class_weights="Balanced",
         verbose=0,

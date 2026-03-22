@@ -28,7 +28,7 @@ import pandas as pd
 from sklearn.utils.class_weight import compute_class_weight
 
 
-WINDOW_SIZE = 5
+WINDOW_SIZE = 10
 
 
 class LSTMModel:

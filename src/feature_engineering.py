@@ -20,7 +20,6 @@ import numpy as np
 RANDOM_STATE = 42
 LABEL_COL = "isMalicious"       # Target variable
 GROUP_COL = "Computer"          # Group column (for group-based splitting)
-SUBSET_N_ROWS = 50_000          # Stratified subset size for feature selection
 RARE_CATEGORY_THRESHOLD = 50    # Categories with <50 rows become "Other_Rare"
 
 
@@ -30,56 +29,6 @@ def h(title):
     print(title)
     print("=" * 80)
 
-
-# ============================================================================
-# SECTION 0: STRATIFIED SUBSET
-# ============================================================================
-
-def create_subset(df, subset_n_rows=SUBSET_N_ROWS):
-    """
-    Take a stratified sample of the dataset for feature selection.
-
-    WHY NOT use the full dataset?
-      With GroupShuffleSplit on only a few computers, the full dataset
-      can produce validation splits where the held-out computer has
-      completely different patterns. A 50k stratified subset gives a
-      better-behaved split for ranking features.
-
-    WHY STRATIFIED?
-      A random subset might accidentally drop all malicious rows
-      (since they're the minority class). Stratified sampling
-      preserves the original class ratio.
-
-    Set subset_n_rows=None to use the full dataset.
-    """
-    h("SECTION 0: STRATIFIED SUBSET")
-
-    # Convert label to numeric if stored as string
-    if df[LABEL_COL].dtype == "object":
-        df[LABEL_COL] = pd.to_numeric(df[LABEL_COL], errors="coerce")
-        df = df[df[LABEL_COL].notna()].copy()
-        df[LABEL_COL] = df[LABEL_COL].astype(int)
-
-    total_rows = len(df)
-
-    if subset_n_rows is not None and subset_n_rows < total_rows:
-        from sklearn.model_selection import train_test_split
-
-        # train_test_split with stratify keeps the class ratio intact
-        # We throw away the first half and keep the subset
-        _, subset = train_test_split(
-            df,
-            test_size=subset_n_rows,
-            random_state=RANDOM_STATE,
-            stratify=df[LABEL_COL],
-        )
-        df = subset.reset_index(drop=True)
-        print("Stratified subset:", len(df), "rows from", total_rows)
-    else:
-        df = df.reset_index(drop=True)
-        print("Using full dataset:", len(df), "rows")
-
-    return df
 
 
 # ============================================================================
