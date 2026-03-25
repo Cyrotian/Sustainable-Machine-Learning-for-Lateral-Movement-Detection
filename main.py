@@ -298,7 +298,7 @@ def lstm():
 
 
 if __name__ == "__main__":
-        #preprocess()
-        lstm()
-        random_forest()
-        lightgbm()
+        preprocess()
+        #lstm()
+        #random_forest()
+        #lightgbm()

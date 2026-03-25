@@ -264,69 +264,10 @@ def plot_performance_vs_features(sweep_df, optimal_n, pareto_threshold, save_pat
     print("Saved:", save_path)
 
 
-# ============================================================================
-# CHART 6: Overfit Gap
-# ============================================================================
-
-def plot_overfit_gap(sweep_df, save_path=None):
-    """
-    VIVA: "The gap is near zero — no overfitting, even on unseen computers."
-    """
-    feature_counts = sweep_df["Original_Features"].astype(str)
-    gaps = sweep_df["Overfit_Gap"]
-
-    colours = []
-    for gap in gaps:
-        if gap <= 0:
-            colours.append("green")
-        else:
-            colours.append("salmon")
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(feature_counts, gaps, color=colours)
-    ax.set_xlabel("Number of Original Features")
-    ax.set_ylabel("Train F1 - Val F1")
-    ax.set_title("Generalisation Gap by Feature Count")
-    ax.axhline(0, color="black", linewidth=0.8)
-    fig.tight_layout()
-
-    if save_path is not None:
-        fig.savefig(save_path, dpi=300, bbox_inches="tight")
-    plt.close()
-    print("Saved:", save_path)
 
 
 # ============================================================================
-# CHART 7: Per-Class F1
-# ============================================================================
-
-def plot_per_class_f1(sweep_df, optimal_n, save_path=None):
-    """
-    VIVA: "Strong F1 for BOTH classes — not biased toward the majority."
-    """
-    feature_counts = sweep_df["Original_Features"]
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.plot(feature_counts, sweep_df["Val_F1_Normal"], marker="^", label="Normal")
-    ax.plot(feature_counts, sweep_df["Val_F1_Attack"], marker="v", label="Attack")
-    ax.plot(feature_counts, sweep_df["Val_F1"], marker="s",
-            linestyle="--", label="Macro Average", color="grey")
-    ax.axvline(optimal_n, linestyle=":", color="green", alpha=0.7,
-               label="Chosen: " + str(optimal_n))
-    ax.set_xlabel("Number of Original Features")
-    ax.set_ylabel("F1 Score")
-    ax.set_title("Per-Class F1 vs Feature Count (Validation)")
-    ax.legend()
-    fig.tight_layout()
-
-    if save_path is not None:
-        fig.savefig(save_path, dpi=300, bbox_inches="tight")
-    plt.close()
-    print("Saved:", save_path)
-
-
-# ============================================================================
-# CONVENIENCE: Generate all charts at once
+# Generate all charts at once
 # ============================================================================
 
 def plot_all(raw_df, results, output_dir="."):
@@ -373,15 +314,6 @@ def plot_all(raw_df, results, output_dir="."):
         results["OPTIMAL_N"],
         results["pareto_threshold"],
         save_path=output_dir + "/05_performance_vs_features.png",
-    )
-    plot_overfit_gap(
-        results["sweep_df"],
-        save_path=output_dir + "/06_overfit_gap.png",
-    )
-    plot_per_class_f1(
-        results["sweep_df"],
-        results["OPTIMAL_N"],
-        save_path=output_dir + "/07_per_class_f1.png",
     )
 
     print("\nAll", n_charts, "charts saved to:", output_dir)

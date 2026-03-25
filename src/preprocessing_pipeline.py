@@ -36,8 +36,8 @@ SELECTED_FEATURES = [
 # FEATURE TRANSFORMS (only the two that matter)
 # ============================================================================
 
-ATTACK_TOOLS = ["psexec", "mimikatz", "procdump", "atomicredteam",
-                "wmic", "powershell", "cmd.exe"]
+ATTACK_TOOLS = [ "mimikatz", "mimidrv", "lazagne","wcry","wannacry", "smbexec", 
+                "psexec", "psexesvc", "powershell", "cmd.exe"]
 INFRA_TOOLS = ["splunk", "streamfwd"]
 
 RARE_THRESHOLD = 50

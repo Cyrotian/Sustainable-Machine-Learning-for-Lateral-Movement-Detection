@@ -1,20 +1,4 @@
-"""
-lstm.py — LSTM model with temporal sliding windows.
-
-LSTM's key advantage over RF is its ability to detect PATTERNS ACROSS
-consecutive events. A single malicious event might look normal, but a
-SEQUENCE of events (e.g. NetworkConnect -> ProcessCreate -> ProcessAccess)
-can reveal lateral movement.
-
-SLIDING WINDOW APPROACH:
-  1. Events are sorted by Computer, then SystemTime
-  2. A sliding window of WINDOW_SIZE consecutive events forms one input
-  3. The label is the label of the LAST event in the window
-  4. Windows don't cross computer boundaries
-
-  Input shape: (num_windows, WINDOW_SIZE, num_features)
-  E.g. window_size=10, 5 features -> (n, 10, 5)
-"""
+#LSTM model with temporal sliding windows.
 
 import numpy as np
 import time
@@ -70,21 +54,7 @@ class LSTMModel:
 
     def create_sequences(self, df, feature_cols, label_col="isMalicious",
                          group_col="Computer"):
-        """
-        Build sliding windows from temporally-sorted event data.
-
-        For each computer:
-          - Take consecutive events in time order
-          - Create windows of WINDOW_SIZE events
-          - Label = label of the last event in the window
-
-        Windows NEVER cross computer boundaries to avoid mixing
-        unrelated event streams.
-
-        Returns:
-          X_seq: np.array of shape (num_windows, window_size, num_features)
-          y_seq: np.array of shape (num_windows,)
-        """
+        """Create sliding windows of events for LSTM input."""
         X_windows = []
         y_windows = []
 
@@ -132,11 +102,6 @@ class LSTMModel:
               label_col="isMalicious", group_col="Computer"):
         """
         Train LSTM on sequenced data.
-FileNotFoundError: [Errno 2] No such file or directory: 'model_metrics.csv'
-        Args:
-          df_train: DataFrame with features + label + Computer + SystemTime
-          df_val:   DataFrame for validation
-          feature_cols: list of the 5 feature column names
         """
         # Encode categoricals
         print("Encoding features...")

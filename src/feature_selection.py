@@ -40,7 +40,7 @@ from src.feature_engineering import h
 # Constants
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
-FEATURE_COUNTS_TO_TEST = [3, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+FEATURE_COUNTS_TO_TEST = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 
 # ============================================================================

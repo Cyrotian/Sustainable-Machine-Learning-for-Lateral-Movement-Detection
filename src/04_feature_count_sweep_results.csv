@@ -1,5 +1,6 @@
 Original_Features,Encoded_Features,Train_F1,Val_F1,Val_F1_Normal,Val_F1_Attack,Overfit_Gap,Selected_Features
 3,69,0.9387,0.9984,0.9986,0.9982,-0.0597,"Image_Category, GrantedAccess, RuleName"
+4,89,0.9387,0.9984,0.9986,0.9982,-0.0597,"Image_Category, GrantedAccess, RuleName, SourceImage"
 5,96,0.968,0.999,0.9991,0.9989,-0.031,"Image_Category, GrantedAccess, RuleName, SourceImage, Signature"
 6,97,0.9855,0.602,0.5006,0.7033,0.3835,"Image_Category, GrantedAccess, RuleName, SourceImage, Signature, EventID"
 7,438,0.9869,0.602,0.5006,0.7033,0.3849,"Image_Category, GrantedAccess, RuleName, SourceImage, Signature, EventID, IsExecutable"

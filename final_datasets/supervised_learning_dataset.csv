@@ -244,7 +244,7 @@ System32,0,-,0,0,1
 System32,0,-,0,0,1
 System32,0,-,0,0,1
 System32,0,-,0,0,1
-Other,0,-,0,0,1
+AttackTool,0,-,0,0,1
 System32,0,-,0,0,1
 System32,0,-,0,0,1
 System32,0,-,0,0,1
@@ -154838,48 +154838,48 @@ Infra,0,-,0,0,1
 Infra,0,-,0,0,1
 Infra,0,-,0,0,1
 Infra,0,-,0,0,1
-Other,0,-,0,0,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Corporation,1
+AttackTool,0,-,0,0,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Corporation,1
 Other,0x1000,-,Other_Rare,0,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
 Other,0x1400,-,C:\Windows\system32\svchost.exe,0,1
 Other,0x1fffff,-,C:\Windows\system32\csrss.exe,0,1
 Other,0x1400,-,C:\Windows\system32\svchost.exe,0,1
 Other,0x1400,-,C:\Windows\system32\svchost.exe,0,1
 Other,0x1400,-,C:\Windows\system32\svchost.exe,0,1
 Other,0x1fffff,-,Other_Rare,0,1
-Other,0,-,0,0,1
+AttackTool,0,-,0,0,1
 System32,0,-,0,0,1
 System32,0,-,0,0,1
 System32,0,"T1031,T1050",0,0,1
@@ -154924,17 +154924,17 @@ System32,0,-,0,Microsoft Windows,1
 Other,0,-,0,0,1
 Other,0,-,0,0,1
 Other,0,-,0,0,1
-Other,0,-,0,0,1
-Other,0,-,0,0,1
-Other,0,-,0,0,1
-Other,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,0,1
+AttackTool,0,-,0,0,1
+AttackTool,0,-,0,0,1
+AttackTool,0,-,0,Microsoft Windows,1
 Other,0x1478,-,C:\Windows\system32\lsass.exe,0,1
 Other,0x1000,-,C:\Windows\system32\lsass.exe,0,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,Microsoft Windows,1
-Other,0,-,0,0,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,Microsoft Windows,1
+AttackTool,0,-,0,0,1
 Other,0x1000,-,C:\Windows\system32\sihost.exe,0,1
 Other,0x1000,-,C:\Windows\system32\sihost.exe,0,1
 Other,0,-,0,0,1
@@ -250104,8 +250104,8 @@ System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
@@ -250118,14 +250118,14 @@ AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 Other,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 AttackTool,0,-,0,0,0
@@ -250134,8 +250134,8 @@ AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
@@ -250145,8 +250145,8 @@ System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
@@ -250154,62 +250154,22 @@ AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-System32,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-Other,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-Other,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-Other,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 Other,0,-,0,0,0
@@ -250221,12 +250181,37 @@ System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+System32,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 Other,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+Other,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
 Other,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
@@ -250241,40 +250226,10 @@ System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
-System32,0,-,0,0,0
 Other,0,-,0,0,0
+Other,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
@@ -250321,12 +250276,57 @@ System32,0,-,0,0,0
 System32,0,-,0,0,0
 Other,0,-,0,0,0
 System32,0,-,0,0,0
-Other,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
+System32,0,-,0,0,0
 System32,0,-,0,0,0
 Other,0,-,0,0,0
 System32,0,-,0,0,0
 Other,0,-,0,0,0
 System32,0,-,0,0,0
+Other,0,-,0,0,0
+System32,0,-,0,0,0
+Other,0,-,0,0,0
+System32,0,-,0,0,0
 System32,0,-,0,0,0
 Other,0,-,0,0,0
 Other,0,-,0,0,0
@@ -250346,8 +250346,8 @@ System32,0,-,0,0,0
 System32,0,-,0,0,0
 Other,0,-,0,0,0
 Other,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
@@ -250357,11 +250357,11 @@ AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 Other,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
@@ -250369,16 +250369,16 @@ AttackTool,0,-,0,0,0
 AttackTool,0,-,0,0,0
 System32,0,-,0,0,0
 AttackTool,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 Other,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
-UserProfile,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
+AttackTool,0,-,0,0,0
 Other,0,-,0,0,0
 System32,0,-,0,0,0
 System32,0,-,0,0,0
