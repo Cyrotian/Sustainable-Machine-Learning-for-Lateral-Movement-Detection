@@ -48,6 +48,3 @@ class Config:
 
     EMMISSIONS_OUTPUT_DIR = str(PROJECT_ROOT / "emissions")
     
-    # Carbon tracking
-    UK_REGION = "GB"
-    CARBON_API_URL = "https://api.carbonintensity.org.uk/intensity"

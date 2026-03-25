@@ -1,32 +1,25 @@
 """
-feature_selection.py — Select the optimal subset of features.
+feature_selection.py — Select the best subset of engineered features.
 
-NOTE: This file is a ONE-TIME pipeline. It was run once to determine
-      the best 5 features, saved to 05_final_selected_features.csv.
-      It is NOT imported by the final dataset creation pipeline.
-      It's kept here for reproducibility and to explain the methodology.
+This file is a one-time reproducibility pipeline.
+It was used to decide which features should be kept in the final model inputs.
 
-PURPOSE: Start with ~35 engineered features, use three ranking methods
-         (Mutual Information + Random Forest Importance + CatBoost
-         Importance), then sweep different feature counts to find the
-         fewest features that still achieve peak performance.
-
-RESULT:  ~35 features -> 5 features (88% dimensionality reduction)
-
-PIPELINE:
-  Section 3: Split data by Computer (group-based)
-  Section 4: One-hot encode categoricals + remove zero-variance
-  Section 5: Rank features by Mutual Information
-  Section 6: Rank features by Random Forest Importance
-  Section 6b: Rank features by CatBoost Importance
-  Section 7: Aggregate encoded-level scores back to original features
-  Section 8: Sweep feature counts (3, 5, 6, ..., 13) and measure F1
-  Section 9: Pick optimal count via Pareto criterion
+Pipeline:
+1. Split by Computer so validation contains unseen machines
+2. One-hot encode categorical columns
+3. Remove zero-variance columns
+4. Rank encoded features using:
+   - Mutual Information
+   - Random Forest importance
+   - CatBoost importance
+5. Aggregate encoded-level scores back to original features
+6. Test different feature counts
+7. Choose the smallest feature set that still achieves the best validation F1
 """
 
-import time
 import pandas as pd
 import numpy as np
+
 from sklearn.model_selection import GroupShuffleSplit
 from sklearn.feature_selection import mutual_info_classif, VarianceThreshold
 from sklearn.ensemble import RandomForestClassifier
@@ -37,19 +30,64 @@ from catboost import CatBoostClassifier
 
 from src.feature_engineering import h
 
-# Constants
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
 FEATURE_COUNTS_TO_TEST = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
+KNOWN_ORIGINAL_FEATURES = [
+    "DestinationPort_Bin",
+    "SourcePort_Bin",
+    "Image_Category",
+    "RuleName",
+    "FileVersion",
+    "Description",
+    "Product",
+    "Company",
+    "OriginalFileName",
+    "CurrentDirectory",
+    "TerminalSessionId",
+    "IntegrityLevel",
+    "ParentImage",
+    "ParentUser",
+    "Protocol",
+    "Initiated",
+    "SourceIsIpv6",
+    "SourceIp",
+    "SourceHostname",
+    "SourcePortName",
+    "DestinationIp",
+    "DestinationHostname",
+    "DestinationPortName",
+    "ImageLoaded",
+    "Signed",
+    "Signature",
+    "SourceImage",
+    "TargetImage",
+    "GrantedAccess",
+    "SourceUser",
+    "TargetUser",
+    "EventType",
+    "QueryName",
+    "IsExecutable",
+    "Archived",
+    "NewThreadId",
+    "StartAddress",
+    "StartModule",
+]
+
 
 # ============================================================================
-# HELPER: Build Random Forest models
+# MODEL BUILDERS
 # ============================================================================
 
-def build_selector_rf():
-    """RF used for ranking feature importance (100 trees)."""
-    rf = RandomForestClassifier(
+def build_selector_random_forest():
+    """Random Forest used for feature-importance ranking."""
+    model = RandomForestClassifier(
         n_estimators=100,
         random_state=RANDOM_STATE,
         class_weight="balanced",
@@ -57,12 +95,12 @@ def build_selector_rf():
         max_features="sqrt",
         min_samples_leaf=2,
     )
-    return rf
+    return model
 
 
-def build_eval_rf():
-    """Stronger RF for evaluating feature subsets (150 trees)."""
-    rf = RandomForestClassifier(
+def build_evaluation_random_forest():
+    """Random Forest used for testing feature subsets."""
+    model = RandomForestClassifier(
         n_estimators=150,
         random_state=RANDOM_STATE,
         class_weight="balanced",
@@ -70,85 +108,90 @@ def build_eval_rf():
         max_features="sqrt",
         min_samples_leaf=1,
     )
-    return rf
+    return model
 
 
 def build_selector_catboost():
-    """CatBoost used for ranking feature importance (1000 trees)."""
-    cb = CatBoostClassifier(
-        iterations=1000, #default value is 1000
+    """CatBoost used for feature-importance ranking."""
+    model = CatBoostClassifier(
+        iterations=1000,
         random_seed=RANDOM_STATE,
         auto_class_weights="Balanced",
         verbose=0,
     )
-    return cb
+    return model
 
 
 # ============================================================================
-# HELPER: Map encoded column names back to original feature names
+# FEATURE NAME HELPERS
 # ============================================================================
 
-# After one-hot encoding, "Image_Category" becomes multiple columns like:
-#   "cat__Image_Category_AttackTool", "cat__Image_Category_System32", etc.
-# We need to map these BACK to "Image_Category" to aggregate importance.
-
-KNOWN_ORIGINAL_FEATURES = [
-    "DestinationPort_Bin", "SourcePort_Bin", "Image_Category",
-    "RuleName", "FileVersion", "Description", "Product", "Company",
-    "OriginalFileName", "CurrentDirectory", "TerminalSessionId",
-    "IntegrityLevel", "ParentImage", "ParentUser", "Protocol",
-    "Initiated", "SourceIsIpv6", "SourceIp", "SourceHostname",
-    "SourcePortName", "DestinationIp", "DestinationHostname",
-    "DestinationPortName", "ImageLoaded", "Signed", "Signature",
-    "SourceImage", "TargetImage", "GrantedAccess", "SourceUser",
-    "TargetUser", "EventType", "QueryName", "IsExecutable",
-    "Archived", "NewThreadId", "StartAddress", "StartModule",
-]
-
-
-def get_original_feature(encoded_name):
+def get_original_feature(encoded_feature_name):
     """
-    Map an encoded column name back to its original feature.
+    Map an encoded feature name back to its original feature name.
 
     Examples:
-      "cat__Image_Category_System32" -> "Image_Category"
-      "num__EventID"                 -> "EventID"
+    - cat__Image_Category_AttackTool -> Image_Category
+    - num__GrantedAccess             -> GrantedAccess
     """
-    if encoded_name.startswith("cat__"):
-        rest = encoded_name[5:]
-        sorted_features = sorted(KNOWN_ORIGINAL_FEATURES, key=len, reverse=True)
-        for feat in sorted_features:
-            if rest.startswith(feat + "_") or rest == feat:
-                return feat
-        if "_" in rest:
-            parts = rest.rsplit("_", 1)
+    if encoded_feature_name.startswith("cat__"):
+        encoded_suffix = encoded_feature_name[5:]
+        sorted_known_features = sorted(KNOWN_ORIGINAL_FEATURES, key=len, reverse=True)
+
+        for original_feature_name in sorted_known_features:
+            if (
+                encoded_suffix.startswith(original_feature_name + "_")
+                or encoded_suffix == original_feature_name
+            ):
+                return original_feature_name
+
+        if "_" in encoded_suffix:
+            parts = encoded_suffix.rsplit("_", 1)
             return parts[0]
-        return rest
 
-    if encoded_name.startswith("num__"):
-        return encoded_name[5:]
+        return encoded_suffix
 
-    return encoded_name
+    if encoded_feature_name.startswith("num__"):
+        return encoded_feature_name[5:]
+
+    return encoded_feature_name
+
+
+def map_encoded_features_to_original_features(feature_names):
+    """Convert a list of encoded feature names into original feature names."""
+    original_feature_names = []
+
+    for encoded_feature_name in feature_names:
+        original_feature_name = get_original_feature(encoded_feature_name)
+        original_feature_names.append(original_feature_name)
+
+    return original_feature_names
+
+
+def create_feature_mask(encoded_feature_names, selected_original_features):
+    """
+    Build a boolean mask that selects encoded columns belonging
+    to the requested original features.
+    """
+    encoded_column_mask = []
+
+    for encoded_feature_name in encoded_feature_names:
+        original_feature_name = get_original_feature(encoded_feature_name)
+        encoded_column_mask.append(original_feature_name in selected_original_features)
+
+    return np.array(encoded_column_mask)
 
 
 # ============================================================================
-# SECTION 3: GROUP-BASED TRAIN/VALIDATION SPLIT
+# SECTION 3: GROUP-BASED SPLIT
 # ============================================================================
 
 def group_split(X, y, groups):
     """
-    Split data so that validation contains UNSEEN COMPUTERS.
+    Split the data so validation contains unseen computers.
 
-    WHY NOT random split?
-      A random split would mix rows from the same computer across
-      train and val. The model could then "recognise" a computer's
-      baseline rather than learning actual attack patterns.
-
-    GroupShuffleSplit ensures:
-      - 80% of COMPUTERS go to training
-      - 20% of COMPUTERS go to validation (never seen during training)
-
-    Returns: X_train, X_val, y_train, y_val, groups_train, groups_val
+    This prevents rows from the same computer appearing in both
+    training and validation.
     """
     h("SECTION 3: GROUP-BASED TRAIN/VAL SPLIT")
 
@@ -158,408 +201,603 @@ def group_split(X, y, groups):
         random_state=RANDOM_STATE,
     )
 
-    split_result = splitter.split(X, y, groups=groups)
-    train_idx, val_idx = next(split_result)
+    split_iterator = splitter.split(X, y, groups=groups)
+    train_indices, validation_indices = next(split_iterator)
 
-    X_train = X.iloc[train_idx].copy()
-    X_val = X.iloc[val_idx].copy()
-    y_train = y.iloc[train_idx].copy()
-    y_val = y.iloc[val_idx].copy()
-    groups_train = groups.iloc[train_idx]
-    groups_val = groups.iloc[val_idx]
+    X_train = X.iloc[train_indices].copy()
+    X_validation = X.iloc[validation_indices].copy()
+
+    y_train = y.iloc[train_indices].copy()
+    y_validation = y.iloc[validation_indices].copy()
+
+    groups_train = groups.iloc[train_indices].copy()
+    groups_validation = groups.iloc[validation_indices].copy()
 
     print("Train samples:", len(X_train))
-    print("Val samples:  ", len(X_val))
+    print("Val samples:  ", len(X_validation))
 
-    return X_train, X_val, y_train, y_val, groups_train, groups_val
+    return X_train, X_validation, y_train, y_validation, groups_train, groups_validation
 
 
 # ============================================================================
-# SECTION 4: ONE-HOT ENCODING + VARIANCE FILTER
+# SECTION 4: ENCODE + FILTER
 # ============================================================================
 
-def encode_and_filter(X_train, X_val):
+def encode_and_filter(X_train, X_validation):
     """
-    Convert categorical features to numbers, then remove useless columns.
+    One-hot encode categorical features and remove zero-variance columns.
 
-    ONE-HOT ENCODING: "Image_Category = AttackTool" becomes:
-        Image_Category_AttackTool: 1, Image_Category_System32: 0, etc.
-    Needed because sklearn's RF can't handle string inputs.
-
-    VARIANCE FILTER: Remove encoded columns that are all-zero.
-
-    IMPORTANT: Encoder is fit on TRAIN only to prevent data leakage.
-
-    Returns: X_train_filtered, X_val_filtered, feature_names, encoder
+    The encoder is fit on training data only.
     """
     h("SECTION 4: ONE-HOT ENCODING + VARIANCE FILTER")
 
-    cat_cols = X_train.select_dtypes(exclude=["number"]).columns.tolist()
-    num_cols = X_train.select_dtypes(include=["number"]).columns.tolist()
+    categorical_columns = X_train.select_dtypes(exclude=["number"]).columns.tolist()
+    numeric_columns = X_train.select_dtypes(include=["number"]).columns.tolist()
 
-    encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=True)
+    one_hot_encoder = OneHotEncoder(
+        handle_unknown="ignore",
+        sparse_output=True,
+    )
 
-    preprocess = ColumnTransformer(
+    preprocessing_pipeline = ColumnTransformer(
         transformers=[
-            ("cat", encoder, cat_cols),
-            ("num", "passthrough", num_cols),
+            ("cat", one_hot_encoder, categorical_columns),
+            ("num", "passthrough", numeric_columns),
         ],
         remainder="drop",
     )
 
-    X_train_encoded = preprocess.fit_transform(X_train)
-    X_val_encoded = preprocess.transform(X_val)
-    feature_names = preprocess.get_feature_names_out()
+    X_train_encoded = preprocessing_pipeline.fit_transform(X_train)
+    X_validation_encoded = preprocessing_pipeline.transform(X_validation)
+
+    encoded_feature_names = preprocessing_pipeline.get_feature_names_out()
 
     variance_filter = VarianceThreshold(threshold=0.0)
+
     X_train_filtered = variance_filter.fit_transform(X_train_encoded)
-    X_val_filtered = variance_filter.transform(X_val_encoded)
-    feature_names_filtered = feature_names[variance_filter.get_support()]
+    X_validation_filtered = variance_filter.transform(X_validation_encoded)
+
+    kept_feature_names = encoded_feature_names[variance_filter.get_support()]
 
     print("Encoded features:", X_train_encoded.shape[1])
     print("After variance filter:", X_train_filtered.shape[1])
 
-    return X_train_filtered, X_val_filtered, feature_names_filtered, preprocess
+    return X_train_filtered, X_validation_filtered, kept_feature_names, preprocessing_pipeline
 
 
 # ============================================================================
-# SECTION 5: MUTUAL INFORMATION (Train-only)
+# SECTION 5: MUTUAL INFORMATION
 # ============================================================================
 
-def compute_mutual_information(X_train_filtered, y_train, feature_names, output_dir="."):
+def compute_mutual_information(X_train_filtered, y_train, encoded_feature_names, output_dir="."):
     """
-    Rank features by Mutual Information with the label.
-
-    MI measures how much knowing a feature reduces uncertainty about
-    the label. MI = 0 means useless, MI > 0 means informative.
-    Model-agnostic — captures any statistical dependency.
-
-    Returns: DataFrame with Feature and MI_Score columns.
+    Rank encoded features using Mutual Information.
     """
     h("SECTION 5: MUTUAL INFORMATION")
 
-    mi_scores = mutual_info_classif(
-        X_train_filtered, y_train,
+    mutual_information_scores = mutual_info_classif(
+        X_train_filtered,
+        y_train,
         discrete_features="auto",
         random_state=RANDOM_STATE,
     )
 
-    mi_df = pd.DataFrame({
-        "Feature": feature_names,
-        "MI_Score": mi_scores,
-    })
-    mi_df = mi_df.sort_values("MI_Score", ascending=False)
-    mi_df = mi_df.reset_index(drop=True)
+    results_dataframe = pd.DataFrame(
+        {
+            "Feature": encoded_feature_names,
+            "MI_Score": mutual_information_scores,
+        }
+    )
 
-    mi_df.to_csv(output_dir + "/01_mutual_information_scores.csv", index=False)
-    return mi_df
+    results_dataframe = results_dataframe.sort_values("MI_Score", ascending=False)
+    results_dataframe = results_dataframe.reset_index(drop=True)
+    results_dataframe.to_csv(output_dir + "/01_mutual_information_scores.csv", index=False)
+
+    return results_dataframe
 
 
 # ============================================================================
 # SECTION 6: RANDOM FOREST IMPORTANCE
 # ============================================================================
 
-def compute_rf_importance(X_train_filtered, y_train, feature_names, output_dir="."):
+def compute_random_forest_importance(
+    X_train_filtered,
+    y_train,
+    encoded_feature_names,
+    output_dir=".",
+):
     """
-    Rank features by RF Gini importance. Features that create the best
-    splits get higher scores. Complements MI by capturing interactions.
-
-    Returns: DataFrame with Feature and RF_Importance columns.
+    Rank encoded features using Random Forest Gini importance.
     """
     h("SECTION 6: RF IMPORTANCE RANKING")
 
-    rf = build_selector_rf()
-    rf.fit(X_train_filtered, y_train)
+    random_forest_model = build_selector_random_forest()
+    random_forest_model.fit(X_train_filtered, y_train)
 
-    importances = rf.feature_importances_
-    ranked_indices = np.argsort(importances)[::-1]
+    importance_scores = random_forest_model.feature_importances_
+    ranked_indices = np.argsort(importance_scores)[::-1]
 
-    imp_df = pd.DataFrame({
-        "Feature": feature_names[ranked_indices],
-        "RF_Importance": importances[ranked_indices],
-    })
-    imp_df = imp_df.reset_index(drop=True)
+    results_dataframe = pd.DataFrame(
+        {
+            "Feature": encoded_feature_names[ranked_indices],
+            "RF_Importance": importance_scores[ranked_indices],
+        }
+    )
 
-    imp_df.to_csv(output_dir + "/02_rf_importance_ranking.csv", index=False)
-    return imp_df
+    results_dataframe = results_dataframe.reset_index(drop=True)
+    results_dataframe.to_csv(output_dir + "/02_rf_importance_ranking.csv", index=False)
+
+    return results_dataframe
 
 
 # ============================================================================
 # SECTION 6b: CATBOOST IMPORTANCE
 # ============================================================================
 
-def compute_catboost_importance(X_train_filtered, y_train, feature_names, output_dir="."):
+def convert_sparse_to_dense_if_needed(matrix):
+    """Convert a sparse matrix to a dense array when required."""
+    if hasattr(matrix, "toarray"):
+        return matrix.toarray()
+    return np.asarray(matrix)
+
+
+def compute_catboost_importance(
+    X_train_filtered,
+    y_train,
+    encoded_feature_names,
+    output_dir=".",
+):
     """
-    Rank features by CatBoost feature importance (PredictionValuesChange).
-
-    CatBoost uses symmetric (oblivious) decision trees and computes
-    importance as the average change in predicted values when a feature
-    is used for a split. Complements RF Gini importance because CatBoost
-    is less biased toward high-cardinality features and handles the
-    encoded sparse matrix differently.
-
-    The encoded features passed here are the same sparse matrix used for
-    MI and RF, so results are directly comparable at the encoded level.
-
-    Returns: DataFrame with Feature and CB_Importance columns.
+    Rank encoded features using CatBoost feature importance.
     """
     h("SECTION 6b: CATBOOST IMPORTANCE RANKING")
 
-    cb = build_selector_catboost()
+    catboost_model = build_selector_catboost()
+    X_train_dense = convert_sparse_to_dense_if_needed(X_train_filtered)
 
-    # CatBoost expects a dense array
-    if hasattr(X_train_filtered, "toarray"):
-        X_dense = X_train_filtered.toarray()
-    else:
-        X_dense = np.asarray(X_train_filtered)
+    catboost_model.fit(X_train_dense, y_train)
 
-    cb.fit(X_dense, y_train)
+    importance_scores = catboost_model.get_feature_importance()
+    ranked_indices = np.argsort(importance_scores)[::-1]
 
-    importances = cb.get_feature_importance()
-    ranked_indices = np.argsort(importances)[::-1]
+    results_dataframe = pd.DataFrame(
+        {
+            "Feature": encoded_feature_names[ranked_indices],
+            "CB_Importance": importance_scores[ranked_indices],
+        }
+    )
 
-    cb_df = pd.DataFrame({
-        "Feature": feature_names[ranked_indices],
-        "CB_Importance": importances[ranked_indices],
-    })
-    cb_df = cb_df.reset_index(drop=True)
+    results_dataframe = results_dataframe.reset_index(drop=True)
+    results_dataframe.to_csv(output_dir + "/02b_catboost_importance_ranking.csv", index=False)
 
-    cb_df.to_csv(output_dir + "/02b_catboost_importance_ranking.csv", index=False)
-    return cb_df
+    return results_dataframe
 
 
 # ============================================================================
 # SECTION 7: AGGREGATE TO ORIGINAL FEATURES
 # ============================================================================
 
-def aggregate_to_original(imp_df, mi_df, cb_df=None, output_dir="."):
+def add_original_feature_column(dataframe, feature_column_name="Feature"):
+    """Add a column containing the original feature name for each encoded feature."""
+    updated_dataframe = dataframe.copy()
+    updated_dataframe["Original_Feature"] = map_encoded_features_to_original_features(
+        updated_dataframe[feature_column_name]
+    )
+    return updated_dataframe
+
+
+def aggregate_rf_scores_to_original_features(random_forest_dataframe):
+    """Aggregate Random Forest encoded-level scores back to original features."""
+    grouped = random_forest_dataframe.groupby("Original_Feature")["RF_Importance"]
+    aggregated = grouped.agg(["sum", "max", "count"])
+
+    aggregated = aggregated.rename(
+        columns={
+            "sum": "RF_Importance_Sum",
+            "max": "RF_Importance_Max",
+            "count": "Encoded_Columns",
+        }
+    )
+
+    aggregated = aggregated.sort_values("RF_Importance_Sum", ascending=False)
+    aggregated = aggregated.reset_index()
+
+    return aggregated
+
+
+def aggregate_mi_scores_to_original_features(mutual_information_dataframe):
+    """Aggregate Mutual Information encoded-level scores back to original features."""
+    grouped = mutual_information_dataframe.groupby("Original_Feature")["MI_Score"]
+    aggregated = grouped.agg(["sum", "max"])
+
+    aggregated = aggregated.rename(
+        columns={
+            "sum": "MI_Score_Sum",
+            "max": "MI_Score_Max",
+        }
+    )
+
+    aggregated = aggregated.sort_values("MI_Score_Sum", ascending=False)
+    aggregated = aggregated.reset_index()
+
+    return aggregated
+
+
+def aggregate_catboost_scores_to_original_features(catboost_dataframe):
+    """Aggregate CatBoost encoded-level scores back to original features."""
+    grouped = catboost_dataframe.groupby("Original_Feature")["CB_Importance"]
+    aggregated = grouped.agg(["sum", "max"])
+
+    aggregated = aggregated.rename(
+        columns={
+            "sum": "CB_Importance_Sum",
+            "max": "CB_Importance_Max",
+        }
+    )
+
+    aggregated = aggregated.reset_index()
+
+    return aggregated
+
+
+def aggregate_to_original(
+    random_forest_importance_dataframe,
+    mutual_information_dataframe,
+    catboost_importance_dataframe=None,
+    output_dir=".",
+):
     """
-    Sum encoded-level scores back to original features.
-
-    Example: cat__Image_Category_AttackTool (0.15) +
-             cat__Image_Category_System32 (0.08) = Image_Category (0.23)
-
-    cb_df: optional CatBoost importance DataFrame (from Section 6b).
-
-    Returns: Summary DataFrame with one row per original feature.
+    Combine encoded-level ranking results into one row per original feature.
     """
     h("SECTION 7: AGGREGATE TO ORIGINAL FEATURES")
 
-    imp_copy = imp_df.copy()
-    mi_copy = mi_df.copy()
+    rf_with_originals = add_original_feature_column(random_forest_importance_dataframe)
+    mi_with_originals = add_original_feature_column(mutual_information_dataframe)
 
-    # Map each encoded name back to its original
-    rf_originals = []
-    for name in imp_copy["Feature"]:
-        rf_originals.append(get_original_feature(name))
-    imp_copy["Original_Feature"] = rf_originals
+    random_forest_summary = aggregate_rf_scores_to_original_features(rf_with_originals)
+    mutual_information_summary = aggregate_mi_scores_to_original_features(mi_with_originals)
 
-    mi_originals = []
-    for name in mi_copy["Feature"]:
-        mi_originals.append(get_original_feature(name))
-    mi_copy["Original_Feature"] = mi_originals
+    summary_dataframe = random_forest_summary.merge(
+        mutual_information_summary,
+        on="Original_Feature",
+        how="outer",
+    )
 
-    # Sum per original feature
-    rf_grouped = imp_copy.groupby("Original_Feature")["RF_Importance"]
-    rf_agg = rf_grouped.agg(["sum", "max", "count"])
-    rf_agg = rf_agg.rename(columns={
-        "sum": "RF_Importance_Sum",
-        "max": "RF_Importance_Max",
-        "count": "Encoded_Columns",
-    })
-    rf_agg = rf_agg.sort_values("RF_Importance_Sum", ascending=False)
-    rf_agg = rf_agg.reset_index()
+    if catboost_importance_dataframe is not None:
+        cb_with_originals = add_original_feature_column(catboost_importance_dataframe)
+        catboost_summary = aggregate_catboost_scores_to_original_features(cb_with_originals)
 
-    mi_grouped = mi_copy.groupby("Original_Feature")["MI_Score"]
-    mi_agg = mi_grouped.agg(["sum", "max"])
-    mi_agg = mi_agg.rename(columns={
-        "sum": "MI_Score_Sum",
-        "max": "MI_Score_Max",
-    })
-    mi_agg = mi_agg.sort_values("MI_Score_Sum", ascending=False)
-    mi_agg = mi_agg.reset_index()
+        summary_dataframe = summary_dataframe.merge(
+            catboost_summary,
+            on="Original_Feature",
+            how="outer",
+        )
 
-    summary = rf_agg.merge(mi_agg, on="Original_Feature", how="outer")
+    summary_dataframe = summary_dataframe.fillna(0)
+    summary_dataframe = summary_dataframe.sort_values("RF_Importance_Sum", ascending=False)
+    summary_dataframe = summary_dataframe.reset_index(drop=True)
 
-    # Merge CatBoost importance if provided
-    if cb_df is not None:
-        cb_copy = cb_df.copy()
-        cb_originals = []
-        for name in cb_copy["Feature"]:
-            cb_originals.append(get_original_feature(name))
-        cb_copy["Original_Feature"] = cb_originals
+    summary_dataframe.to_csv(
+        output_dir + "/03_original_feature_importance_summary.csv",
+        index=False,
+    )
 
-        cb_grouped = cb_copy.groupby("Original_Feature")["CB_Importance"]
-        cb_agg = cb_grouped.agg(["sum", "max"])
-        cb_agg = cb_agg.rename(columns={
-            "sum": "CB_Importance_Sum",
-            "max": "CB_Importance_Max",
-        })
-        cb_agg = cb_agg.reset_index()
-
-        summary = summary.merge(cb_agg, on="Original_Feature", how="outer")
-
-    summary = summary.fillna(0)
-    summary = summary.sort_values("RF_Importance_Sum", ascending=False)
-    summary = summary.reset_index(drop=True)
-
-    summary.to_csv(output_dir + "/03_original_feature_importance_summary.csv")
-    return summary
+    return summary_dataframe
 
 
 # ============================================================================
-# SECTION 8: FEATURE-COUNT SWEEP
+# SECTION 8: FEATURE COUNT SWEEP
 # ============================================================================
 
-def feature_count_sweep(summary, X_train_filtered, X_val_filtered,
-                        y_train, y_val, feature_names, output_dir="."):
+def evaluate_feature_subset(
+    selected_original_features,
+    X_train_filtered,
+    X_validation_filtered,
+    y_train,
+    y_validation,
+    encoded_feature_names,
+):
     """
-    Try top-3, top-5, top-6, ..., top-13 features.
-    For each, train a fresh RF and measure validation F1.
-    Finds the sweet spot between too few (underfit) and too many (overfit).
+    Train a Random Forest using only the chosen original features.
+    """
+    encoded_column_mask = create_feature_mask(
+        encoded_feature_names,
+        selected_original_features,
+    )
 
-    Returns: (results_dataframe, ranked_feature_list)
+    model = build_evaluation_random_forest()
+    model.fit(X_train_filtered[:, encoded_column_mask], y_train)
+
+    training_predictions = model.predict(X_train_filtered[:, encoded_column_mask])
+    validation_predictions = model.predict(X_validation_filtered[:, encoded_column_mask])
+
+    training_f1 = f1_score(y_train, training_predictions, average="macro")
+    validation_f1 = f1_score(y_validation, validation_predictions, average="macro")
+    validation_f1_normal = f1_score(
+        y_validation,
+        validation_predictions,
+        pos_label=0,
+        average="binary",
+    )
+    validation_f1_attack = f1_score(
+        y_validation,
+        validation_predictions,
+        pos_label=1,
+        average="binary",
+    )
+
+    results = {
+        "Encoded_Features": int(encoded_column_mask.sum()),
+        "Train_F1": round(training_f1, 4),
+        "Val_F1": round(validation_f1, 4),
+        "Val_F1_Normal": round(validation_f1_normal, 4),
+        "Val_F1_Attack": round(validation_f1_attack, 4),
+        "Overfit_Gap": round(training_f1 - validation_f1, 4),
+    }
+
+    return results
+
+
+def feature_count_sweep(
+    summary_dataframe,
+    X_train_filtered,
+    X_validation_filtered,
+    y_train,
+    y_validation,
+    encoded_feature_names,
+    output_dir=".",
+):
+    """
+    Test several feature counts and record validation performance.
     """
     h("SECTION 8: FEATURE-COUNT SWEEP")
 
-    ranked_original = summary["Original_Feature"].tolist()
-    results = []
+    ranked_original_features = summary_dataframe["Original_Feature"].tolist()
+    sweep_results = []
 
-    for k in FEATURE_COUNTS_TO_TEST:
-        if k > len(ranked_original):
-            k = len(ranked_original)
+    for number_of_features in FEATURE_COUNTS_TO_TEST:
+        adjusted_feature_count = min(number_of_features, len(ranked_original_features))
+        selected_original_features = ranked_original_features[:adjusted_feature_count]
 
-        top_k_features = ranked_original[:k]
+        metrics = evaluate_feature_subset(
+            selected_original_features,
+            X_train_filtered,
+            X_validation_filtered,
+            y_train,
+            y_validation,
+            encoded_feature_names,
+        )
 
-        # Boolean mask: which encoded columns belong to these top-K?
-        mask = []
-        for encoded_name in feature_names:
-            original_name = get_original_feature(encoded_name)
-            mask.append(original_name in top_k_features)
-        mask = np.array(mask)
+        sweep_results.append(
+            {
+                "Original_Features": adjusted_feature_count,
+                "Encoded_Features": metrics["Encoded_Features"],
+                "Train_F1": metrics["Train_F1"],
+                "Val_F1": metrics["Val_F1"],
+                "Val_F1_Normal": metrics["Val_F1_Normal"],
+                "Val_F1_Attack": metrics["Val_F1_Attack"],
+                "Overfit_Gap": metrics["Overfit_Gap"],
+                "Selected_Features": ", ".join(selected_original_features),
+            }
+        )
 
-        # Train and evaluate
-        rf = build_eval_rf()
-        rf.fit(X_train_filtered[:, mask], y_train)
+        print(
+            "  Top-" + str(adjusted_feature_count)
+            + ": Val F1=" + str(metrics["Val_F1"])
+            + " Gap=" + str(metrics["Overfit_Gap"])
+        )
 
-        y_pred_val = rf.predict(X_val_filtered[:, mask])
-        y_pred_train = rf.predict(X_train_filtered[:, mask])
+    sweep_dataframe = pd.DataFrame(sweep_results)
+    sweep_dataframe.to_csv(output_dir + "/04_feature_count_sweep_results.csv", index=False)
 
-        f1_val = f1_score(y_val, y_pred_val, average="macro")
-        f1_train = f1_score(y_train, y_pred_train, average="macro")
-        f1_normal = f1_score(y_val, y_pred_val, pos_label=0, average="binary")
-        f1_attack = f1_score(y_val, y_pred_val, pos_label=1, average="binary")
-
-        results.append({
-            "Original_Features": k,
-            "Encoded_Features": mask.sum(),
-            "Train_F1": round(f1_train, 4),
-            "Val_F1": round(f1_val, 4),
-            "Val_F1_Normal": round(f1_normal, 4),
-            "Val_F1_Attack": round(f1_attack, 4),
-            "Overfit_Gap": round(f1_train - f1_val, 4),
-            "Selected_Features": ", ".join(top_k_features),
-        })
-
-        print("  Top-" + str(k) + ": Val F1=" + str(round(f1_val, 4)),
-              " Gap=" + str(round(f1_train - f1_val, 4)))
-
-    sweep_df = pd.DataFrame(results)
-    sweep_df.to_csv(output_dir + "/04_feature_count_sweep_results.csv", index=False)
-    return sweep_df, ranked_original
+    return sweep_dataframe, ranked_original_features
 
 
 # ============================================================================
-# SECTION 9: OPTIMAL FEATURE COUNT (PARETO CRITERION)
+# SECTION 9: SELECT FINAL FEATURE SET
 # ============================================================================
 
-def select_optimal_features(sweep_df, ranked_original, summary,
-                            X_train_filtered, X_val_filtered,
-                            y_train, y_val, feature_names, output_dir="."):
+def get_best_validation_f1(sweep_dataframe):
+    """Return the highest validation F1 in the sweep results."""
+    best_row_index = sweep_dataframe["Val_F1"].idxmax()
+    best_validation_f1 = float(sweep_dataframe.loc[best_row_index, "Val_F1"])
+    return best_validation_f1
+
+
+def get_smallest_feature_count_that_matches_best_f1(sweep_dataframe, best_validation_f1):
     """
-    Pick the FEWEST features that achieve the BEST validation F1.
-    Fewer features = faster inference = less energy = less CO2.
+    Return the smallest feature count whose validation F1 matches the best score.
+    """
+    good_enough_rows = sweep_dataframe[sweep_dataframe["Val_F1"] >= best_validation_f1]
+    optimal_feature_count = int(good_enough_rows["Original_Features"].min())
+    return optimal_feature_count
 
-    Returns: (final_feature_list, optimal_count, best_f1)
+
+def save_final_feature_list(final_features, summary_dataframe, output_dir="."):
+    """Save the chosen final feature list to CSV."""
+    ranks = []
+    feature_names = []
+    random_forest_scores = []
+
+    for feature_rank, feature_name in enumerate(final_features, start=1):
+        matching_rows = summary_dataframe[
+            summary_dataframe["Original_Feature"] == feature_name
+        ]
+
+        ranks.append(feature_rank)
+        feature_names.append(feature_name)
+        random_forest_scores.append(matching_rows["RF_Importance_Sum"].values[0])
+
+    final_features_dataframe = pd.DataFrame(
+        {
+            "Rank": ranks,
+            "Feature": feature_names,
+            "RF_Importance_Sum": random_forest_scores,
+        }
+    )
+
+    final_features_dataframe.to_csv(
+        output_dir + "/05_final_selected_features.csv",
+        index=False,
+    )
+
+
+def print_selected_features(final_features):
+    """Print the final selected features."""
+    print("\nSelected", len(final_features), "features:")
+    for feature_rank, feature_name in enumerate(final_features, start=1):
+        print("  " + str(feature_rank) + ". " + feature_name)
+
+
+def print_final_validation_report(
+    final_features,
+    X_train_filtered,
+    X_validation_filtered,
+    y_train,
+    y_validation,
+    encoded_feature_names,
+):
+    """Train the final model and print a validation classification report."""
+    encoded_column_mask = create_feature_mask(
+        encoded_feature_names,
+        final_features,
+    )
+
+    final_model = build_evaluation_random_forest()
+    final_model.fit(X_train_filtered[:, encoded_column_mask], y_train)
+
+    validation_predictions = final_model.predict(
+        X_validation_filtered[:, encoded_column_mask]
+    )
+
+    print(
+        "\nValidation Report ("
+        + str(len(final_features))
+        + " features, unseen computers):"
+    )
+    print(
+        classification_report(
+            y_validation,
+            validation_predictions,
+            target_names=["Normal", "Attack"],
+            digits=4,
+        )
+    )
+
+
+def select_optimal_features(
+    sweep_dataframe,
+    ranked_original_features,
+    summary_dataframe,
+    X_train_filtered,
+    X_validation_filtered,
+    y_train,
+    y_validation,
+    encoded_feature_names,
+    output_dir=".",
+):
+    """
+    Choose the smallest feature set that still achieves the best validation F1.
     """
     h("SECTION 9: OPTIMAL FEATURE COUNT (PARETO)")
 
-    best_row = sweep_df["Val_F1"].idxmax()
-    best_f1 = float(sweep_df.loc[best_row, "Val_F1"])
+    best_validation_f1 = get_best_validation_f1(sweep_dataframe)
+    optimal_feature_count = get_smallest_feature_count_that_matches_best_f1(
+        sweep_dataframe,
+        best_validation_f1,
+    )
 
-    good_enough = sweep_df[sweep_df["Val_F1"] >= best_f1]
-    optimal_n = int(good_enough["Original_Features"].min())
+    print("Best Val F1:", best_validation_f1)
+    print("Pareto choice:", optimal_feature_count, "features")
 
-    print("Best Val F1:", best_f1)
-    print("Pareto choice:", optimal_n, "features")
+    final_features = ranked_original_features[:optimal_feature_count]
 
-    final_features = ranked_original[:optimal_n]
+    save_final_feature_list(final_features, summary_dataframe, output_dir)
+    print_selected_features(final_features)
 
-    # Save the final feature list
-    ranks = []
-    names = []
-    rf_scores = []
-    for i in range(len(final_features)):
-        feat = final_features[i]
-        ranks.append(i + 1)
-        names.append(feat)
-        matching = summary[summary["Original_Feature"] == feat]
-        rf_scores.append(matching["RF_Importance_Sum"].values[0])
+    print_final_validation_report(
+        final_features,
+        X_train_filtered,
+        X_validation_filtered,
+        y_train,
+        y_validation,
+        encoded_feature_names,
+    )
 
-    final_df = pd.DataFrame({
-        "Rank": ranks,
-        "Feature": names,
-        "RF_Importance_Sum": rf_scores,
-    })
-    final_df.to_csv(output_dir + "/05_final_selected_features.csv", index=False)
-
-    # Print selected features
-    print("\nSelected", optimal_n, "features:")
-    for i in range(len(final_features)):
-        print("  " + str(i + 1) + ". " + final_features[i])
-
-    # Final classification report
-    mask = []
-    for encoded_name in feature_names:
-        original_name = get_original_feature(encoded_name)
-        mask.append(original_name in final_features)
-    mask = np.array(mask)
-
-    rf_final = build_eval_rf()
-    rf_final.fit(X_train_filtered[:, mask], y_train)
-    y_pred = rf_final.predict(X_val_filtered[:, mask])
-
-    print("\nValidation Report (" + str(optimal_n) + " features, unseen computers):")
-    print(classification_report(y_val, y_pred, target_names=["Normal", "Attack"], digits=4))
-
-    return final_features, optimal_n, best_f1
+    return final_features, optimal_feature_count, best_validation_f1
 
 
 # ============================================================================
-# CONVENIENCE: RUN THE FULL PIPELINE
+# RUN THE FULL PIPELINE
 # ============================================================================
 
 def run_feature_selection_pipeline(X, y, groups, output_dir="."):
-    """Run Sections 3-9 in sequence."""
-    X_train, X_val, y_train, y_val, g_train, g_val = group_split(X, y, groups)
-    X_train_f, X_val_f, feat_names, preprocess = encode_and_filter(X_train, X_val)
-    mi_df = compute_mutual_information(X_train_f, y_train, feat_names, output_dir)
-    imp_df = compute_rf_importance(X_train_f, y_train, feat_names, output_dir)
-    cb_df = compute_catboost_importance(X_train_f, y_train, feat_names, output_dir)
-    summary = aggregate_to_original(imp_df, mi_df, cb_df, output_dir)
-    sweep_df, ranked = feature_count_sweep(
-        summary, X_train_f, X_val_f, y_train, y_val, feat_names, output_dir)
-    final_features, optimal_n, threshold = select_optimal_features(
-        sweep_df, ranked, summary,
-        X_train_f, X_val_f, y_train, y_val, feat_names, output_dir)
+    """Run the full feature-selection pipeline from start to finish."""
+    X_train, X_validation, y_train, y_validation, groups_train, groups_validation = (
+        group_split(X, y, groups)
+    )
+
+    X_train_filtered, X_validation_filtered, encoded_feature_names, preprocessing_pipeline = (
+        encode_and_filter(X_train, X_validation)
+    )
+
+    mutual_information_dataframe = compute_mutual_information(
+        X_train_filtered,
+        y_train,
+        encoded_feature_names,
+        output_dir,
+    )
+
+    random_forest_importance_dataframe = compute_random_forest_importance(
+        X_train_filtered,
+        y_train,
+        encoded_feature_names,
+        output_dir,
+    )
+
+    catboost_importance_dataframe = compute_catboost_importance(
+        X_train_filtered,
+        y_train,
+        encoded_feature_names,
+        output_dir,
+    )
+
+    summary_dataframe = aggregate_to_original(
+        random_forest_importance_dataframe,
+        mutual_information_dataframe,
+        catboost_importance_dataframe,
+        output_dir,
+    )
+
+    sweep_dataframe, ranked_original_features = feature_count_sweep(
+        summary_dataframe,
+        X_train_filtered,
+        X_validation_filtered,
+        y_train,
+        y_validation,
+        encoded_feature_names,
+        output_dir,
+    )
+
+    final_features, optimal_feature_count, pareto_threshold = select_optimal_features(
+        sweep_dataframe,
+        ranked_original_features,
+        summary_dataframe,
+        X_train_filtered,
+        X_validation_filtered,
+        y_train,
+        y_validation,
+        encoded_feature_names,
+        output_dir,
+    )
 
     return {
         "final_features": final_features,
-        "OPTIMAL_N": optimal_n,
-        "pareto_threshold": threshold,
-        "summary": summary,
-        "sweep_df": sweep_df,
-        "mi_df": mi_df,
-        "imp_df": imp_df,
-        "cb_df": cb_df,
+        "OPTIMAL_N": optimal_feature_count,
+        "pareto_threshold": pareto_threshold,
+        "summary": summary_dataframe,
+        "sweep_df": sweep_dataframe,
+        "mi_df": mutual_information_dataframe,
+        "imp_df": random_forest_importance_dataframe,
+        "cb_df": catboost_importance_dataframe,
     }

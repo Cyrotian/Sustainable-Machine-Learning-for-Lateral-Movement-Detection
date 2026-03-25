@@ -1,32 +1,21 @@
 """
-plot_complexity_sweep.py — Generate dual-axis charts from complexity sweep results.
+plot_complexity_sweep.py — Plot complexity sweep results and regression charts.
 
-PURPOSE: Visualise how F1 and CO₂ emissions change as model complexity increases.
-         One chart per model with F1 on left axis, emissions on right axis.
-         Plus a summary chart showing all models together.
-         Plus linear regression CO₂ scaling law charts:
-           - Tree models overlay (RF + LightGBM)
-           - LSTM separate
-         Plus CSV of regression constants.
-
-INPUT:   results/complexity_sweep.csv (from complexity_sweep.py)
-OUTPUT:  figures/complexity_rf.png
-         figures/complexity_lgbm.png
-         figures/complexity_lstm.png
-         figures/complexity_summary.png
-         figures/complexity_co2_regression_tree.png
-         figures/complexity_co2_regression_lstm.png
-         results/complexity_regression.csv
-
-USAGE:   python plot_complexity_sweep.py
+This script:
+1. Loads the complexity sweep CSV
+2. Creates one dual-axis chart per model
+3. Creates one combined summary chart
+4. Computes simple sustainability heuristics
+5. Fits linear regressions for scaling behaviour
+6. Saves regression constants and regression charts
 """
 
 import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 from scipy import stats
+
 
 # ============================================================================
 # CONFIGURATION
@@ -41,390 +30,707 @@ MODEL_COLORS = {
     "LSTM": "#22C55E",
 }
 
-PARAM_LABELS = {
+PARAMETER_LABELS = {
     "n_estimators": "Number of Estimators",
     "hidden_units": "LSTM Hidden Units",
     "epochs": "Training Epochs",
 }
 
-MARKERS = {
+MODEL_MARKERS = {
     "Random Forest": "o",
     "LightGBM": "s",
     "LSTM": "^",
 }
 
 
-def style_ax(ax):
-    """Apply consistent styling."""
-    ax.spines["top"].set_visible(False)
-    ax.tick_params(labelsize=10)
+# ============================================================================
+# GENERAL HELPERS
+# ============================================================================
+
+def style_axis(axis):
+    """Apply consistent axis styling."""
+    axis.spines["top"].set_visible(False)
+    axis.tick_params(labelsize=10)
+
+
+def load_sweep_results(csv_path):
+    """Load the complexity sweep CSV."""
+    return pd.read_csv(csv_path)
+
+
+def save_figure(output_path):
+    """Save and close the current matplotlib figure."""
+    plt.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved: {output_path}")
+
+
+def get_parameter_label(parameter_name):
+    """Return a user-friendly parameter label."""
+    return PARAMETER_LABELS.get(parameter_name, parameter_name)
 
 
 # ============================================================================
-# INDIVIDUAL MODEL CHARTS (DUAL AXIS)
+# INDIVIDUAL MODEL CHARTS
 # ============================================================================
 
-def plot_model_dual_axis(df_model, model_name, output_dir):
+def get_model_plot_data(model_dataframe):
+    """Extract the main arrays used for one model chart."""
+    parameter_name = model_dataframe["parameter_name"].iloc[0]
+    x_values = model_dataframe["parameter_value"].values
+    f1_values = model_dataframe["f1"].values
+    training_emissions_micrograms = model_dataframe["train_emissions"].values * 1e6
+    inference_emissions_micrograms = model_dataframe["inference_emissions"].values * 1e6
+
+    return {
+        "parameter_name": parameter_name,
+        "x_values": x_values,
+        "f1_values": f1_values,
+        "training_emissions_micrograms": training_emissions_micrograms,
+        "inference_emissions_micrograms": inference_emissions_micrograms,
+    }
+
+
+def plot_f1_axis(axis, x_values, f1_values, model_name):
+    """Plot F1 values on the left axis."""
+    model_color = MODEL_COLORS.get(model_name, "#888888")
+
+    axis.plot(
+        x_values,
+        f1_values,
+        "o-",
+        color=model_color,
+        linewidth=2.5,
+        markersize=8,
+        label="F1-Score",
+        zorder=5,
+    )
+
+    axis.set_ylabel("F1-Score", fontsize=12, color=model_color)
+    axis.tick_params(axis="y", labelcolor=model_color)
+
+    y_min = min(f1_values) * 0.995
+    y_max = min(max(f1_values) * 1.002, 1.0)
+    axis.set_ylim(y_min, y_max)
+
+    style_axis(axis)
+
+
+def plot_emissions_axis(axis, x_values, training_emissions, inference_emissions):
+    """Plot training and inference emissions on the right axis."""
+    axis.plot(
+        x_values,
+        training_emissions,
+        "s--",
+        color="#DC2626",
+        linewidth=2,
+        markersize=7,
+        label="Train CO₂",
+        alpha=0.8,
+    )
+
+    axis.plot(
+        x_values,
+        inference_emissions,
+        "^--",
+        color="#9333EA",
+        linewidth=2,
+        markersize=7,
+        label="Inference CO₂",
+        alpha=0.8,
+    )
+
+    axis.set_ylabel("CO₂ Emissions (µg)", fontsize=12, color="#DC2626")
+    axis.tick_params(axis="y", labelcolor="#DC2626")
+
+    style_axis(axis)
+
+
+def find_99_percent_peak_f1_index(f1_values):
     """
-    Plot F1 and emissions vs complexity parameter on dual y-axes.
-
-    Left axis:  F1-Score (detection performance)
-    Right axis: CO₂ emissions (environmental cost)
-
-    The key insight is where F1 plateaus while emissions keep rising.
+    Find the first configuration that achieves at least 99% of peak F1.
     """
-    param_name = df_model["parameter_name"].iloc[0]
-    x = df_model["parameter_value"].values
-    f1 = df_model["f1"].values
-    train_co2 = df_model["train_emissions"].values * 1e6
-    infer_co2 = df_model["inference_emissions"].values * 1e6
-
-    color_main = MODEL_COLORS.get(model_name, "#888888")
-
-    fig, ax1 = plt.subplots(figsize=(10, 6))
-
-    # ── Left axis: F1-Score ──────────────────────────────────────────
-    ax1.plot(x, f1, "o-", color=color_main, linewidth=2.5, markersize=8,
-             label="F1-Score", zorder=5)
-    ax1.set_xlabel(PARAM_LABELS.get(param_name, param_name), fontsize=12)
-    ax1.set_ylabel("F1-Score", fontsize=12, color=color_main)
-    ax1.tick_params(axis="y", labelcolor=color_main)
-    ax1.set_ylim(min(f1) * 0.995, min(max(f1) * 1.002, 1.0))
-    style_ax(ax1)
-
-    # ── Right axis: Emissions ────────────────────────────────────────
-    ax2 = ax1.twinx()
-    ax2.plot(x, train_co2, "s--", color="#DC2626", linewidth=2, markersize=7,
-             label="Train CO₂", alpha=0.8)
-    ax2.plot(x, infer_co2, "^--", color="#9333EA", linewidth=2, markersize=7,
-             label="Inference CO₂", alpha=0.8)
-    ax2.set_ylabel("CO₂ Emissions (µg)", fontsize=12, color="#DC2626")
-    ax2.tick_params(axis="y", labelcolor="#DC2626")
-    style_ax(ax2)
-
-    # ── Find sustainability-optimal point ────────────────────────────
-    peak_f1 = max(f1)
+    peak_f1 = max(f1_values)
     threshold_f1 = peak_f1 * 0.99
-    optimal_idx = None
-    for i, val in enumerate(f1):
-        if val >= threshold_f1:
-            optimal_idx = i
-            break
 
-    if optimal_idx is not None:
-        ax1.axvline(x=x[optimal_idx], color="gray", linestyle=":", alpha=0.6, linewidth=1.5)
-        ax1.annotate(
-            f"99% peak F1\n{param_name}={x[optimal_idx]}",
-            xy=(x[optimal_idx], f1[optimal_idx]),
-            xytext=(x[optimal_idx] + (max(x) - min(x)) * 0.1, f1[optimal_idx] - (max(f1) - min(f1)) * 0.3),
-            fontsize=10, fontweight="bold", color="gray",
-            arrowprops=dict(arrowstyle="->", color="gray", lw=1.5),
+    for index, f1_value in enumerate(f1_values):
+        if f1_value >= threshold_f1:
+            return index
+
+    return None
+
+
+def annotate_sustainability_optimal_point(
+    axis,
+    x_values,
+    f1_values,
+    parameter_name,
+    optimal_index,
+):
+    """Annotate the first point that reaches 99% of peak F1."""
+    if optimal_index is None:
+        return
+
+    x_value = x_values[optimal_index]
+    y_value = f1_values[optimal_index]
+
+    x_offset = (max(x_values) - min(x_values)) * 0.1
+    y_offset = (max(f1_values) - min(f1_values)) * 0.3
+
+    axis.axvline(
+        x=x_value,
+        color="gray",
+        linestyle=":",
+        alpha=0.6,
+        linewidth=1.5,
+    )
+
+    axis.annotate(
+        f"99% peak F1\n{parameter_name}={x_value}",
+        xy=(x_value, y_value),
+        xytext=(x_value + x_offset, y_value - y_offset),
+        fontsize=10,
+        fontweight="bold",
+        color="gray",
+        arrowprops=dict(arrowstyle="->", color="gray", lw=1.5),
+    )
+
+
+def add_combined_legend(left_axis, right_axis):
+    """Combine legends from both y-axes."""
+    left_lines, left_labels = left_axis.get_legend_handles_labels()
+    right_lines, right_labels = right_axis.get_legend_handles_labels()
+
+    left_axis.legend(
+        left_lines + right_lines,
+        left_labels + right_labels,
+        loc="center right",
+        fontsize=10,
+    )
+
+
+def plot_model_dual_axis(model_dataframe, model_name, output_dir):
+    """
+    Plot one model's F1 and emissions against its complexity parameter.
+    """
+    plot_data = get_model_plot_data(model_dataframe)
+
+    parameter_name = plot_data["parameter_name"]
+    x_values = plot_data["x_values"]
+    f1_values = plot_data["f1_values"]
+    training_emissions = plot_data["training_emissions_micrograms"]
+    inference_emissions = plot_data["inference_emissions_micrograms"]
+
+    figure, left_axis = plt.subplots(figsize=(10, 6))
+
+    plot_f1_axis(left_axis, x_values, f1_values, model_name)
+
+    right_axis = left_axis.twinx()
+    plot_emissions_axis(
+        right_axis,
+        x_values,
+        training_emissions,
+        inference_emissions,
+    )
+
+    left_axis.set_xlabel(get_parameter_label(parameter_name), fontsize=12)
+
+    optimal_index = find_99_percent_peak_f1_index(f1_values)
+    annotate_sustainability_optimal_point(
+        left_axis,
+        x_values,
+        f1_values,
+        parameter_name,
+        optimal_index,
+    )
+
+    left_axis.set_title(
+        f"{model_name}: Detection Performance vs Environmental Cost\n"
+        f"Varying {get_parameter_label(parameter_name)}",
+        fontsize=13,
+        fontweight="bold",
+        pad=15,
+    )
+
+    left_axis.grid(axis="y", alpha=0.2)
+    add_combined_legend(left_axis, right_axis)
+
+    figure.tight_layout()
+
+    file_name = model_name.lower().replace(" ", "_")
+    output_path = os.path.join(output_dir, f"complexity_{file_name}.png")
+    save_figure(output_path)
+
+    return optimal_index
+
+
+# ============================================================================
+# SUMMARY CHART
+# ============================================================================
+
+def annotate_summary_endpoints(axis, total_emissions, f1_values, parameter_values, color):
+    """Label the lowest and highest complexity points."""
+    axis.annotate(
+        f"{parameter_values[0]}",
+        (total_emissions.iloc[0], f1_values.iloc[0]),
+        fontsize=8,
+        color=color,
+        fontweight="bold",
+        textcoords="offset points",
+        xytext=(-15, -12),
+    )
+
+    axis.annotate(
+        f"{parameter_values[-1]}",
+        (total_emissions.iloc[-1], f1_values.iloc[-1]),
+        fontsize=8,
+        color=color,
+        fontweight="bold",
+        textcoords="offset points",
+        xytext=(5, 5),
+    )
+
+
+def plot_summary(dataframe, output_dir):
+    """
+    Plot all model configurations on one performance-vs-emissions chart.
+    """
+    figure, axis = plt.subplots(figsize=(10, 7))
+
+    for model_name, model_group in dataframe.groupby("model"):
+        model_color = MODEL_COLORS.get(model_name, "#888888")
+        total_emissions_micrograms = (
+            model_group["train_emissions"] + model_group["inference_emissions"]
+        ) * 1e6
+
+        axis.scatter(
+            total_emissions_micrograms,
+            model_group["f1"],
+            color=model_color,
+            s=80,
+            alpha=0.7,
+            edgecolors="white",
+            linewidth=0.8,
+            label=model_name,
+            zorder=5,
         )
 
-    # ── Title and legend ─────────────────────────────────────────────
-    ax1.set_title(f"{model_name}: Detection Performance vs Environmental Cost\n"
-                  f"Varying {PARAM_LABELS.get(param_name, param_name)}",
-                  fontsize=13, fontweight="bold", pad=15)
+        axis.plot(
+            total_emissions_micrograms,
+            model_group["f1"],
+            "-",
+            color=model_color,
+            alpha=0.3,
+            linewidth=1.5,
+        )
 
-    lines1, labels1 = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, loc="center right", fontsize=10)
+        parameter_values = model_group["parameter_value"].values
+        annotate_summary_endpoints(
+            axis,
+            total_emissions_micrograms,
+            model_group["f1"],
+            parameter_values,
+            model_color,
+        )
 
-    ax1.grid(axis="y", alpha=0.2)
-    fig.tight_layout()
+    axis.set_xlabel("Total CO₂ Emissions (µg) - Training + Inference", fontsize=12)
+    axis.set_ylabel("F1-Score", fontsize=12)
+    axis.set_title(
+        "Detection Performance vs Environmental Cost\n"
+        "Each point = one complexity configuration",
+        fontsize=13,
+        fontweight="bold",
+        pad=15,
+    )
 
-    filename = model_name.lower().replace(" ", "_")
-    filepath = os.path.join(output_dir, f"complexity_{filename}.png")
-    plt.savefig(filepath, dpi=300, bbox_inches="tight")
-    plt.close()
-    print(f"  Saved: {filepath}")
+    axis.legend(fontsize=11, loc="lower right")
+    axis.grid(alpha=0.2)
+    style_axis(axis)
 
-    return optimal_idx
+    figure.tight_layout()
+
+    output_path = os.path.join(output_dir, "complexity_summary.png")
+    save_figure(output_path)
 
 
 # ============================================================================
-# SUMMARY CHART (ALL MODELS)
+# HEURISTICS
 # ============================================================================
 
-def plot_summary(df, output_dir):
+def calculate_heuristic_row(model_name, model_group):
     """
-    Plot normalised F1 vs normalised total emissions for all models.
-    Each point is one complexity configuration.
+    Calculate the peak and sustainability-optimal configuration for one model.
     """
-    fig, ax = plt.subplots(figsize=(10, 7))
+    sorted_group = model_group.sort_values("parameter_value").reset_index(drop=True)
 
-    for model_name, group in df.groupby("model"):
-        color = MODEL_COLORS.get(model_name, "#888888")
-        total_co2 = (group["train_emissions"] + group["inference_emissions"]) * 1e6
+    peak_index = sorted_group["f1"].idxmax()
+    peak_row = sorted_group.loc[peak_index]
 
-        ax.scatter(total_co2, group["f1"], color=color, s=80, alpha=0.7,
-                   edgecolors="white", linewidth=0.8, label=model_name, zorder=5)
+    peak_f1 = peak_row["f1"]
+    peak_parameter_value = peak_row["parameter_value"]
+    peak_total_emissions = peak_row["train_emissions"] + peak_row["inference_emissions"]
 
-        ax.plot(total_co2, group["f1"], "-", color=color, alpha=0.3, linewidth=1.5)
+    threshold_f1 = peak_f1 * 0.99
+    optimal_row = sorted_group[sorted_group["f1"] >= threshold_f1].iloc[0]
 
-        param = group["parameter_value"].values
-        ax.annotate(f"{param[0]}", (total_co2.iloc[0], group["f1"].iloc[0]),
-                    fontsize=8, color=color, fontweight="bold",
-                    textcoords="offset points", xytext=(-15, -12))
-        ax.annotate(f"{param[-1]}", (total_co2.iloc[-1], group["f1"].iloc[-1]),
-                    fontsize=8, color=color, fontweight="bold",
-                    textcoords="offset points", xytext=(5, 5))
+    optimal_parameter_value = optimal_row["parameter_value"]
+    optimal_f1 = optimal_row["f1"]
+    optimal_total_emissions = (
+        optimal_row["train_emissions"] + optimal_row["inference_emissions"]
+    )
 
-    ax.set_xlabel("Total CO₂ Emissions (µg) - Training + Inference", fontsize=12)
-    ax.set_ylabel("F1-Score", fontsize=12)
-    ax.set_title("Detection Performance vs Environmental Cost\n"
-                 "Each point = one complexity configuration",
-                 fontsize=13, fontweight="bold", pad=15)
-    ax.legend(fontsize=11, loc="lower right")
-    ax.grid(alpha=0.2)
-    style_ax(ax)
+    f1_loss_percent = (peak_f1 - optimal_f1) / peak_f1 * 100
+    emissions_saved_percent = (
+        (peak_total_emissions - optimal_total_emissions) / peak_total_emissions * 100
+    )
 
-    fig.tight_layout()
-    filepath = os.path.join(output_dir, "complexity_summary.png")
-    plt.savefig(filepath, dpi=300, bbox_inches="tight")
-    plt.close()
-    print(f"  Saved: {filepath}")
+    parameter_name = sorted_group["parameter_name"].iloc[0]
+
+    return {
+        "model": model_name,
+        "parameter": parameter_name,
+        "peak_value": int(peak_parameter_value),
+        "peak_f1": peak_f1,
+        "peak_co2_ug": peak_total_emissions * 1e6,
+        "optimal_value": int(optimal_parameter_value),
+        "optimal_f1": optimal_f1,
+        "optimal_co2_ug": optimal_total_emissions * 1e6,
+        "f1_loss_pct": f1_loss_percent,
+        "co2_saved_pct": emissions_saved_percent,
+    }
 
 
-# ============================================================================
-# HEURISTICS TABLE
-# ============================================================================
+def print_heuristic_row(row):
+    """Print one model's heuristic summary."""
+    print(f"\n  {row['model']}:")
+    print(
+        f"    Peak:    {row['parameter']}={row['peak_value']:>4} "
+        f"→ F1={row['peak_f1']:.4f}, CO₂={row['peak_co2_ug']:.1f}µg"
+    )
+    print(
+        f"    Optimal: {row['parameter']}={row['optimal_value']:>4} "
+        f"→ F1={row['optimal_f1']:.4f}, CO₂={row['optimal_co2_ug']:.1f}µg"
+    )
+    print(
+        f"    Saving:  {row['co2_saved_pct']:.1f}% less CO₂ "
+        f"for {row['f1_loss_pct']:.2f}% F1 loss"
+    )
 
-def compute_heuristics(df):
+
+def compute_heuristics(dataframe):
     """
-    For each model, find the sustainability-optimal configuration:
-    the lowest complexity that achieves >= 99% of peak F1.
+    For each model, find the lowest complexity that reaches 99% of peak F1.
     """
     print("\n" + "=" * 80)
     print("SUSTAINABILITY HEURISTICS")
     print("=" * 80)
 
-    rows = []
+    heuristic_rows = []
 
-    for model_name, group in df.groupby("model"):
-        group = group.sort_values("parameter_value").reset_index(drop=True)
-
-        peak_idx = group["f1"].idxmax()
-        peak_f1 = group.loc[peak_idx, "f1"]
-        peak_param = group.loc[peak_idx, "parameter_value"]
-        peak_train_co2 = group.loc[peak_idx, "train_emissions"]
-        peak_infer_co2 = group.loc[peak_idx, "inference_emissions"]
-        peak_total_co2 = peak_train_co2 + peak_infer_co2
-
-        threshold = peak_f1 * 0.99
-        optimal = group[group["f1"] >= threshold].iloc[0]
-        opt_param = optimal["parameter_value"]
-        opt_f1 = optimal["f1"]
-        opt_total_co2 = optimal["train_emissions"] + optimal["inference_emissions"]
-
-        f1_loss = (peak_f1 - opt_f1) / peak_f1 * 100
-        co2_saved = (peak_total_co2 - opt_total_co2) / peak_total_co2 * 100
-
-        param_name = group["parameter_name"].iloc[0]
-
-        print(f"\n  {model_name}:")
-        print(f"    Peak:    {param_name}={int(peak_param):>4} → F1={peak_f1:.4f}, "
-              f"CO₂={peak_total_co2*1e6:.1f}µg")
-        print(f"    Optimal: {param_name}={int(opt_param):>4} → F1={opt_f1:.4f}, "
-              f"CO₂={opt_total_co2*1e6:.1f}µg")
-        print(f"    Saving:  {co2_saved:.1f}% less CO₂ for {f1_loss:.2f}% F1 loss")
-
-        rows.append({
-            "model": model_name,
-            "parameter": param_name,
-            "peak_value": int(peak_param),
-            "peak_f1": peak_f1,
-            "peak_co2_ug": peak_total_co2 * 1e6,
-            "optimal_value": int(opt_param),
-            "optimal_f1": opt_f1,
-            "optimal_co2_ug": opt_total_co2 * 1e6,
-            "f1_loss_pct": f1_loss,
-            "co2_saved_pct": co2_saved,
-        })
+    for model_name, model_group in dataframe.groupby("model"):
+        row = calculate_heuristic_row(model_name, model_group)
+        print_heuristic_row(row)
+        heuristic_rows.append(row)
 
     print("=" * 80)
 
-    heuristics_df = pd.DataFrame(rows)
-    heuristics_path = "results/complexity_heuristics.csv"
-    heuristics_df.to_csv(heuristics_path, index=False)
-    print(f"\nHeuristics saved to {heuristics_path}")
+    heuristics_dataframe = pd.DataFrame(heuristic_rows)
+    output_path = "results/complexity_heuristics.csv"
+    heuristics_dataframe.to_csv(output_path, index=False)
 
-    return heuristics_df
+    print(f"\nHeuristics saved to {output_path}")
+    return heuristics_dataframe
 
 
 # ============================================================================
-# LINEAR REGRESSION HELPERS
+# REGRESSION HELPERS
 # ============================================================================
 
-def fit_regression(x, y):
-    """Fit OLS linear regression and return results dict."""
-    x = np.array(x, dtype=float)
-    y = np.array(y, dtype=float)
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+def fit_regression(x_values, y_values):
+    """Fit a simple linear regression and return the coefficients."""
+    x_array = np.array(x_values, dtype=float)
+    y_array = np.array(y_values, dtype=float)
+
+    slope, intercept, r_value, p_value, standard_error = stats.linregress(
+        x_array,
+        y_array,
+    )
+
     return {
         "slope": slope,
         "intercept": intercept,
         "r_squared": r_value ** 2,
         "p_value": p_value,
-        "std_err": std_err,
+        "std_err": standard_error,
     }
 
 
-def _plot_model_regression(ax, x, y, reg, model_name):
-    """Scatter + regression line for one model on one axes."""
-    color = MODEL_COLORS.get(model_name, "#888888")
-    marker = MARKERS.get(model_name, "o")
+def plot_regression_line(axis, x_values, regression_result, color):
+    """Plot a dashed regression line."""
+    x_line = np.linspace(min(x_values), max(x_values), 100)
+    y_line = regression_result["slope"] * x_line + regression_result["intercept"]
 
-    ax.scatter(x, y, color=color, marker=marker, s=60, zorder=5,
-               label=f'{model_name} (R$^2$={reg["r_squared"]:.4f})')
-    x_line = np.linspace(min(x), max(x), 100)
-    ax.plot(x_line, reg["slope"] * x_line + reg["intercept"],
-            color=color, linestyle="--", linewidth=1.5)
+    axis.plot(
+        x_line,
+        y_line,
+        color=color,
+        linestyle="--",
+        linewidth=1.5,
+    )
+
+
+def plot_model_regression_points(axis, x_values, y_values, regression_result, model_name):
+    """Plot scatter points and a regression line for one model."""
+    model_color = MODEL_COLORS.get(model_name, "#888888")
+    marker = MODEL_MARKERS.get(model_name, "o")
+
+    axis.scatter(
+        x_values,
+        y_values,
+        color=model_color,
+        marker=marker,
+        s=60,
+        zorder=5,
+        label=f'{model_name} (R$^2$={regression_result["r_squared"]:.4f})',
+    )
+
+    plot_regression_line(axis, x_values, regression_result, model_color)
 
 
 # ============================================================================
-# COMPUTE ALL REGRESSIONS + SAVE CSV
+# REGRESSION CSV
 # ============================================================================
 
-def compute_regressions(df):
-    """
-    Fit linear regressions for all model/metric combinations.
-    Returns list of dicts and saves to results/complexity_regression.csv.
-    """
-    rows = []
-
-    metrics = {
-        "train_co2":  "train_emissions",
-        "infer_co2":  "inference_emissions",
+def get_regression_metric_mapping():
+    """Return the mapping between output metric names and dataframe columns."""
+    return {
+        "train_co2": "train_emissions",
+        "infer_co2": "inference_emissions",
         "train_time": "train_time",
         "infer_time": "inference_time",
     }
+
+
+def build_regression_row(model_name, parameter_name, metric_key, regression_result):
+    """Build one regression-results row."""
+    phase_name = "training" if "train" in metric_key else "inference"
+    measure_name = "co2_kg" if "co2" in metric_key else "time_s"
+
+    return {
+        "model": model_name,
+        "complexity_parameter": parameter_name,
+        "metric": f"{phase_name}_{measure_name}",
+        "slope": regression_result["slope"],
+        "intercept": regression_result["intercept"],
+        "r_squared": regression_result["r_squared"],
+        "p_value": regression_result["p_value"],
+        "std_err": regression_result["std_err"],
+    }
+
+
+def print_regression_result(model_name, phase_name, measure_name, parameter_name, regression_result):
+    """Print one regression equation."""
+    print(f"  {model_name} {phase_name} {measure_name}:")
+    print(
+        f"    y = {regression_result['slope']:.6e} * "
+        f"{parameter_name} + {regression_result['intercept']:.6e}"
+    )
+    print(
+        f"    R^2 = {regression_result['r_squared']:.6f},  "
+        f"p = {regression_result['p_value']:.2e}"
+    )
+
+
+def compute_regressions(dataframe):
+    """
+    Fit linear regressions for every model and every tracked metric.
+    """
+    regression_rows = []
+    metric_mapping = get_regression_metric_mapping()
 
     print("\n" + "=" * 80)
     print("LINEAR REGRESSION: All Scaling Laws")
     print("=" * 80)
 
-    for model_name, group in df.groupby("model"):
-        group = group.sort_values("parameter_value")
-        x = group["parameter_value"].values
-        param_name = group["parameter_name"].iloc[0]
+    for model_name, model_group in dataframe.groupby("model"):
+        sorted_group = model_group.sort_values("parameter_value")
+        x_values = sorted_group["parameter_value"].values
+        parameter_name = sorted_group["parameter_name"].iloc[0]
 
-        for metric_key, col_name in metrics.items():
-            y = group[col_name].values
-            reg = fit_regression(x, y)
+        for metric_key, column_name in metric_mapping.items():
+            y_values = sorted_group[column_name].values
+            regression_result = fit_regression(x_values, y_values)
 
-            phase = "training" if "train" in metric_key else "inference"
-            measure = "co2_kg" if "co2" in metric_key else "time_s"
+            phase_name = "training" if "train" in metric_key else "inference"
+            measure_name = "co2_kg" if "co2" in metric_key else "time_s"
 
-            rows.append({
-                "model": model_name,
-                "complexity_parameter": param_name,
-                "metric": f"{phase}_{measure}",
-                "slope": reg["slope"],
-                "intercept": reg["intercept"],
-                "r_squared": reg["r_squared"],
-                "p_value": reg["p_value"],
-                "std_err": reg["std_err"],
-            })
+            print_regression_result(
+                model_name,
+                phase_name,
+                measure_name,
+                parameter_name,
+                regression_result,
+            )
 
-            print(f"  {model_name} {phase} {measure}:")
-            print(f"    y = {reg['slope']:.6e} * {param_name} + {reg['intercept']:.6e}")
-            print(f"    R^2 = {reg['r_squared']:.6f},  p = {reg['p_value']:.2e}")
+            regression_row = build_regression_row(
+                model_name,
+                parameter_name,
+                metric_key,
+                regression_result,
+            )
+
+            regression_rows.append(regression_row)
 
     print("=" * 80)
 
-    reg_df = pd.DataFrame(rows)
-    reg_path = "results/complexity_regression.csv"
-    reg_df.to_csv(reg_path, index=False)
-    print(f"\nRegression constants saved to {reg_path}")
+    regression_dataframe = pd.DataFrame(regression_rows)
+    output_path = "results/complexity_regression.csv"
+    regression_dataframe.to_csv(output_path, index=False)
 
-    return reg_df
+    print(f"\nRegression constants saved to {output_path}")
+    return regression_dataframe
 
 
 # ============================================================================
-# REGRESSION CHART: TREE MODELS (RF + LightGBM overlay)
+# REGRESSION CHARTS
 # ============================================================================
 
-def plot_regression_tree(df, output_dir):
+def configure_regression_axis(axis, x_label, y_label, title):
+    """Set labels, title, grid, and styling for a regression axis."""
+    axis.set_xlabel(x_label, fontsize=10)
+    axis.set_ylabel(y_label, fontsize=10)
+    axis.set_title(title, fontsize=11)
+    axis.legend(fontsize=9)
+    axis.grid(True, alpha=0.2)
+    style_axis(axis)
+
+
+def plot_tree_regression_panel(axis, dataframe, emission_column, y_label, title):
+    """Plot one regression panel for the tree models."""
+    tree_model_names = ["Random Forest", "LightGBM"]
+    tree_dataframe = dataframe[dataframe["model"].isin(tree_model_names)]
+
+    for model_name in tree_model_names:
+        model_group = tree_dataframe[tree_dataframe["model"] == model_name]
+        sorted_group = model_group.sort_values("parameter_value")
+
+        x_values = sorted_group["parameter_value"].values
+        y_values = sorted_group[emission_column].values
+        regression_result = fit_regression(x_values, y_values)
+
+        plot_model_regression_points(
+            axis,
+            x_values,
+            y_values,
+            regression_result,
+            model_name,
+        )
+
+    configure_regression_axis(
+        axis,
+        get_parameter_label("n_estimators"),
+        y_label,
+        title,
+    )
+
+
+def plot_regression_tree(dataframe, output_dir):
     """
-    Two-panel overlay: RF and LightGBM on shared axes.
-    Left = training CO₂, Right = inference CO₂.
+    Plot training and inference CO2 scaling for Random Forest and LightGBM.
     """
-    tree_models = ["Random Forest", "LightGBM"]
-    df_tree = df[df["model"].isin(tree_models)]
+    figure, axes = plt.subplots(1, 2, figsize=(14, 6))
+    figure.suptitle(
+        "CO$_2$ Emissions Scale for Tree Models",
+        fontsize=13,
+        fontweight="bold",
+    )
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-    fig.suptitle("CO$_2$ Emissions Scale for Tree Models",
-                 fontsize=13, fontweight="bold")
+    plot_tree_regression_panel(
+        axes[0],
+        dataframe,
+        "train_emissions",
+        "Training CO$_2$ (kg)",
+        "Training CO$_2$ vs Complexity",
+    )
 
-    for col, (emission_col, ylabel, subtitle) in enumerate([
-        ("train_emissions",     "Training CO$_2$ (kg)",   "Training CO$_2$ vs Complexity"),
-        ("inference_emissions", "Inference CO$_2$ (kg)",  "Inference CO$_2$ vs Complexity"),
-    ]):
-        ax = axes[col]
-
-        for model_name in tree_models:
-            group = df_tree[df_tree["model"] == model_name].sort_values("parameter_value")
-            x = group["parameter_value"].values
-            y = group[emission_col].values
-            reg = fit_regression(x, y)
-            _plot_model_regression(ax, x, y, reg, model_name)
-
-        ax.set_xlabel(PARAM_LABELS.get("n_estimators"), fontsize=10)
-        ax.set_ylabel(ylabel, fontsize=10)
-        ax.set_title(subtitle, fontsize=11)
-        ax.legend(fontsize=9)
-        ax.grid(True, alpha=0.2)
-        style_ax(ax)
+    plot_tree_regression_panel(
+        axes[1],
+        dataframe,
+        "inference_emissions",
+        "Inference CO$_2$ (kg)",
+        "Inference CO$_2$ vs Complexity",
+    )
 
     plt.tight_layout()
-    filepath = os.path.join(output_dir, "complexity_co2_regression_tree.png")
-    plt.savefig(filepath, dpi=300, bbox_inches="tight")
-    plt.close()
-    print(f"  Saved: {filepath}")
+
+    output_path = os.path.join(output_dir, "complexity_co2_regression_tree.png")
+    save_figure(output_path)
 
 
-# ============================================================================
-# REGRESSION CHART: LSTM (separate due to different complexity parameter)
-# ============================================================================
+def plot_lstm_regression_panel(axis, lstm_dataframe, emission_column, y_label, title):
+    """Plot one regression panel for the LSTM model."""
+    if lstm_dataframe.empty:
+        return
 
-def plot_regression_lstm(df, output_dir):
+    x_values = lstm_dataframe["parameter_value"].values
+    parameter_name = lstm_dataframe["parameter_name"].iloc[0]
+    y_values = lstm_dataframe[emission_column].values
+
+    regression_result = fit_regression(x_values, y_values)
+
+    plot_model_regression_points(
+        axis,
+        x_values,
+        y_values,
+        regression_result,
+        "LSTM",
+    )
+
+    configure_regression_axis(
+        axis,
+        get_parameter_label(parameter_name),
+        y_label,
+        title,
+    )
+
+
+def plot_regression_lstm(dataframe, output_dir):
     """
-    Two-panel LSTM only: training CO₂ and inference CO₂ vs hidden units.
+    Plot training and inference CO2 scaling for the LSTM model.
     """
-    df_lstm = df[df["model"] == "LSTM"].sort_values("parameter_value")
-    if df_lstm.empty:
+    lstm_dataframe = dataframe[dataframe["model"] == "LSTM"].sort_values("parameter_value")
+
+    if lstm_dataframe.empty:
         print("  No LSTM data found, skipping.")
         return
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-    fig.suptitle("CO$_2$ Emissions Scale for LSTM",
-                 fontsize=13, fontweight="bold")
+    figure, axes = plt.subplots(1, 2, figsize=(14, 6))
+    figure.suptitle(
+        "CO$_2$ Emissions Scale for LSTM",
+        fontsize=13,
+        fontweight="bold",
+    )
 
-    x = df_lstm["parameter_value"].values
-    param_name = df_lstm["parameter_name"].iloc[0]
+    plot_lstm_regression_panel(
+        axes[0],
+        lstm_dataframe,
+        "train_emissions",
+        "Training CO$_2$ (kg)",
+        "Training CO$_2$ vs Complexity",
+    )
 
-    for col, (emission_col, ylabel, subtitle) in enumerate([
-        ("train_emissions",     "Training CO$_2$ (kg)",   "Training CO$_2$ vs Complexity"),
-        ("inference_emissions", "Inference CO$_2$ (kg)",  "Inference CO$_2$ vs Complexity"),
-    ]):
-        ax = axes[col]
-        y = df_lstm[emission_col].values
-        reg = fit_regression(x, y)
-        _plot_model_regression(ax, x, y, reg, "LSTM")
-
-        ax.set_xlabel(PARAM_LABELS.get(param_name, param_name), fontsize=10)
-        ax.set_ylabel(ylabel, fontsize=10)
-        ax.set_title(subtitle, fontsize=11)
-        ax.legend(fontsize=9)
-        ax.grid(True, alpha=0.2)
-        style_ax(ax)
+    plot_lstm_regression_panel(
+        axes[1],
+        lstm_dataframe,
+        "inference_emissions",
+        "Inference CO$_2$ (kg)",
+        "Inference CO$_2$ vs Complexity",
+    )
 
     plt.tight_layout()
-    filepath = os.path.join(output_dir, "complexity_co2_regression_lstm.png")
-    plt.savefig(filepath, dpi=300, bbox_inches="tight")
-    plt.close()
-    print(f"  Saved: {filepath}")
+
+    output_path = os.path.join(output_dir, "complexity_co2_regression_lstm.png")
+    save_figure(output_path)
 
 
 # ============================================================================
@@ -435,29 +741,26 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     print("Loading sweep results...")
-    df = pd.read_csv(INPUT_CSV)
-    print(f"  {len(df)} configurations loaded")
+    sweep_dataframe = load_sweep_results(INPUT_CSV)
+    print(f"  {len(sweep_dataframe)} configurations loaded")
 
-    # Individual model charts
     print("\nGenerating individual model charts...")
-    for model_name in df["model"].unique():
-        df_model = df[df["model"] == model_name].sort_values("parameter_value")
-        plot_model_dual_axis(df_model, model_name, OUTPUT_DIR)
+    for model_name in sweep_dataframe["model"].unique():
+        model_dataframe = sweep_dataframe[
+            sweep_dataframe["model"] == model_name
+        ].sort_values("parameter_value")
 
-    # Summary chart
+        plot_model_dual_axis(model_dataframe, model_name, OUTPUT_DIR)
+
     print("\nGenerating summary chart...")
-    plot_summary(df, OUTPUT_DIR)
+    plot_summary(sweep_dataframe, OUTPUT_DIR)
 
-    # Heuristics
-    compute_heuristics(df)
+    compute_heuristics(sweep_dataframe)
+    compute_regressions(sweep_dataframe)
 
-    # Regression constants CSV (all models, all metrics)
-    compute_regressions(df)
-
-    # CO₂ regression charts
     print("\nGenerating regression charts...")
-    plot_regression_tree(df, OUTPUT_DIR)
-    plot_regression_lstm(df, OUTPUT_DIR)
+    plot_regression_tree(sweep_dataframe, OUTPUT_DIR)
+    plot_regression_lstm(sweep_dataframe, OUTPUT_DIR)
 
 
 if __name__ == "__main__":

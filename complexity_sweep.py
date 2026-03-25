@@ -1,37 +1,44 @@
 """
-complexity_sweep.py — Map complexity parameters to emissions and F1.
+complexity_sweep.py — Measure how model complexity affects performance and emissions.
 
-PURPOSE: For each model, vary the key complexity parameter while holding
-         everything else constant. Record F1 and CO₂ at each step.
+This script tests three models:
+1. Random Forest
+2. LightGBM
+3. LSTM
 
-         Random Forest:  n_estimators  (10, 25, 50, 75, 100, 150, 200, 300)
-         LightGBM:       n_estimators  (10, 25, 50, 75, 100, 150, 200, 300)
-         LSTM:           hidden_units  (16, 32, 64, 128, 256)
+For each model, it changes one complexity setting while keeping the others fixed:
+- Random Forest: number of trees
+- LightGBM: number of trees
+- LSTM: number of hidden units
 
-         All parameters directly affect inference cost:
-           - More trees = more predictions to aggregate
-           - More LSTM units = larger weight matrices to compute
-
-OUTPUT:  results/complexity_sweep.csv
-
-USAGE:   python complexity_sweep.py
+For every configuration, it records:
+- F1
+- Precision
+- Recall
+- False Positive Rate
+- Training time
+- Training emissions
+- Inference time
+- Inference emissions
 """
 
 import os
 import time
+import warnings
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+
 from codecarbon import EmissionsTracker
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.utils.class_weight import compute_class_weight
-from sklearn.linear_model import LinearRegression
-import warnings
+
 warnings.filterwarnings("ignore")
 
+
 # ============================================================================
-# CONFIGURATION — UPDATE THESE PATHS TO MATCH YOUR PROJECT
+# CONFIGURATION
 # ============================================================================
 
 TRAIN_CSV = "final_datasets/supervised_learning_dataset.csv"
@@ -39,426 +46,687 @@ TEST_CSV = "final_datasets/lmd2023_test_dataset.csv"
 LSTM_TRAIN_CSV = "final_datasets/lstm_train_sequenced.csv"
 LSTM_TEST_CSV = "final_datasets/lstm_test_sequenced.csv"
 
+FEATURES_CSV = "src/05_final_selected_features.csv"
 OUTPUT_CSV = "results/complexity_sweep.csv"
 
+LABEL_COLUMN = "isMalicious"
+GROUP_COLUMN = "Computer"
 RANDOM_STATE = 42
-LABEL_COL = "isMalicious"
 
-RF_ESTIMATORS = [10, 25, 50, 75, 100, 150, 200, 300]
-LGBM_ESTIMATORS = [10, 25, 50, 75, 100, 150, 200, 300]
-LSTM_UNITS = [16, 32, 64, 128, 256, 512]
+RF_ESTIMATOR_VALUES = [10, 25, 50, 75, 100, 150, 200, 300]
+LGBM_ESTIMATOR_VALUES = [10, 25, 50, 75, 100, 150, 200, 300]
+LSTM_HIDDEN_UNIT_VALUES = [16, 32, 64, 128, 256]
 
 LSTM_WINDOW_SIZE = 10
 LSTM_BATCH_SIZE = 256
 LSTM_EPOCHS = 10
 LSTM_PATIENCE = 3
 
-features_df = pd.read_csv("src/05_final_selected_features.csv")
-FEATURE_COLS = features_df["Feature"].tolist()
+selected_features_dataframe = pd.read_csv(FEATURES_CSV)
+FEATURE_COLUMNS = selected_features_dataframe["Feature"].tolist()
 
 
 # ============================================================================
-# HELPERS
+# GENERAL HELPER FUNCTIONS
+# ============================================================================
+
+def print_section(title):
+    """Print a section heading."""
+    print("\n" + "=" * 60)
+    print(title)
+    print("=" * 60)
+
+
+def load_csv_file(file_path):
+    """Load a CSV file."""
+    return pd.read_csv(file_path, low_memory=False)
+
+
+def replace_unknown_category(value, known_classes, fallback_class):
+    """Replace unseen categories with a fallback class."""
+    if value in known_classes:
+        return value
+    return fallback_class
+
+
+def record_result(
+    results,
+    model_name,
+    parameter_name,
+    parameter_value,
+    f1,
+    precision,
+    recall,
+    false_positive_rate,
+    training_time,
+    training_emissions,
+    inference_time,
+    inference_emissions,
+):
+    """Store one model result in the results list."""
+    results.append(
+        {
+            "model": model_name,
+            "parameter_name": parameter_name,
+            "parameter_value": parameter_value,
+            "f1": f1,
+            "precision": precision,
+            "recall": recall,
+            "fpr": false_positive_rate,
+            "train_time": training_time,
+            "train_emissions": training_emissions,
+            "inference_time": inference_time,
+            "inference_emissions": inference_emissions,
+        }
+    )
+
+
+def calculate_classification_metrics(true_labels, predicted_labels):
+    """Calculate the main evaluation metrics."""
+    f1 = f1_score(true_labels, predicted_labels, average="binary")
+    precision = precision_score(true_labels, predicted_labels, average="binary", zero_division=0)
+    recall = recall_score(true_labels, predicted_labels, average="binary", zero_division=0)
+
+    tn, fp, fn, tp = confusion_matrix(true_labels, predicted_labels).ravel()
+    false_positive_rate = fp / (fp + tn) if (fp + tn) > 0 else 0
+
+    return f1, precision, recall, false_positive_rate
+
+
+def run_with_emissions_tracking(function_to_run, project_name, *args, **kwargs):
+    """
+    Run a function while measuring time and emissions.
+
+    Returns:
+    - function result
+    - elapsed time
+    - emissions
+    """
+    tracker = EmissionsTracker(project_name=project_name, log_level="error")
+    tracker.start()
+
+    start_time = time.time()
+    function_result = function_to_run(*args, **kwargs)
+    elapsed_time = time.time() - start_time
+
+    emissions = tracker.stop()
+
+    return function_result, elapsed_time, emissions
+
+
+def save_results_to_csv(results, output_csv_path):
+    """Save all results to CSV."""
+    results_dataframe = pd.DataFrame(results)
+    results_dataframe.to_csv(output_csv_path, index=False)
+    return results_dataframe
+
+
+# ============================================================================
+# SUPERVISED DATA HELPERS
 # ============================================================================
 
 def load_supervised_data():
-    """Load supervised learning train/test data as DataFrames."""
-    print("Loading supervised data...")
-    train = pd.read_csv(TRAIN_CSV)
-    test = pd.read_csv(TEST_CSV)
+    """
+    Load the train and test datasets used by Random Forest and LightGBM.
 
-    y_train = train[LABEL_COL].values
-    X_train = train.drop(columns=[LABEL_COL])
+    Returns:
+    - X_train
+    - y_train
+    - X_test
+    - y_test
+    """
+    print("Loading supervised train and test data...")
 
-    y_test = test[LABEL_COL].values
-    X_test = test.drop(columns=[LABEL_COL])
+    training_dataframe = load_csv_file(TRAIN_CSV)
+    testing_dataframe = load_csv_file(TEST_CSV)
 
-    print(f"  Train: {X_train.shape[0]:,} rows, {X_train.shape[1]} features")
-    print(f"  Test:  {X_test.shape[0]:,} rows, {X_test.shape[1]} features")
+    X_train = training_dataframe.drop(columns=[LABEL_COLUMN])
+    y_train = training_dataframe[LABEL_COLUMN].values
+
+    X_test = testing_dataframe.drop(columns=[LABEL_COLUMN])
+    y_test = testing_dataframe[LABEL_COLUMN].values
+
+    print(f"  Train rows: {len(X_train):,} | Features: {X_train.shape[1]}")
+    print(f"  Test rows:  {len(X_test):,} | Features: {X_test.shape[1]}")
 
     return X_train, y_train, X_test, y_test
 
 
-def encode_data(X_train, X_test):
+def encode_categorical_columns(X_train, X_test):
     """
-    Label-encode categorical columns, matching the model implementations.
-    Fitted on training data only. Unknown test categories mapped to the
-    first known class (same behaviour as RandomForestModel._encode).
+    Label-encode categorical columns using training data only.
+    Unknown test categories are mapped to the first known class.
     """
-    print("Encoding categorical features...")
-    X_train_enc = X_train.copy()
-    X_test_enc = X_test.copy()
-    encoders = {}
+    print("Encoding categorical columns...")
 
-    categorical_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
+    encoded_X_train = X_train.copy()
+    encoded_X_test = X_test.copy()
+    encoders_by_column = {}
 
-    for col in categorical_cols:
-        le = LabelEncoder()
-        X_train_enc[col] = le.fit_transform(X_train[col].astype(str))
+    categorical_columns = X_train.select_dtypes(include=["object"]).columns.tolist()
 
-        known = set(le.classes_)
-        X_test_enc[col] = X_test[col].astype(str).apply(
-            lambda x: x if x in known else le.classes_[0]
+    for column_name in categorical_columns:
+        label_encoder = LabelEncoder()
+
+        encoded_X_train[column_name] = label_encoder.fit_transform(
+            X_train[column_name].astype(str)
         )
-        X_test_enc[col] = le.transform(X_test_enc[col])
 
-        encoders[col] = le
+        known_classes = set(label_encoder.classes_)
+        fallback_class = label_encoder.classes_[0]
 
-    print(f"  Encoded {len(categorical_cols)} categorical columns: {categorical_cols}")
-
-    return X_train_enc.values, X_test_enc.values, encoders
-
-
-def compute_metrics(y_true, y_pred):
-    """Compute F1, precision, recall, FPR."""
-    f1 = f1_score(y_true, y_pred, average="binary")
-    prec = precision_score(y_true, y_pred, average="binary", zero_division=0)
-    rec = recall_score(y_true, y_pred, average="binary", zero_division=0)
-
-    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
-    fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
-
-    return f1, prec, rec, fpr
-
-
-def append_result(results, model, param_name, param_value,
-                  f1, prec, rec, fpr,
-                  train_time, train_emissions,
-                  inference_time, inference_emissions):
-    """Append one sweep result."""
-    results.append({
-        "model": model,
-        "parameter_name": param_name,
-        "parameter_value": param_value,
-        "f1": f1,
-        "precision": prec,
-        "recall": rec,
-        "fpr": fpr,
-        "train_time": train_time,
-        "train_emissions": train_emissions,
-        "inference_time": inference_time,
-        "inference_emissions": inference_emissions,
-    })
-
-
-# ============================================================================
-# RANDOM FOREST SWEEP
-# ============================================================================
-
-def sweep_rf(X_train, y_train, X_test, y_test, results):
-    """Sweep Random Forest over n_estimators."""
-    print("\n" + "=" * 60)
-    print("RANDOM FOREST SWEEP: n_estimators")
-    print("=" * 60)
-
-    for n in RF_ESTIMATORS:
-        print(f"\n  n_estimators = {n}")
-
-        tracker = EmissionsTracker(project_name=f"rf_sweep_{n}", log_level="error")
-        tracker.start()
-        t0 = time.time()
-
-        model = RandomForestClassifier(
-            n_estimators=n,
-            class_weight="balanced",
-            max_features="sqrt",
-            random_state=RANDOM_STATE,
-            n_jobs=-1,
+        encoded_X_test[column_name] = X_test[column_name].astype(str).apply(
+            replace_unknown_category,
+            args=(known_classes, fallback_class),
         )
-        model.fit(X_train, y_train)
+        encoded_X_test[column_name] = label_encoder.transform(encoded_X_test[column_name])
 
-        train_time = time.time() - t0
-        train_emissions = tracker.stop()
+        encoders_by_column[column_name] = label_encoder
 
-        tracker = EmissionsTracker(project_name=f"rf_infer_{n}", log_level="error")
-        tracker.start()
-        t0 = time.time()
+    print(f"  Encoded {len(categorical_columns)} columns")
 
-        y_pred = model.predict(X_test)
-
-        inference_time = time.time() - t0
-        inference_emissions = tracker.stop()
-
-        f1, prec, rec, fpr = compute_metrics(y_test, y_pred)
-
-        print(f"    F1: {f1:.4f} | Train: {train_time:.2f}s ({train_emissions*1e6:.1f}µg) "
-              f"| Infer: {inference_time:.2f}s ({inference_emissions*1e6:.1f}µg)")
-
-        append_result(results, "Random Forest", "n_estimators", n,
-                      f1, prec, rec, fpr,
-                      train_time, train_emissions,
-                      inference_time, inference_emissions)
+    return encoded_X_train.values, encoded_X_test.values, encoders_by_column
 
 
 # ============================================================================
-# LIGHTGBM SWEEP
+# RANDOM FOREST
 # ============================================================================
 
-def sweep_lgbm(X_train, y_train, X_test, y_test, results):
-    """Sweep LightGBM over n_estimators."""
+def train_random_forest_model(X_train, y_train, number_of_estimators):
+    """Train a Random Forest model with a specific number of trees."""
+    model = RandomForestClassifier(
+        n_estimators=number_of_estimators,
+        class_weight="balanced",
+        max_features="sqrt",
+        random_state=RANDOM_STATE,
+        n_jobs=-1,
+    )
+    model.fit(X_train, y_train)
+    return model
+
+
+def predict_with_model(model, X_test):
+    """Run inference with a trained model."""
+    return model.predict(X_test)
+
+
+def sweep_random_forest(X_train, y_train, X_test, y_test, results):
+    """Test Random Forest across multiple tree counts."""
+    print_section("RANDOM FOREST SWEEP")
+
+    for number_of_estimators in RF_ESTIMATOR_VALUES:
+        print(f"\nTesting Random Forest with n_estimators = {number_of_estimators}")
+
+        trained_model, training_time, training_emissions = run_with_emissions_tracking(
+            train_random_forest_model,
+            f"rf_train_{number_of_estimators}",
+            X_train,
+            y_train,
+            number_of_estimators,
+        )
+
+        predictions, inference_time, inference_emissions = run_with_emissions_tracking(
+            predict_with_model,
+            f"rf_infer_{number_of_estimators}",
+            trained_model,
+            X_test,
+        )
+
+        f1, precision, recall, false_positive_rate = calculate_classification_metrics(
+            y_test, predictions
+        )
+
+        print(
+            f"  F1: {f1:.4f} | "
+            f"Train: {training_time:.2f}s ({training_emissions * 1e6:.1f}µg) | "
+            f"Infer: {inference_time:.2f}s ({inference_emissions * 1e6:.1f}µg)"
+        )
+
+        record_result(
+            results=results,
+            model_name="Random Forest",
+            parameter_name="n_estimators",
+            parameter_value=number_of_estimators,
+            f1=f1,
+            precision=precision,
+            recall=recall,
+            false_positive_rate=false_positive_rate,
+            training_time=training_time,
+            training_emissions=training_emissions,
+            inference_time=inference_time,
+            inference_emissions=inference_emissions,
+        )
+
+
+# ============================================================================
+# LIGHTGBM
+# ============================================================================
+
+def train_lightgbm_model(X_train, y_train, number_of_estimators):
+    """Train a LightGBM model with a specific number of trees."""
     from lightgbm import LGBMClassifier
 
-    print("\n" + "=" * 60)
-    print("LIGHTGBM SWEEP: n_estimators")
-    print("=" * 60)
+    model = LGBMClassifier(
+        n_estimators=number_of_estimators,
+        is_unbalance=True,
+        random_state=RANDOM_STATE,
+        verbose=-1,
+    )
+    model.fit(X_train, y_train)
+    return model
 
-    for n in LGBM_ESTIMATORS:
-        print(f"\n  n_estimators = {n}")
 
-        tracker = EmissionsTracker(project_name=f"lgbm_sweep_{n}", log_level="error")
-        tracker.start()
-        t0 = time.time()
+def sweep_lightgbm(X_train, y_train, X_test, y_test, results):
+    """Test LightGBM across multiple tree counts."""
+    print_section("LIGHTGBM SWEEP")
 
-        model = LGBMClassifier(
-            n_estimators=n,
-            is_unbalance=True,
-            random_state=RANDOM_STATE,
-            verbose=-1,
+    for number_of_estimators in LGBM_ESTIMATOR_VALUES:
+        print(f"\nTesting LightGBM with n_estimators = {number_of_estimators}")
+
+        trained_model, training_time, training_emissions = run_with_emissions_tracking(
+            train_lightgbm_model,
+            f"lgbm_train_{number_of_estimators}",
+            X_train,
+            y_train,
+            number_of_estimators,
         )
-        model.fit(X_train, y_train)
 
-        train_time = time.time() - t0
-        train_emissions = tracker.stop()
+        predictions, inference_time, inference_emissions = run_with_emissions_tracking(
+            predict_with_model,
+            f"lgbm_infer_{number_of_estimators}",
+            trained_model,
+            X_test,
+        )
 
-        tracker = EmissionsTracker(project_name=f"lgbm_infer_{n}", log_level="error")
-        tracker.start()
-        t0 = time.time()
+        f1, precision, recall, false_positive_rate = calculate_classification_metrics(
+            y_test, predictions
+        )
 
-        y_pred = model.predict(X_test)
+        print(
+            f"  F1: {f1:.4f} | "
+            f"Train: {training_time:.2f}s ({training_emissions * 1e6:.1f}µg) | "
+            f"Infer: {inference_time:.2f}s ({inference_emissions * 1e6:.1f}µg)"
+        )
 
-        inference_time = time.time() - t0
-        inference_emissions = tracker.stop()
-
-        f1, prec, rec, fpr = compute_metrics(y_test, y_pred)
-
-        print(f"    F1: {f1:.4f} | Train: {train_time:.2f}s ({train_emissions*1e6:.1f}µg) "
-              f"| Infer: {inference_time:.2f}s ({inference_emissions*1e6:.1f}µg)")
-
-        append_result(results, "LightGBM", "n_estimators", n,
-                      f1, prec, rec, fpr,
-                      train_time, train_emissions,
-                      inference_time, inference_emissions)
+        record_result(
+            results=results,
+            model_name="LightGBM",
+            parameter_name="n_estimators",
+            parameter_value=number_of_estimators,
+            f1=f1,
+            precision=precision,
+            recall=recall,
+            false_positive_rate=false_positive_rate,
+            training_time=training_time,
+            training_emissions=training_emissions,
+            inference_time=inference_time,
+            inference_emissions=inference_emissions,
+        )
 
 
 # ============================================================================
-# LSTM SWEEP
+# LSTM DATA PREPARATION
 # ============================================================================
 
-def encode_and_scale_lstm(df_train, df_test, feature_cols):
+def split_lstm_data_by_computer(train_dataframe, validation_fraction=0.2):
     """
-    LabelEncode + MinMaxScale the LSTM data, matching LSTMModel._encode
-    and LSTMModel._scale. Fitted on training data only.
+    Split LSTM training data by Computer so validation uses unseen machines.
     """
-    print("Encoding and scaling LSTM features...")
+    computer_ids = train_dataframe[GROUP_COLUMN].unique()
+
+    number_of_validation_computers = max(1, int(len(computer_ids) * validation_fraction))
+
+    random_generator = np.random.default_rng(RANDOM_STATE)
+    random_generator.shuffle(computer_ids)
+
+    validation_computers = computer_ids[:number_of_validation_computers]
+    training_computers = computer_ids[number_of_validation_computers:]
+
+    training_split = train_dataframe[
+        train_dataframe[GROUP_COLUMN].isin(training_computers)
+    ].copy()
+
+    validation_split = train_dataframe[
+        train_dataframe[GROUP_COLUMN].isin(validation_computers)
+    ].copy()
+
+    return training_split, validation_split, training_computers, validation_computers
+
+
+def encode_and_scale_lstm_data(training_dataframe, other_dataframe, feature_columns):
+    """
+    Label-encode categorical columns and MinMax-scale numeric values.
+    Fit on training data only, then apply to another dataset.
+    """
+    processed_training_dataframe = training_dataframe.copy()
+    processed_other_dataframe = other_dataframe.copy()
+
     label_encoders = {}
     scaler = MinMaxScaler()
 
-    train_enc = df_train.copy()
-    test_enc = df_test.copy()
+    categorical_columns = (
+        training_dataframe[feature_columns]
+        .select_dtypes(include=["object"])
+        .columns
+        .tolist()
+    )
 
-    categorical_cols = df_train[feature_cols].select_dtypes(include=["object"]).columns.tolist()
+    for column_name in categorical_columns:
+        label_encoder = LabelEncoder()
 
-    for col in categorical_cols:
-        le = LabelEncoder()
-        train_enc[col] = le.fit_transform(df_train[col].astype(str))
-
-        known = set(le.classes_)
-        test_enc[col] = df_test[col].astype(str).apply(
-            lambda x: x if x in known else le.classes_[0]
+        processed_training_dataframe[column_name] = label_encoder.fit_transform(
+            training_dataframe[column_name].astype(str)
         )
-        test_enc[col] = le.transform(test_enc[col])
 
-        label_encoders[col] = le
+        known_classes = set(label_encoder.classes_)
+        fallback_class = label_encoder.classes_[0]
 
-    train_enc[feature_cols] = scaler.fit_transform(train_enc[feature_cols])
-    test_enc[feature_cols] = scaler.transform(test_enc[feature_cols])
+        processed_other_dataframe[column_name] = other_dataframe[column_name].astype(str).apply(
+            replace_unknown_category,
+            args=(known_classes, fallback_class),
+        )
+        processed_other_dataframe[column_name] = label_encoder.transform(
+            processed_other_dataframe[column_name]
+        )
 
-    print(f"  Encoded {len(categorical_cols)} columns, scaled to [0, 1]")
+        label_encoders[column_name] = label_encoder
 
-    return train_enc, test_enc
+    processed_training_dataframe[feature_columns] = scaler.fit_transform(
+        processed_training_dataframe[feature_columns]
+    )
+    processed_other_dataframe[feature_columns] = scaler.transform(
+        processed_other_dataframe[feature_columns]
+    )
+
+    return processed_training_dataframe, processed_other_dataframe
 
 
-def build_sequences(df, feature_cols, window_size,
-                    label_col="isMalicious", group_col="Computer"):
+def create_lstm_sequences(
+    dataframe,
+    feature_columns,
+    window_size,
+    label_column=LABEL_COLUMN,
+    group_column=GROUP_COLUMN,
+):
     """
-    Build sliding windows grouped by Computer, matching LSTMModel.create_sequences.
-    No zero-padding — windows start at index (window_size - 1).
+    Create sliding window sequences for the LSTM.
+    Each sequence stays within one computer.
     """
-    X_windows = []
-    y_windows = []
+    sequence_features = []
+    sequence_labels = []
 
-    computers = df[group_col].unique()
-    print(f"  Creating sequences from {len(computers)} computers, window_size={window_size}")
+    computer_ids = dataframe[group_column].unique()
+    print(f"  Building sequences from {len(computer_ids)} computers")
 
-    for comp in computers:
-        comp_data = df[df[group_col] == comp]
-        features = comp_data[feature_cols].values
-        labels = comp_data[label_col].values
+    for computer_id in computer_ids:
+        computer_rows = dataframe[dataframe[group_column] == computer_id]
 
-        for i in range(len(features) - window_size + 1):
-            window = features[i : i + window_size]
-            label = labels[i + window_size - 1]
-            X_windows.append(window)
-            y_windows.append(label)
+        feature_values = computer_rows[feature_columns].values
+        label_values = computer_rows[label_column].values
 
-    X_seq = np.array(X_windows)
-    y_seq = np.array(y_windows)
+        for start_index in range(len(feature_values) - window_size + 1):
+            end_index = start_index + window_size
 
-    print(f"  Sequences: {X_seq.shape[0]:,} | Shape: {X_seq.shape}")
+            window = feature_values[start_index:end_index]
+            label = label_values[end_index - 1]
 
-    return X_seq, y_seq
+            sequence_features.append(window)
+            sequence_labels.append(label)
+
+    X_sequences = np.array(sequence_features)
+    y_sequences = np.array(sequence_labels)
+
+    print(f"  Total sequences: {X_sequences.shape[0]:,}")
+    print(f"  Sequence shape: {X_sequences.shape}")
+
+    return X_sequences, y_sequences
 
 
-def sweep_lstm(results):
-    """Sweep LSTM over hidden units."""
+def load_and_prepare_lstm_datasets():
+    """Load, split, encode, scale, and sequence the LSTM data."""
+    print("Loading LSTM datasets...")
+
+    full_training_dataframe = load_csv_file(LSTM_TRAIN_CSV)
+    full_test_dataframe = load_csv_file(LSTM_TEST_CSV)
+
+    training_split, validation_split, training_computers, validation_computers = (
+        split_lstm_data_by_computer(full_training_dataframe)
+    )
+
+    print(
+        f"  Train computers: {len(training_computers)} | "
+        f"Validation computers: {len(validation_computers)}"
+    )
+    print(
+        f"  Train rows: {len(training_split):,} | "
+        f"Validation rows: {len(validation_split):,}"
+    )
+
+    encoded_training_split, encoded_test_dataframe = encode_and_scale_lstm_data(
+        training_split,
+        full_test_dataframe,
+        FEATURE_COLUMNS,
+    )
+
+    _, encoded_validation_split = encode_and_scale_lstm_data(
+        training_split,
+        validation_split,
+        FEATURE_COLUMNS,
+    )
+
+    print("\nBuilding LSTM training sequences...")
+    X_train, y_train = create_lstm_sequences(
+        encoded_training_split,
+        FEATURE_COLUMNS,
+        LSTM_WINDOW_SIZE,
+    )
+
+    print("Building LSTM validation sequences...")
+    X_validation, y_validation = create_lstm_sequences(
+        encoded_validation_split,
+        FEATURE_COLUMNS,
+        LSTM_WINDOW_SIZE,
+    )
+
+    print("Building LSTM test sequences...")
+    X_test, y_test = create_lstm_sequences(
+        encoded_test_dataframe,
+        FEATURE_COLUMNS,
+        LSTM_WINDOW_SIZE,
+    )
+
+    y_train = y_train.astype(int)
+    y_validation = y_validation.astype(int)
+    y_test = y_test.astype(int)
+
+    return X_train, y_train, X_validation, y_validation, X_test, y_test
+
+
+def calculate_lstm_class_weights(y_train):
+    """Calculate balanced class weights for the LSTM."""
+    unique_classes = np.unique(y_train)
+    class_weight_values = compute_class_weight(
+        class_weight="balanced",
+        classes=unique_classes,
+        y=y_train,
+    )
+
+    class_weights = dict(zip(unique_classes.astype(int), class_weight_values))
+    return class_weights
+
+
+# ============================================================================
+# LSTM MODEL
+# ============================================================================
+
+def build_lstm_model(number_of_hidden_units, number_of_features):
+    """Create an LSTM model with the given hidden layer size."""
     import tensorflow as tf
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import LSTM, Dense, Dropout
+
+    model = Sequential(
+        [
+            LSTM(
+                number_of_hidden_units,
+                input_shape=(LSTM_WINDOW_SIZE, number_of_features),
+                return_sequences=False,
+            ),
+            Dropout(0.2),
+            Dense(32, activation="relu"),
+            Dropout(0.2),
+            Dense(1, activation="sigmoid"),
+        ]
+    )
+
+    model.compile(
+        optimizer="adam",
+        loss="binary_crossentropy",
+        metrics=["accuracy", "recall"],
+    )
+
+    return model
+
+
+def train_lstm_model(
+    model,
+    X_train,
+    y_train,
+    X_validation,
+    y_validation,
+    class_weights,
+):
+    """Train the LSTM model with early stopping."""
     from tensorflow.keras.callbacks import EarlyStopping
+
+    early_stopping = EarlyStopping(
+        monitor="val_loss",
+        patience=LSTM_PATIENCE,
+        restore_best_weights=True,
+    )
+
+    history = model.fit(
+        X_train,
+        y_train,
+        validation_data=(X_validation, y_validation),
+        epochs=LSTM_EPOCHS,
+        batch_size=LSTM_BATCH_SIZE,
+        class_weight=class_weights,
+        callbacks=[early_stopping],
+        verbose=0,
+    )
+
+    return history
+
+
+def predict_with_lstm(model, X_test, threshold=0.5):
+    """Generate binary predictions from LSTM probabilities."""
+    predicted_probabilities = model.predict(X_test, verbose=0)
+    predicted_labels = (predicted_probabilities.flatten() >= threshold).astype(int)
+    return predicted_labels
+
+
+def sweep_lstm(results):
+    """Test LSTM across multiple hidden-unit sizes."""
+    import tensorflow as tf
 
     os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
     tf.get_logger().setLevel("ERROR")
 
-    print("\n" + "=" * 60)
-    print("LSTM SWEEP: hidden_units")
-    print("=" * 60)
+    print_section("LSTM SWEEP")
 
-    # Load raw sequenced data
-    print("Loading LSTM sequenced data...")
-    train_df = pd.read_csv(LSTM_TRAIN_CSV, low_memory=False)
-    test_df = pd.read_csv(LSTM_TEST_CSV, low_memory=False)
+    X_train, y_train, X_validation, y_validation, X_test, y_test = (
+        load_and_prepare_lstm_datasets()
+    )
 
-    # Split training into train/val by Computer
-    computers = train_df["Computer"].unique()
-    n_val = max(1, int(len(computers) * 0.2))
-    rng = np.random.default_rng(RANDOM_STATE)
-    rng.shuffle(computers)
-    val_computers = computers[:n_val]
-    train_computers = computers[n_val:]
-
-    df_train = train_df[train_df["Computer"].isin(train_computers)].copy()
-    df_val = train_df[train_df["Computer"].isin(val_computers)].copy()
-
-    print(f"  Train computers: {len(train_computers)} | Val computers: {len(val_computers)}")
-    print(f"  Train rows: {len(df_train):,} | Val rows: {len(df_val):,}")
-
-    # Encode + scale (fitted on train only)
-    df_train_enc, test_df_enc = encode_and_scale_lstm(df_train, test_df, FEATURE_COLS)
-    _, df_val_enc = encode_and_scale_lstm(df_train, df_val, FEATURE_COLS)
-
-    # Build sequences once (shared across all unit configurations)
-    print("\nBuilding training sequences...")
-    X_train, y_train = build_sequences(df_train_enc, FEATURE_COLS, LSTM_WINDOW_SIZE)
-
-    print("Building validation sequences...")
-    X_val, y_val = build_sequences(df_val_enc, FEATURE_COLS, LSTM_WINDOW_SIZE)
-
-    print("Building test sequences...")
-    X_test, y_test = build_sequences(test_df_enc, FEATURE_COLS, LSTM_WINDOW_SIZE)
-
-    y_train = y_train.astype(int)
-    y_val = y_val.astype(int)
-    y_test = y_test.astype(int)
-
-    # Class weights
-    classes = np.unique(y_train)
-    weights = compute_class_weight("balanced", classes=classes, y=y_train)
-    class_weights = dict(zip(classes.astype(int), weights))
+    class_weights = calculate_lstm_class_weights(y_train)
     print(f"  Class weights: {class_weights}")
 
-    # Sweep over hidden units
-    for units in LSTM_UNITS:
-        print(f"\n  hidden_units = {units}")
+    for number_of_hidden_units in LSTM_HIDDEN_UNIT_VALUES:
+        print(f"\nTesting LSTM with hidden_units = {number_of_hidden_units}")
 
         tf.keras.backend.clear_session()
         tf.random.set_seed(RANDOM_STATE)
         np.random.seed(RANDOM_STATE)
 
-        # Architecture matching LSTMModel.build_model, varying first LSTM layer
-        model = Sequential([
-            LSTM(units, input_shape=(LSTM_WINDOW_SIZE, len(FEATURE_COLS)),
-                 return_sequences=False),
-            Dropout(0.2),
-            Dense(32, activation="relu"),
-            Dropout(0.2),
-            Dense(1, activation="sigmoid"),
-        ])
-        model.compile(
-            optimizer="adam",
-            loss="binary_crossentropy",
-            metrics=["accuracy", "recall"],
+        lstm_model = build_lstm_model(
+            number_of_hidden_units=number_of_hidden_units,
+            number_of_features=len(FEATURE_COLUMNS),
         )
 
-        early_stop = EarlyStopping(
-            monitor="val_loss",
-            patience=LSTM_PATIENCE,
-            restore_best_weights=True,
+        history, training_time, training_emissions = run_with_emissions_tracking(
+            train_lstm_model,
+            f"lstm_train_{number_of_hidden_units}",
+            lstm_model,
+            X_train,
+            y_train,
+            X_validation,
+            y_validation,
+            class_weights,
         )
 
-        # Train with early stopping (matching your actual training)
-        tracker = EmissionsTracker(project_name=f"lstm_sweep_{units}", log_level="error")
-        tracker.start()
-        t0 = time.time()
+        actual_number_of_epochs = len(history.history["loss"])
 
-        history = model.fit(
-            X_train, y_train,
-            validation_data=(X_val, y_val),
-            epochs=LSTM_EPOCHS,
-            batch_size=LSTM_BATCH_SIZE,
-            class_weight=class_weights,
-            callbacks=[early_stop],
-            verbose=0,
+        predictions, inference_time, inference_emissions = run_with_emissions_tracking(
+            predict_with_lstm,
+            f"lstm_infer_{number_of_hidden_units}",
+            lstm_model,
+            X_test,
+            0.5,
         )
 
-        train_time = time.time() - t0
-        train_emissions = tracker.stop()
+        f1, precision, recall, false_positive_rate = calculate_classification_metrics(
+            y_test, predictions
+        )
 
-        actual_epochs = len(history.history["loss"])
+        print(
+            f"  F1: {f1:.4f} | "
+            f"Epochs: {actual_number_of_epochs} | "
+            f"Train: {training_time:.1f}s ({training_emissions * 1e6:.1f}µg) | "
+            f"Infer: {inference_time:.1f}s ({inference_emissions * 1e6:.1f}µg)"
+        )
 
-        # Inference
-        tracker = EmissionsTracker(project_name=f"lstm_infer_{units}", log_level="error")
-        tracker.start()
-        t0 = time.time()
-
-        y_prob = model.predict(X_test, verbose=0)
-        y_pred = (y_prob.flatten() >= 0.5).astype(int)
-
-        inference_time = time.time() - t0
-        inference_emissions = tracker.stop()
-
-        f1, prec, rec, fpr = compute_metrics(y_test, y_pred)
-
-        print(f"    F1: {f1:.4f} | Epochs: {actual_epochs} | "
-              f"Train: {train_time:.1f}s ({train_emissions*1e6:.1f}µg) "
-              f"| Infer: {inference_time:.1f}s ({inference_emissions*1e6:.1f}µg)")
-
-        append_result(results, "LSTM", "hidden_units", units,
-                      f1, prec, rec, fpr,
-                      train_time, train_emissions,
-                      inference_time, inference_emissions)
+        record_result(
+            results=results,
+            model_name="LSTM",
+            parameter_name="hidden_units",
+            parameter_value=number_of_hidden_units,
+            f1=f1,
+            precision=precision,
+            recall=recall,
+            false_positive_rate=false_positive_rate,
+            training_time=training_time,
+            training_emissions=training_emissions,
+            inference_time=inference_time,
+            inference_emissions=inference_emissions,
+        )
 
 
 # ============================================================================
 # MAIN
 # ============================================================================
 
-if __name__ == "__main__":
+def main():
+    """Run the full complexity sweep and save the results."""
     os.makedirs("results", exist_ok=True)
-    results = []
+    all_results = []
 
-    # Load and encode supervised data for RF and LightGBM sweeps
     X_train, y_train, X_test, y_test = load_supervised_data()
-    X_train_enc, X_test_enc, encoders = encode_data(X_train, X_test)
+    encoded_X_train, encoded_X_test, encoders = encode_categorical_columns(X_train, X_test)
 
-    sweep_rf(X_train_enc, y_train, X_test_enc, y_test, results)
-    sweep_lgbm(X_train_enc, y_train, X_test_enc, y_test, results)
-    sweep_lstm(results)
+    sweep_random_forest(encoded_X_train, y_train, encoded_X_test, y_test, all_results)
+    sweep_lightgbm(encoded_X_train, y_train, encoded_X_test, y_test, all_results)
+    sweep_lstm(all_results)
 
-    df = pd.DataFrame(results)
-    df.to_csv(OUTPUT_CSV, index=False)
-    print(f"\n{'=' * 60}")
-    print(f"Results saved to {OUTPUT_CSV}")
-    print(f"Total configurations tested: {len(results)}")
-    print(f"{'=' * 60}")
+    results_dataframe = save_results_to_csv(all_results, OUTPUT_CSV)
+
+    print_section("SWEEP COMPLETE")
+    print(f"Results saved to: {OUTPUT_CSV}")
+    print(f"Total configurations tested: {len(results_dataframe)}")
+
     print("\nSummary:")
-    print(df.to_string(index=False))
+    print(results_dataframe.to_string(index=False))
+
+
+if __name__ == "__main__":
+    main()
