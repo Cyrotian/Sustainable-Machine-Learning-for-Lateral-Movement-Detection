@@ -1,22 +1,10 @@
-"""
-feature_engineering.py — Remove weak features and create better ones.
-
-This script has two jobs:
-1. Remove raw features that would hurt the model
-2. Create more meaningful features from raw Sysmon columns
-
-Result:
-- starts with many raw Sysmon fields
-- ends with a cleaner feature matrix for feature selection
-"""
+# feature_engineering.py - Remove weak features and create better ones.
 
 import pandas as pd
 import numpy as np
 
 
-# ============================================================================
 # CONFIGURATION
-# ============================================================================
 
 RANDOM_STATE = 42
 LABEL_COLUMN = "isMalicious"
@@ -32,9 +20,11 @@ ATTACK_TOOLS = [
     "smbexec",
     "psexec",
     "psexesvc",
+    "powershell",
+    "cmd.exe",
 ]
 
-INFRA_TOOLS = ["splunk", "streamfwd", "sysmon"]
+INFRA_TOOLS = ["splunk", "streamfwd"]
 
 HIGH_CARDINALITY_CATEGORICAL_COLUMNS = [
     "ImageLoaded",
@@ -99,7 +89,7 @@ REDUNDANT_COLUMNS = [
 # ============================================================================
 
 def h(title):
-    """Print a section heading."""
+    # Print a section heading.
     print("\n" + "=" * 80)
     print(title)
     print("=" * 80)
@@ -110,9 +100,7 @@ def h(title):
 # ============================================================================
 
 def find_near_zero_variance_columns(dataframe):
-    """
-    Find columns where one value appears in more than 99.9% of rows.
-    """
+    # Find columns where one value appears in more than 99.9% of rows.
     near_zero_variance_columns = []
 
     for column_name in dataframe.columns:
@@ -133,9 +121,7 @@ def find_near_zero_variance_columns(dataframe):
 
 
 def combine_columns_to_drop(dataframe, near_zero_variance_columns):
-    """
-    Combine all feature-removal lists and keep only columns that actually exist.
-    """
+    # Combine all feature-removal lists and keep only columns that actually exist.
     all_candidate_columns = (
         near_zero_variance_columns
         + METADATA_COLUMNS
@@ -155,20 +141,18 @@ def combine_columns_to_drop(dataframe, near_zero_variance_columns):
 
 
 def drop_features(dataframe):
-    """
-    Remove features that are likely to harm generalisation.
-
-    Removed feature types:
-    1. Near-zero variance columns
-    2. Metadata and identifier columns
-    3. High-cardinality leak-risk columns
-    4. Redundant columns
-
-    Returns:
-    - cleaned dataframe
-    - dropped column list
-    - original feature count
-    """
+    # Remove features that are likely to harm generalisation.
+    #
+    # Removed feature types:
+    # 1. Near-zero variance columns
+    # 2. Metadata and identifier columns
+    # 3. High-cardinality leak-risk columns
+    # 4. Redundant columns
+    #
+    # Returns:
+    # - cleaned dataframe
+    # - dropped column list
+    # - original feature count
     h("SECTION 1: FEATURE REMOVAL")
 
     near_zero_variance_columns = find_near_zero_variance_columns(dataframe)
@@ -199,9 +183,7 @@ def drop_features(dataframe):
 # ============================================================================
 
 def categorise_image(image_path):
-    """
-    Convert a raw executable path into a broader security-relevant category.
-    """
+    # Convert a raw executable path into a broader security-relevant category.
     image_path_text = str(image_path).lower()
 
     for tool_name in ATTACK_TOOLS:
@@ -225,13 +207,11 @@ def categorise_image(image_path):
 
 
 def bin_port(port_series):
-    """
-    Convert raw port numbers into broader categories:
-    - NotPopulated: 0 or missing
-    - WellKnown: 1–1023
-    - Registered: 1024–49151
-    - Ephemeral: 49152–65536
-    """
+    # Convert raw port numbers into broader categories:
+    # - NotPopulated: 0 or missing
+    # - WellKnown: 1-1023
+    # - Registered: 1024-49151
+    # - Ephemeral: 49152-65536
     port_numbers = pd.to_numeric(port_series, errors="coerce").fillna(0).astype(int)
 
     def classify_port(port_number):
@@ -248,7 +228,7 @@ def bin_port(port_series):
 
 
 def create_image_category(dataframe):
-    """Replace Image with Image_Category."""
+    # Replace Image with Image_Category.
     updated_dataframe = dataframe.copy()
 
     if "Image" in updated_dataframe.columns:
@@ -261,7 +241,7 @@ def create_image_category(dataframe):
 
 
 def create_port_bins(dataframe):
-    """Replace raw port columns with port-range categories."""
+    # Replace raw port columns with port-range categories.
     updated_dataframe = dataframe.copy()
 
     if "SourcePort" in updated_dataframe.columns:
@@ -278,9 +258,7 @@ def create_port_bins(dataframe):
 
 
 def group_rare_categories(dataframe, rare_threshold):
-    """
-    Group rare values in high-cardinality categorical columns into Other_Rare.
-    """
+    # Group rare values in high-cardinality categorical columns into Other_Rare.
     updated_dataframe = dataframe.copy()
 
     for column_name in HIGH_CARDINALITY_CATEGORICAL_COLUMNS:
@@ -307,7 +285,7 @@ def group_rare_categories(dataframe, rare_threshold):
 
 
 def create_logonid_flag(dataframe):
-    """Replace LogonId with a simple populated / not-populated flag."""
+    # Replace LogonId with a simple populated / not-populated flag.
     updated_dataframe = dataframe.copy()
 
     if "LogonId" in updated_dataframe.columns:
@@ -320,7 +298,7 @@ def create_logonid_flag(dataframe):
 
 
 def drop_parent_process_id(dataframe):
-    """Drop ParentProcessId because it behaves like an identifier."""
+    # Drop ParentProcessId because it behaves like an identifier.
     updated_dataframe = dataframe.copy()
 
     if "ParentProcessId" in updated_dataframe.columns:
@@ -331,7 +309,7 @@ def drop_parent_process_id(dataframe):
 
 
 def print_feature_summary(feature_dataframe):
-    """Print a short summary of the final engineered feature matrix."""
+    # Print a short summary of the final engineered feature matrix.
     number_of_categorical_columns = feature_dataframe.select_dtypes(
         exclude=["number"]
     ).shape[1]
@@ -350,22 +328,8 @@ def print_feature_summary(feature_dataframe):
 # ============================================================================
 
 def engineer_features(cleaned_dataframe, rare_threshold=RARE_CATEGORY_THRESHOLD):
-    """
-    Apply all feature-engineering steps.
+    # Apply all feature-engineering steps.
 
-    Transforms:
-    1. Image -> Image_Category
-    2. SourcePort -> SourcePort_Bin
-    3. DestinationPort -> DestinationPort_Bin
-    4. Group rare categories in selected high-cardinality columns
-    5. LogonId -> LogonId_Populated
-    6. Drop ParentProcessId
-
-    Returns:
-    - X: feature matrix
-    - y: label vector
-    - groups: computer IDs for group-based splitting
-    """
     h("SECTION 2: FEATURE ENGINEERING")
 
     y = cleaned_dataframe[LABEL_COLUMN].astype(int)

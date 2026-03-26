@@ -1,19 +1,3 @@
-"""
-preprocessing_pipeline.py — Create final datasets for model training and testing.
-
-This script:
-1. Loads the raw LMD datasets
-2. Builds the selected features
-3. Applies a small number of feature transformations
-4. Saves the final CSV files used by the models
-
-Transforms applied:
-- Image -> Image_Category
-- SourceImage rare-category grouping
-- Missing-value filling
-- Optional retention of Computer and SystemTime for LSTM sequence building
-"""
-
 import os
 import sys
 from pathlib import Path
@@ -53,24 +37,23 @@ INFRA_TOOLS = ["splunk", "streamfwd"]
 RARE_THRESHOLD = 50
 
 
-# ============================================================================
-# GENERAL HELPERS
-# ============================================================================
+
+# HELPERS
 
 def print_section(title):
-    """Print a clear section heading."""
+    # Heading
     print("\n" + "=" * 80)
     print(title)
     print("=" * 80)
 
 
 def load_csv_file(csv_path):
-    """Load a CSV file."""
+    # Load a CSV file
     return pd.read_csv(csv_path, low_memory=False)
 
 
 def remove_unnamed_columns(dataframe):
-    """Remove columns whose names start with 'Unnamed'."""
+    # Remove columns whose names start with 'Unnamed'
     useful_columns = []
 
     for column_name in dataframe.columns:
@@ -81,9 +64,9 @@ def remove_unnamed_columns(dataframe):
 
 
 def standardise_label_column(dataframe):
-    """
-    Rename Label to isMalicious and keep only valid numeric label rows.
-    """
+    
+    # Rename Label to isMalicious and keep only valid numeric label rows.
+
     cleaned_dataframe = dataframe.copy()
 
     if "Label" in cleaned_dataframe.columns:
@@ -101,7 +84,7 @@ def standardise_label_column(dataframe):
 
 
 def load_and_clean_raw_dataset(csv_path):
-    """Load a raw dataset and apply the standard cleanup steps."""
+    #load a raw dataset and apply the standard cleanup steps.
     print("\nLoading:", csv_path)
 
     dataframe = load_csv_file(csv_path)
@@ -117,7 +100,7 @@ def load_and_clean_raw_dataset(csv_path):
 # ============================================================================
 
 def categorise_image(image_path):
-    """Convert an executable path into a security-relevant category."""
+    # Convert an executable path into a security-relevant category
     image_path_text = str(image_path).lower()
 
     for tool_name in ATTACK_TOOLS:
@@ -141,7 +124,7 @@ def categorise_image(image_path):
 
 
 def create_image_category_if_needed(dataframe):
-    """Create Image_Category from Image when it is not already present."""
+    # Create Image_Category from Image when it is not already present
     updated_dataframe = dataframe.copy()
 
     if "Image_Category" not in updated_dataframe.columns and "Image" in updated_dataframe.columns:
@@ -152,10 +135,7 @@ def create_image_category_if_needed(dataframe):
 
 
 def select_required_features(dataframe, selected_features):
-    """
-    Create a new dataframe containing only the selected features plus the label.
-    Missing features are filled with a default value.
-    """
+    # Create a new dataframe containing only the selected features plus the label. Missing features are filled with a default value
     result_dataframe = pd.DataFrame()
 
     for feature_name in selected_features:
@@ -171,7 +151,7 @@ def select_required_features(dataframe, selected_features):
 
 
 def group_rare_sourceimage_values(dataframe):
-    """Replace rare SourceImage categories with 'Other_Rare'."""
+    # Replace rare SourceImage categories with 'Other_Rare'
     updated_dataframe = dataframe.copy()
 
     if "SourceImage" in updated_dataframe.columns:
@@ -187,7 +167,7 @@ def group_rare_sourceimage_values(dataframe):
 
 
 def fill_missing_values(dataframe):
-    """Fill missing values using simple defaults."""
+    # Fill missing values using simple defaults
     filled_dataframe = dataframe.copy()
 
     for column_name in filled_dataframe.columns:
@@ -200,7 +180,7 @@ def fill_missing_values(dataframe):
 
 
 def filter_by_label_if_needed(dataframe, filter_label=None):
-    """Optionally keep only rows with one label value."""
+    # Optionally keep only rows with one label value."""
     if filter_label is None:
         return dataframe
 
@@ -215,9 +195,8 @@ def filter_by_label_if_needed(dataframe, filter_label=None):
 # ============================================================================
 
 def build_base_dataset(dataframe, selected_features, filter_label=None):
-    """
-    Apply the shared preprocessing steps used by all final datasets.
-    """
+    # Apply the shared preprocessing steps used by all final datasets.
+
     processed_dataframe = create_image_category_if_needed(dataframe)
     processed_dataframe = select_required_features(processed_dataframe, selected_features)
     processed_dataframe = group_rare_sourceimage_values(processed_dataframe)
@@ -236,21 +215,18 @@ def build_base_dataset(dataframe, selected_features, filter_label=None):
 
 
 def process_dataset(csv_path, selected_features, filter_label=None):
-    """
-    Load a dataset and apply the shared preprocessing steps.
-
-    This version is used for the standard tabular model datasets.
-    """
+   
+    # Load a dataset and apply the shared preprocessing steps.
     raw_dataframe = load_and_clean_raw_dataset(csv_path)
     return build_base_dataset(raw_dataframe, selected_features, filter_label)
 
 
-# ============================================================================
+
 # LSTM-SPECIFIC DATASET BUILDING
-# ============================================================================
+
 
 def save_sequence_columns(dataframe):
-    """Extract Computer and SystemTime if they exist."""
+    # Extract Computer and SystemTime
     saved_columns = {}
 
     if GROUP_COLUMN in dataframe.columns:
@@ -263,7 +239,7 @@ def save_sequence_columns(dataframe):
 
 
 def reattach_sequence_columns(dataframe, saved_columns):
-    """Add back Computer and SystemTime after feature trimming."""
+    # Add back Computer and SystemTime after feature trimming
     updated_dataframe = dataframe.copy()
 
     if GROUP_COLUMN in saved_columns:
@@ -276,7 +252,7 @@ def reattach_sequence_columns(dataframe, saved_columns):
 
 
 def sort_for_lstm_sequence_building(dataframe):
-    """Sort by Computer and SystemTime so LSTM windows are chronological."""
+    # Sort by Computer and SystemTime so LSTM windows are chronological
     sorted_dataframe = dataframe.copy()
     sort_columns = []
 
@@ -294,14 +270,10 @@ def sort_for_lstm_sequence_building(dataframe):
 
 
 def process_dataset_with_sequence_columns(csv_path, selected_features, filter_label=None):
-    """
-    Load a dataset, apply the shared preprocessing, and keep sequence columns.
+    # Load a dataset, apply the shared preprocessing, and keep sequence columns for LSTM
 
-    This version is used for LSTM datasets because the LSTM needs:
-    - Computer: to keep events grouped by machine
-    - SystemTime: to keep events in time order
-    """
-    print("\nLoading (with sequence columns):", csv_path)
+    
+    print("\n File:", csv_path)
 
     raw_dataframe = load_csv_file(csv_path)
     raw_dataframe = remove_unnamed_columns(raw_dataframe)
@@ -326,20 +298,16 @@ def process_dataset_with_sequence_columns(csv_path, selected_features, filter_la
     return processed_dataframe
 
 
-# ============================================================================
-# FEATURE LIST HELPERS
-# ============================================================================
+
+# FEATURE LIST
 
 def load_selected_features(features_csv_path):
-    """
-    Load the selected feature list from CSV.
-    Fall back to the hardcoded list if the file is missing.
-    """
+    # Load the selected feature list from CSV.
+
     if os.path.exists(features_csv_path):
         features_dataframe = pd.read_csv(features_csv_path)
         return features_dataframe["Feature"].tolist()
 
-    print("WARNING: features CSV not found, using hardcoded list")
     return SELECTED_FEATURES
 
 
@@ -348,9 +316,9 @@ def load_selected_features(features_csv_path):
 # ============================================================================
 
 def create_all_datasets(features_csv_path="05_final_selected_features.csv"):
-    """
-    Create all final datasets used by the models.
-    """
+  
+    # Create all final datasets used by the models.
+    
     final_features = load_selected_features(features_csv_path)
 
     output_folder = Path("final_datasets")

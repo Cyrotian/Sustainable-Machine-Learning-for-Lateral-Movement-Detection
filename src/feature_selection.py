@@ -1,22 +1,3 @@
-"""
-feature_selection.py — Select the best subset of engineered features.
-
-This file is a one-time reproducibility pipeline.
-It was used to decide which features should be kept in the final model inputs.
-
-Pipeline:
-1. Split by Computer so validation contains unseen machines
-2. One-hot encode categorical columns
-3. Remove zero-variance columns
-4. Rank encoded features using:
-   - Mutual Information
-   - Random Forest importance
-   - CatBoost importance
-5. Aggregate encoded-level scores back to original features
-6. Test different feature counts
-7. Choose the smallest feature set that still achieves the best validation F1
-"""
-
 import pandas as pd
 import numpy as np
 
@@ -31,9 +12,8 @@ from catboost import CatBoostClassifier
 from src.feature_engineering import h
 
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+# Config
+
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
@@ -81,12 +61,9 @@ KNOWN_ORIGINAL_FEATURES = [
 ]
 
 
-# ============================================================================
-# MODEL BUILDERS
-# ============================================================================
 
 def build_selector_random_forest():
-    """Random Forest used for feature-importance ranking."""
+    # Random Forest used for feature-importance ranking
     model = RandomForestClassifier(
         n_estimators=100,
         random_state=RANDOM_STATE,
@@ -99,7 +76,7 @@ def build_selector_random_forest():
 
 
 def build_evaluation_random_forest():
-    """Random Forest used for testing feature subsets."""
+    # Random Forest used for testing feature subsets
     model = RandomForestClassifier(
         n_estimators=150,
         random_state=RANDOM_STATE,
@@ -112,7 +89,7 @@ def build_evaluation_random_forest():
 
 
 def build_selector_catboost():
-    """CatBoost used for feature-importance ranking."""
+    # CatBoost used for feature-importance ranking
     model = CatBoostClassifier(
         iterations=1000,
         random_seed=RANDOM_STATE,
@@ -122,18 +99,13 @@ def build_selector_catboost():
     return model
 
 
-# ============================================================================
+
 # FEATURE NAME HELPERS
-# ============================================================================
 
 def get_original_feature(encoded_feature_name):
-    """
-    Map an encoded feature name back to its original feature name.
+    # Map an encoded feature name back to its original feature name.
 
-    Examples:
-    - cat__Image_Category_AttackTool -> Image_Category
-    - num__GrantedAccess             -> GrantedAccess
-    """
+
     if encoded_feature_name.startswith("cat__"):
         encoded_suffix = encoded_feature_name[5:]
         sorted_known_features = sorted(KNOWN_ORIGINAL_FEATURES, key=len, reverse=True)
@@ -158,7 +130,7 @@ def get_original_feature(encoded_feature_name):
 
 
 def map_encoded_features_to_original_features(feature_names):
-    """Convert a list of encoded feature names into original feature names."""
+    # Convert a list of encoded feature names into original feature names
     original_feature_names = []
 
     for encoded_feature_name in feature_names:
@@ -270,9 +242,8 @@ def encode_and_filter(X_train, X_validation):
 # ============================================================================
 
 def compute_mutual_information(X_train_filtered, y_train, encoded_feature_names, output_dir="."):
-    """
-    Rank encoded features using Mutual Information.
-    """
+    # Rank encoded features using Mutual Information.
+
     h("SECTION 5: MUTUAL INFORMATION")
 
     mutual_information_scores = mutual_info_classif(
@@ -306,9 +277,9 @@ def compute_random_forest_importance(
     encoded_feature_names,
     output_dir=".",
 ):
-    """
-    Rank encoded features using Random Forest Gini importance.
-    """
+    
+    # Rank encoded features using Random Forest Gini importance.
+
     h("SECTION 6: RF IMPORTANCE RANKING")
 
     random_forest_model = build_selector_random_forest()
@@ -335,7 +306,7 @@ def compute_random_forest_importance(
 # ============================================================================
 
 def convert_sparse_to_dense_if_needed(matrix):
-    """Convert a sparse matrix to a dense array when required."""
+    # Convert a sparse matrix to a dense array when required."""
     if hasattr(matrix, "toarray"):
         return matrix.toarray()
     return np.asarray(matrix)
@@ -347,9 +318,9 @@ def compute_catboost_importance(
     encoded_feature_names,
     output_dir=".",
 ):
-    """
-    Rank encoded features using CatBoost feature importance.
-    """
+    
+    # Rank encoded features using CatBoost feature importance.
+
     h("SECTION 6b: CATBOOST IMPORTANCE RANKING")
 
     catboost_model = build_selector_catboost()
@@ -378,7 +349,7 @@ def compute_catboost_importance(
 # ============================================================================
 
 def add_original_feature_column(dataframe, feature_column_name="Feature"):
-    """Add a column containing the original feature name for each encoded feature."""
+    # Add a column containing the original feature name for each encoded feature."""
     updated_dataframe = dataframe.copy()
     updated_dataframe["Original_Feature"] = map_encoded_features_to_original_features(
         updated_dataframe[feature_column_name]
@@ -387,7 +358,7 @@ def add_original_feature_column(dataframe, feature_column_name="Feature"):
 
 
 def aggregate_rf_scores_to_original_features(random_forest_dataframe):
-    """Aggregate Random Forest encoded-level scores back to original features."""
+    # Aggregate Random Forest encoded-level scores back to original features."""
     grouped = random_forest_dataframe.groupby("Original_Feature")["RF_Importance"]
     aggregated = grouped.agg(["sum", "max", "count"])
 
@@ -406,7 +377,7 @@ def aggregate_rf_scores_to_original_features(random_forest_dataframe):
 
 
 def aggregate_mi_scores_to_original_features(mutual_information_dataframe):
-    """Aggregate Mutual Information encoded-level scores back to original features."""
+    # Aggregate Mutual Information encoded-level scores back to original features.
     grouped = mutual_information_dataframe.groupby("Original_Feature")["MI_Score"]
     aggregated = grouped.agg(["sum", "max"])
 
@@ -424,7 +395,7 @@ def aggregate_mi_scores_to_original_features(mutual_information_dataframe):
 
 
 def aggregate_catboost_scores_to_original_features(catboost_dataframe):
-    """Aggregate CatBoost encoded-level scores back to original features."""
+    # Aggregate CatBoost encoded-level scores back to original features.
     grouped = catboost_dataframe.groupby("Original_Feature")["CB_Importance"]
     aggregated = grouped.agg(["sum", "max"])
 
@@ -446,9 +417,9 @@ def aggregate_to_original(
     catboost_importance_dataframe=None,
     output_dir=".",
 ):
-    """
-    Combine encoded-level ranking results into one row per original feature.
-    """
+    
+    # Combine encoded-level ranking results into one row per original feature.
+
     h("SECTION 7: AGGREGATE TO ORIGINAL FEATURES")
 
     rf_with_originals = add_original_feature_column(random_forest_importance_dataframe)
@@ -485,9 +456,8 @@ def aggregate_to_original(
     return summary_dataframe
 
 
-# ============================================================================
 # SECTION 8: FEATURE COUNT SWEEP
-# ============================================================================
+
 
 def evaluate_feature_subset(
     selected_original_features,
@@ -497,9 +467,9 @@ def evaluate_feature_subset(
     y_validation,
     encoded_feature_names,
 ):
-    """
-    Train a Random Forest using only the chosen original features.
-    """
+    
+    # Train a Random Forest using only the chosen original features.
+
     encoded_column_mask = create_feature_mask(
         encoded_feature_names,
         selected_original_features,
@@ -547,9 +517,9 @@ def feature_count_sweep(
     encoded_feature_names,
     output_dir=".",
 ):
-    """
-    Test several feature counts and record validation performance.
-    """
+    
+    # Test several feature counts and record validation performance.
+
     h("SECTION 8: FEATURE-COUNT SWEEP")
 
     ranked_original_features = summary_dataframe["Original_Feature"].tolist()
@@ -593,9 +563,8 @@ def feature_count_sweep(
     return sweep_dataframe, ranked_original_features
 
 
-# ============================================================================
+
 # SECTION 9: SELECT FINAL FEATURE SET
-# ============================================================================
 
 def get_best_validation_f1(sweep_dataframe):
     """Return the highest validation F1 in the sweep results."""
@@ -643,7 +612,7 @@ def save_final_feature_list(final_features, summary_dataframe, output_dir="."):
 
 
 def print_selected_features(final_features):
-    """Print the final selected features."""
+    # Print the final selected features
     print("\nSelected", len(final_features), "features:")
     for feature_rank, feature_name in enumerate(final_features, start=1):
         print("  " + str(feature_rank) + ". " + feature_name)
@@ -657,7 +626,7 @@ def print_final_validation_report(
     y_validation,
     encoded_feature_names,
 ):
-    """Train the final model and print a validation classification report."""
+    # Train the final model and print a validation classification report
     encoded_column_mask = create_feature_mask(
         encoded_feature_names,
         final_features,
@@ -696,9 +665,9 @@ def select_optimal_features(
     encoded_feature_names,
     output_dir=".",
 ):
-    """
-    Choose the smallest feature set that still achieves the best validation F1.
-    """
+   
+    # Choose the smallest feature set that still achieves the best validation F1
+
     h("SECTION 9: OPTIMAL FEATURE COUNT (PARETO)")
 
     best_validation_f1 = get_best_validation_f1(sweep_dataframe)
@@ -727,9 +696,9 @@ def select_optimal_features(
     return final_features, optimal_feature_count, best_validation_f1
 
 
-# ============================================================================
-# RUN THE FULL PIPELINE
-# ============================================================================
+
+ # RUN THE FULL PIPELINE
+
 
 def run_feature_selection_pipeline(X, y, groups, output_dir="."):
     """Run the full feature-selection pipeline from start to finish."""

@@ -1,12 +1,4 @@
-"""
-main.py — Main entry point for the dissertation pipeline.
-
-This file controls four main tasks:
-1. Preprocessing the raw data
-2. Training and evaluating the Random Forest model
-3. Training and evaluating the LightGBM model
-4. Training and evaluating the LSTM model
-"""
+# main.py - Main entry point
 
 import pandas as pd
 import numpy as np
@@ -14,24 +6,22 @@ from sklearn.model_selection import train_test_split
 from save_metrics import save_model_metrics
 
 
-# ============================================================================
 # HELPER FUNCTIONS
-# ============================================================================
 
 def print_section(title):
-    # Print a clear section heading."""
+    # Print a clear section heading.
     print("\n" + "=" * 80)
     print(title)
     print("=" * 80)
 
 
 def load_csv_file(file_path):
-    # Load a CSV file with low_memory disabled."""
+    # Load a CSV file with low_memory disabled.
     return pd.read_csv(file_path, low_memory=False)
 
 
 def remove_unnamed_columns(dataframe):
-    # Remove columns whose names start with 'Unnamed'."""
+    # Remove columns whose names start with 'Unnamed'.
     useful_columns = []
 
     for column_name in dataframe.columns:
@@ -44,7 +34,6 @@ def remove_unnamed_columns(dataframe):
 def clean_label_column(dataframe):
     # Rename the label column and keep only valid binary rows.
     # Valid values are '0' and '1'.
-  
     cleaned_dataframe = dataframe.copy()
 
     cleaned_dataframe.rename(columns={"Label": "isMalicious"}, inplace=True)
@@ -68,14 +57,14 @@ def print_dataset_summary(dataframe, label_column="isMalicious"):
 
 
 def load_supervised_train_and_test():
-    # Load the supervised training dataset and the LMD-2023 test dataset
+    # Load the supervised training dataset and the LMD-2023 test dataset.
     training_dataframe = load_csv_file("final_datasets/supervised_learning_dataset.csv")
     testing_dataframe = load_csv_file("final_datasets/lmd2023_test_dataset.csv")
     return training_dataframe, testing_dataframe
 
 
 def split_features_and_labels(dataframe, target_column="isMalicious"):
-    # Split a dataframe into X and y
+    # Split a dataframe into X and y.
     features = dataframe.drop(columns=[target_column])
     labels = dataframe[target_column]
 
@@ -83,28 +72,24 @@ def split_features_and_labels(dataframe, target_column="isMalicious"):
 
 
 def print_inference_summary(model_name, summary_dictionary):
-    # Print mean and standard deviation summary values
+    # Print mean and standard deviation summary values.
     print(f"\n-- {model_name} Inference Summary (mean +/- std) --")
 
     for metric_name, metric_value in summary_dictionary.items():
         print(f"  {metric_name}: {round(metric_value, 6)}")
 
 
-# ============================================================================
 # PREPROCESSING
-# ============================================================================
 
 def preprocess():
-    """
-    Run the full preprocessing pipeline:
-    1. Load raw LMD-2022 data
-    2. Clean the dataset
-    3. Drop bad features
-    4. Engineer new features
-    5. Run feature selection
-    6. Generate plots
-    7. Create final datasets
-    """
+    # Run the full preprocessing pipeline:
+    # 1. Load raw LMD-2022 data
+    # 2. Clean the dataset
+    # 3. Drop bad features
+    # 4. Engineer new features
+    # 5. Run feature selection
+    # 6. Generate plots
+    # 7. Create final datasets
 
     from config import Config
     from src.feature_engineering import drop_features, engineer_features
@@ -163,7 +148,7 @@ def preprocess():
 # ============================================================================
 
 def random_forest():
-    """Train and evaluate the Random Forest model."""
+    # Train and evaluate the Random Forest model.
     from models.random_forest import RandomForestModel
 
     print_section("RANDOM FOREST")
@@ -206,7 +191,7 @@ def random_forest():
 # ============================================================================
 
 def lightgbm():
-    """Train and evaluate the LightGBM model."""
+    # Train and evaluate the LightGBM model.
     from models.lightGBM import LightGBMModel
 
     print_section("LIGHTGBM")
@@ -264,10 +249,8 @@ def lightgbm():
 # ============================================================================
 
 def split_lstm_train_and_validation_by_computer(train_dataframe, validation_fraction=0.2):
-    """
-    Split the LSTM training data by computer to avoid leakage.
-    This ensures the validation set contains unseen computers.
-    """
+    # Split the LSTM training data by computer to avoid leakage.
+    # This ensures the validation set contains unseen computers.
     computer_ids = train_dataframe["Computer"].unique()
 
     number_of_validation_computers = max(1, int(len(computer_ids) * validation_fraction))
@@ -285,10 +268,8 @@ def split_lstm_train_and_validation_by_computer(train_dataframe, validation_frac
 
 
 def prepare_lstm_test_sequences(lstm_model, test_dataframe, feature_columns):
-    """
-    Encode, scale, and convert the test set into LSTM sequences.
-    This is done once before repeated inference runs.
-    """
+    # Encode, scale, and convert the test set into LSTM sequences.
+    # This is done once before repeated inference runs.
     encoded_test_features = lstm_model._encode(test_dataframe[feature_columns], fit=False)
     scaled_test_features = lstm_model._scale(encoded_test_features, fit=False)
 
@@ -307,7 +288,7 @@ def prepare_lstm_test_sequences(lstm_model, test_dataframe, feature_columns):
 
 
 def lstm():
-    """Train and evaluate the LSTM model."""
+    # Train and evaluate the LSTM model.
     from models.lstm import LSTMModel
     from codecarbon import EmissionsTracker
 
