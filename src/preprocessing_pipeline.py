@@ -28,8 +28,6 @@ ATTACK_TOOLS = [
     "smbexec",
     "psexec",
     "psexesvc",
-    "powershell",
-    "cmd.exe",
 ]
 
 INFRA_TOOLS = ["splunk", "streamfwd"]

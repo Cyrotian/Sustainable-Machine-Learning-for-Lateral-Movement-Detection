@@ -35,7 +35,6 @@ def clean_label_column(dataframe):
     # Rename the label column and keep only valid binary rows.
     # Valid values are '0' and '1'.
     cleaned_dataframe = dataframe.copy()
-
     cleaned_dataframe.rename(columns={"Label": "isMalicious"}, inplace=True)
 
     valid_rows = (
@@ -67,7 +66,6 @@ def split_features_and_labels(dataframe, target_column="isMalicious"):
     # Split a dataframe into X and y.
     features = dataframe.drop(columns=[target_column])
     labels = dataframe[target_column]
-
     return features, labels
 
 
@@ -105,7 +103,7 @@ def preprocess():
 
     print_dataset_summary(raw_dataframe)
 
-    # Keep an untouched copy for plotting
+    # Keep an untouched copy for plotting.
     original_dataframe_for_plots = raw_dataframe.copy()
 
     print_section("STEP 2: Drop bad features and engineer new ones")
@@ -115,12 +113,7 @@ def preprocess():
 
     print_section("STEP 3: Run feature selection")
 
-    feature_selection_results = run_feature_selection_pipeline(
-        feature_matrix,
-        labels,
-        groups,
-        output_dir="src"
-    )
+    feature_selection_results = run_feature_selection_pipeline(feature_matrix, labels, groups, output_dir="src")
 
     selected_features = feature_selection_results["final_features"]
     optimal_feature_count = feature_selection_results["OPTIMAL_N"]
@@ -131,15 +124,9 @@ def preprocess():
         print(f"  {index}. {feature_name}")
 
     print_section("STEP 4: Generate dissertation plots")
-
-    plot_all(
-        original_dataframe_for_plots,
-        feature_selection_results,
-        output_dir="plots"
-    )
+    plot_all(original_dataframe_for_plots, feature_selection_results, output_dir="plots")
 
     print_section("STEP 5: Create final datasets")
-
     create_all_datasets(features_csv_path="src/05_final_selected_features.csv")
 
 
@@ -204,18 +191,10 @@ def lightgbm():
     print("Creating validation split for early stopping...")
 
     X_train, X_validation, y_train, y_validation = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=y
+        X, y, test_size=0.2, random_state=42, stratify=y
     )
 
-    print(
-        "Train:", len(X_train),
-        "| Validation:", len(X_validation),
-        "| Test:", len(X_test)
-    )
+    print("Train:", len(X_train), "| Validation:", len(X_validation), "| Test:", len(X_test))
 
     lightgbm_model = LightGBMModel()
 
@@ -252,7 +231,6 @@ def split_lstm_train_and_validation_by_computer(train_dataframe, validation_frac
     # Split the LSTM training data by computer to avoid leakage.
     # This ensures the validation set contains unseen computers.
     computer_ids = train_dataframe["Computer"].unique()
-
     number_of_validation_computers = max(1, int(len(computer_ids) * validation_fraction))
 
     random_generator = np.random.default_rng(42)
@@ -300,24 +278,12 @@ def lstm():
     selected_features_dataframe = load_csv_file("src/05_final_selected_features.csv")
     feature_columns = selected_features_dataframe["Feature"].tolist()
 
-    training_split, validation_split, training_computers, validation_computers = (
-        split_lstm_train_and_validation_by_computer(train_dataframe)
-    )
+    training_split, validation_split, training_computers, validation_computers = split_lstm_train_and_validation_by_computer(train_dataframe)
 
-    print(
-        "Train computers:", len(training_computers),
-        "| Validation computers:", len(validation_computers)
-    )
-    print(
-        "Train rows:", len(training_split),
-        "| Validation rows:", len(validation_split)
-    )
+    print("Train computers:", len(training_computers), "| Validation computers:", len(validation_computers))
+    print("Train rows:", len(training_split), "| Validation rows:", len(validation_split))
 
-    carbon_tracker = EmissionsTracker(
-        output_dir="emissions",
-        project_name="lstm_training",
-        log_level="error",
-    )
+    carbon_tracker = EmissionsTracker(output_dir="emissions", project_name="lstm_training", log_level="error")
 
     lstm_config = {
         "epochs": 10,
@@ -335,11 +301,7 @@ def lstm():
     print("\nSanity check:", lstm_model.evaluate(test_dataframe, feature_columns))
 
     print("\nPreparing test sequences...")
-    X_test_sequences, y_test_sequences = prepare_lstm_test_sequences(
-        lstm_model,
-        test_dataframe,
-        feature_columns
-    )
+    X_test_sequences, y_test_sequences = prepare_lstm_test_sequences(lstm_model, test_dataframe, feature_columns)
 
     print("\n-- LSTM: 10 Inference Runs --")
     for run_number in range(10):
@@ -359,10 +321,6 @@ def lstm():
     print_inference_summary("LSTM", summary)
 
     save_model_metrics("LSTM", summary)
-
-
-
-# RUN PIPELINE
 
 
 if __name__ == "__main__":

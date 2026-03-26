@@ -1,7 +1,7 @@
 Feature,MI_Score
 num__EventID,0.46809030614664504
 cat__RuleName_-,0.25335171714004817
-cat__Image_Category_Infra,0.1971887826308552
+cat__Image_Category_Infra,0.19955661525949125
 cat__Image_Category_System32,0.149400946604786
 cat__Signed_True,0.11606750137512656
 cat__Signature_0,0.11526198459273634
@@ -19,7 +19,7 @@ cat__ParentUser_0,0.057131804282471915
 cat__RuleName_Sysmon_Event_3(NetworkConnect),0.05047202066152026
 cat__Archived_false - insufficient disk space,0.04906767891259439
 cat__IsExecutable_False,0.04906590688488738
-cat__Image_Category_UserProfile,0.046539265602366695
+cat__Image_Category_UserProfile,0.04661707528218239
 cat__RuleName_DLL,0.04637210544023909
 cat__SourceImage_C:\Windows\system32\svchost.exe,0.04495442581978226
 cat__SourcePort_Bin_WellKnown,0.037520444246877255
@@ -476,11 +476,11 @@ cat__OriginalFileName_logonui.exe,0.0006606453517891607
 cat__RuleName_Tamper-Winlogon,0.0006506471962629155
 cat__OriginalFileName_UsoClient,0.0006506471962629155
 cat__Description_UsoClient,0.0006506471962629155
-cat__Image_Category_Other,0.0006404527214038946
 cat__CurrentDirectory_C:\Program Files (x86)\Microsoft\EdgeUpdate\1.3.171.37\,0.0006385920930293163
 cat__FileVersion_108.0.1462.42,0.0006325646275294637
 cat__FileVersion_10.0.19041.1320 (WinBuild.160101.0800),0.0006144825754925858
 cat__ParentUser_NT AUTHORITY\NETWORK SERVICE,0.0006084553396262121
+cat__Image_Category_Other,0.000605896457622157
 cat__FileVersion_10.0.14393.2273 (rs1_release_1.180427-1811),0.0006035740247541613
 cat__DestinationIp_10.0.1.15,0.0006020930296219244
 cat__DestinationIp_192.168.1.28,0.0005964010401144793

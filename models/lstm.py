@@ -40,11 +40,11 @@ class LSTMModel:
     # =========================================================================
 
     def _get_categorical_columns(self, dataframe):
-        """Return the categorical column names."""
+        # Return the categorical column names.
         return dataframe.select_dtypes(include=["object"]).columns.tolist()
 
     def _replace_unknown_category(self, value, known_classes, fallback_class):
-        # Replace unseen categories with a fallback value
+        # Replace unseen categories with a fallback value.
         if value in known_classes:
             return value
         return fallback_class
@@ -52,14 +52,11 @@ class LSTMModel:
     def _fit_and_encode_column(self, dataframe, column_name):
         # Fit a LabelEncoder on one training column and transform it.
         label_encoder = LabelEncoder()
-
-        dataframe[column_name] = label_encoder.fit_transform(
-            dataframe[column_name].astype(str)
-        )
+        dataframe[column_name] = label_encoder.fit_transform(dataframe[column_name].astype(str))
         self.label_encoders[column_name] = label_encoder
 
     def _transform_column_with_existing_encoder(self, dataframe, column_name):
-        # Transform one column using a stored LabelEncoder
+        # Transform one column using a stored LabelEncoder.
         label_encoder = self.label_encoders[column_name]
         known_classes = set(label_encoder.classes_)
         fallback_class = label_encoder.classes_[0]
@@ -72,7 +69,7 @@ class LSTMModel:
         dataframe[column_name] = label_encoder.transform(dataframe[column_name])
 
     def _encode(self, X, fit=False):
-        # Label-encode categorical columns
+        # Label-encode categorical columns.
         encoded_dataframe = X.copy()
         categorical_columns = self._get_categorical_columns(X)
 
@@ -80,21 +77,18 @@ class LSTMModel:
             if fit:
                 self._fit_and_encode_column(encoded_dataframe, column_name)
             else:
-                self._transform_column_with_existing_encoder(
-                    encoded_dataframe,
-                    column_name,
-                )
+                self._transform_column_with_existing_encoder(encoded_dataframe, column_name)
 
         return encoded_dataframe
 
     def _scale(self, X, fit=False):
-        # Scale all features to the range [0, 1]
+        # Scale all features to the range [0, 1].
         if fit:
             return self.scaler.fit_transform(X)
         return self.scaler.transform(X)
 
     def _prepare_features(self, dataframe, feature_columns, fit=False):
-        #Encode and scale the feature columns.
+        # Encode and scale the feature columns.
         encoded_features = self._encode(dataframe[feature_columns], fit=fit)
         scaled_features = self._scale(encoded_features, fit=fit)
         return scaled_features
@@ -107,9 +101,7 @@ class LSTMModel:
         label_column,
         group_column,
     ):
-        """
-        Rebuild a dataframe containing scaled features plus label and group columns.
-        """
+        # Rebuild a dataframe containing scaled features plus label and group columns.
         processed_dataframe = pd.DataFrame(scaled_features, columns=feature_columns)
         processed_dataframe[label_column] = original_dataframe[label_column].values
         processed_dataframe[group_column] = original_dataframe[group_column].values
@@ -126,28 +118,20 @@ class LSTMModel:
         label_col="isMalicious",
         group_col="Computer",
     ):
-        # Create sliding windows for LSTM input
+        # Create sliding windows for LSTM input.
         sequence_features = []
         sequence_labels = []
 
         computer_ids = dataframe[group_col].unique()
-
-        print(
-            "  Creating sequences from",
-            len(computer_ids),
-            "computers,",
-            "window_size=" + str(self.window_size),
-        )
+        print("  Creating sequences from", len(computer_ids), "computers,", "window_size=" + str(self.window_size))
 
         for computer_id in computer_ids:
             computer_rows = dataframe[dataframe[group_col] == computer_id]
-
             feature_values = computer_rows[feature_columns].values
             label_values = computer_rows[label_col].values
 
             for start_index in range(len(feature_values) - self.window_size + 1):
                 end_index = start_index + self.window_size
-
                 window = feature_values[start_index:end_index]
                 label = label_values[end_index - 1]
 
@@ -157,13 +141,7 @@ class LSTMModel:
         X_sequences = np.array(sequence_features)
         y_sequences = np.array(sequence_labels)
 
-        print(
-            "  Sequences created:",
-            X_sequences.shape[0],
-            "| Shape:",
-            X_sequences.shape,
-        )
-
+        print("  Sequences created:", X_sequences.shape[0], "| Shape:", X_sequences.shape)
         return X_sequences, y_sequences
 
     def _prepare_sequenced_dataset(
@@ -174,14 +152,8 @@ class LSTMModel:
         label_col="isMalicious",
         group_col="Computer",
     ):
-    
         # Encode, scale, rebuild, and convert a dataframe into LSTM sequences.
-        
-        scaled_features = self._prepare_features(
-            dataframe,
-            feature_columns,
-            fit=fit,
-        )
+        scaled_features = self._prepare_features(dataframe, feature_columns, fit=fit)
 
         processed_dataframe = self._build_processed_dataframe(
             scaled_features,
@@ -191,43 +163,28 @@ class LSTMModel:
             group_col,
         )
 
-        return self.create_sequences(
-            processed_dataframe,
-            feature_columns,
-            label_col,
-            group_col,
-        )
+        return self.create_sequences(processed_dataframe, feature_columns, label_col, group_col)
 
- 
+    # =========================================================================
     # MODEL BUILDING
-  
+    # =========================================================================
 
     def build_model(self, input_shape):
-        # Build the LSTM network 
+        # Build the LSTM network.
         hidden_units = self.config.get("hidden_units", 64)
 
-        self.model = keras.Sequential(
-            [
-                layers.LSTM(
-                    hidden_units,
-                    input_shape=input_shape,
-                    return_sequences=False,
-                ),
-                layers.Dropout(0.2),
-                layers.Dense(32, activation="relu"),
-                layers.Dropout(0.2),
-                layers.Dense(1, activation="sigmoid"),
-            ]
-        )
+        self.model = keras.Sequential([
+            layers.LSTM(hidden_units, input_shape=input_shape, return_sequences=False),
+            layers.Dropout(0.2),
+            layers.Dense(32, activation="relu"),
+            layers.Dropout(0.2),
+            layers.Dense(1, activation="sigmoid"),
+        ])
 
-        self.model.compile(
-            optimizer="adam",
-            loss="binary_crossentropy",
-            metrics=["accuracy", "recall"],
-        )
+        self.model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy", "recall"])
 
     def _calculate_class_weights(self, y_train):
-        # Calculate balanced class weights from the training labels
+        # Calculate balanced class weights from the training labels.
         unique_classes = np.unique(y_train)
         class_weight_values = compute_class_weight(
             class_weight="balanced",
@@ -238,21 +195,16 @@ class LSTMModel:
         return dict(zip(unique_classes, class_weight_values))
 
     def _create_early_stopping_callback(self):
-        """Create an EarlyStopping callback."""
+        # Create an EarlyStopping callback.
         patience = self.config.get("patience", 3)
-
-        return keras.callbacks.EarlyStopping(
-            monitor="val_loss",
-            patience=patience,
-            restore_best_weights=True,
-        )
+        return keras.callbacks.EarlyStopping(monitor="val_loss", patience=patience, restore_best_weights=True)
 
     # =========================================================================
     # METRIC HELPERS
     # =========================================================================
 
     def _calculate_false_positive_rate(self, y_true, predictions):
-        # Calculate false positive rate 
+        # Calculate false positive rate.
         tn, fp, _, _ = confusion_matrix(y_true, predictions).ravel()
 
         if (fp + tn) > 0:
@@ -261,7 +213,7 @@ class LSTMModel:
         return 0.0
 
     def _calculate_metrics(self, y_true, predictions):
-        # Calculate classification metrics
+        # Calculate classification metrics.
         false_positive_rate = self._calculate_false_positive_rate(y_true, predictions)
 
         return {
@@ -285,7 +237,7 @@ class LSTMModel:
         label_col="isMalicious",
         group_col="Computer",
     ):
-        # Train the LSTM on sequenced data
+        # Train the LSTM on sequenced data.
         print("Encoding and scaling training data...")
         X_train, y_train = self._prepare_sequenced_dataset(
             df_train,
@@ -313,7 +265,6 @@ class LSTMModel:
         early_stopping = self._create_early_stopping_callback()
 
         carbon_tracker.start()
-
         history = self.model.fit(
             X_train,
             y_train,
@@ -326,7 +277,6 @@ class LSTMModel:
         )
 
         self.training_emissions = carbon_tracker.stop()
-
         return history
 
     # =========================================================================
@@ -334,11 +284,11 @@ class LSTMModel:
     # =========================================================================
 
     def predict_probabilities_from_sequences(self, X_sequences):
-        # Predict probabilities from pre-built sequences
+        # Predict probabilities from pre-built sequences.
         return self.model.predict(X_sequences, verbose=0)
 
     def predict_from_sequences(self, X_sequences):
-        # Predict binary labels from pre-built sequences."""
+        # Predict binary labels from pre-built sequences.
         threshold = self.config.get("threshold", DEFAULT_THRESHOLD)
         predicted_probabilities = self.predict_probabilities_from_sequences(X_sequences)
         predicted_labels = (predicted_probabilities >= threshold).astype(int).flatten()
@@ -355,7 +305,7 @@ class LSTMModel:
         label_col="isMalicious",
         group_col="Computer",
     ):
-        # Evaluate the LSTM on a test dataframe."""
+        # Evaluate the LSTM on a test dataframe.
         X_test, y_test = self._prepare_sequenced_dataset(
             df_test,
             feature_columns,
@@ -370,14 +320,8 @@ class LSTMModel:
         return self.metrics
 
     def inference_with_metrics(self, X_sequences, y_sequences):
-        
         # Run one tracked inference pass on pre-built sequences.
-        
-        tracker = EmissionsTracker(
-            output_dir="emissions",
-            project_name="lstm_inference",
-            log_level="error",
-        )
+        tracker = EmissionsTracker(output_dir="emissions", project_name="lstm_inference", log_level="error")
 
         tracker.start()
         start_time = time.perf_counter()
@@ -407,7 +351,7 @@ class LSTMModel:
         return result
 
     def get_inference_summary(self):
-        # Return mean and standard deviation across all recorded inference runs."""
+        # Return mean and standard deviation across all recorded inference runs.
         if not self.inference_results:
             print("No inference runs recorded yet.")
             return None

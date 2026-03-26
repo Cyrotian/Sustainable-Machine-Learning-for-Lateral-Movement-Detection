@@ -1,5 +1,6 @@
 # complexity_sweep.py - Measure how model complexity affects performance and emissions.
 
+import os
 import time
 import warnings
 import numpy as np
@@ -81,21 +82,19 @@ def record_result(
     inference_emissions,
 ):
     # Store one model result in the results list.
-    results.append(
-        {
-            "model": model_name,
-            "parameter_name": parameter_name,
-            "parameter_value": parameter_value,
-            "f1": f1,
-            "precision": precision,
-            "recall": recall,
-            "fpr": false_positive_rate,
-            "train_time": training_time,
-            "train_emissions": training_emissions,
-            "inference_time": inference_time,
-            "inference_emissions": inference_emissions,
-        }
-    )
+    results.append({
+        "model": model_name,
+        "parameter_name": parameter_name,
+        "parameter_value": parameter_value,
+        "f1": f1,
+        "precision": precision,
+        "recall": recall,
+        "fpr": false_positive_rate,
+        "train_time": training_time,
+        "train_emissions": training_emissions,
+        "inference_time": inference_time,
+        "inference_emissions": inference_emissions,
+    })
 
 
 def calculate_classification_metrics(true_labels, predicted_labels):
@@ -112,7 +111,6 @@ def calculate_classification_metrics(true_labels, predicted_labels):
 
 def run_with_emissions_tracking(function_to_run, project_name, *args, **kwargs):
     # Run a function while measuring time and emissions.
-    #
     # Returns:
     # - function result
     # - elapsed time
@@ -125,7 +123,6 @@ def run_with_emissions_tracking(function_to_run, project_name, *args, **kwargs):
     elapsed_time = time.time() - start_time
 
     emissions = tracker.stop()
-
     return function_result, elapsed_time, emissions
 
 
@@ -142,7 +139,6 @@ def save_results_to_csv(results, output_csv_path):
 
 def load_supervised_data():
     # Load the train and test datasets used by Random Forest and LightGBM.
- 
     print("Loading supervised train and test data...")
 
     training_dataframe = load_csv_file(TRAIN_CSV)
@@ -174,9 +170,7 @@ def encode_categorical_columns(X_train, X_test):
     for column_name in categorical_columns:
         label_encoder = LabelEncoder()
 
-        encoded_X_train[column_name] = label_encoder.fit_transform(
-            X_train[column_name].astype(str)
-        )
+        encoded_X_train[column_name] = label_encoder.fit_transform(X_train[column_name].astype(str))
 
         known_classes = set(label_encoder.classes_)
         fallback_class = label_encoder.classes_[0]
@@ -238,9 +232,7 @@ def sweep_random_forest(X_train, y_train, X_test, y_test, results):
             X_test,
         )
 
-        f1, precision, recall, false_positive_rate = calculate_classification_metrics(
-            y_test, predictions
-        )
+        f1, precision, recall, false_positive_rate = calculate_classification_metrics(y_test, predictions)
 
         print(
             f"  F1: {f1:.4f} | "
@@ -304,9 +296,7 @@ def sweep_lightgbm(X_train, y_train, X_test, y_test, results):
             X_test,
         )
 
-        f1, precision, recall, false_positive_rate = calculate_classification_metrics(
-            y_test, predictions
-        )
+        f1, precision, recall, false_positive_rate = calculate_classification_metrics(y_test, predictions)
 
         print(
             f"  F1: {f1:.4f} | "
@@ -337,7 +327,6 @@ def sweep_lightgbm(X_train, y_train, X_test, y_test, results):
 def split_lstm_data_by_computer(train_dataframe, validation_fraction=0.2):
     # Split LSTM training data by Computer so validation uses unseen machines.
     computer_ids = train_dataframe[GROUP_COLUMN].unique()
-
     number_of_validation_computers = max(1, int(len(computer_ids) * validation_fraction))
 
     random_generator = np.random.default_rng(RANDOM_STATE)
@@ -346,13 +335,8 @@ def split_lstm_data_by_computer(train_dataframe, validation_fraction=0.2):
     validation_computers = computer_ids[:number_of_validation_computers]
     training_computers = computer_ids[number_of_validation_computers:]
 
-    training_split = train_dataframe[
-        train_dataframe[GROUP_COLUMN].isin(training_computers)
-    ].copy()
-
-    validation_split = train_dataframe[
-        train_dataframe[GROUP_COLUMN].isin(validation_computers)
-    ].copy()
+    training_split = train_dataframe[train_dataframe[GROUP_COLUMN].isin(training_computers)].copy()
+    validation_split = train_dataframe[train_dataframe[GROUP_COLUMN].isin(validation_computers)].copy()
 
     return training_split, validation_split, training_computers, validation_computers
 
@@ -366,12 +350,7 @@ def encode_and_scale_lstm_data(training_dataframe, other_dataframe, feature_colu
     label_encoders = {}
     scaler = MinMaxScaler()
 
-    categorical_columns = (
-        training_dataframe[feature_columns]
-        .select_dtypes(include=["object"])
-        .columns
-        .tolist()
-    )
+    categorical_columns = training_dataframe[feature_columns].select_dtypes(include=["object"]).columns.tolist()
 
     for column_name in categorical_columns:
         label_encoder = LabelEncoder()
@@ -387,18 +366,12 @@ def encode_and_scale_lstm_data(training_dataframe, other_dataframe, feature_colu
             replace_unknown_category,
             args=(known_classes, fallback_class),
         )
-        processed_other_dataframe[column_name] = label_encoder.transform(
-            processed_other_dataframe[column_name]
-        )
+        processed_other_dataframe[column_name] = label_encoder.transform(processed_other_dataframe[column_name])
 
         label_encoders[column_name] = label_encoder
 
-    processed_training_dataframe[feature_columns] = scaler.fit_transform(
-        processed_training_dataframe[feature_columns]
-    )
-    processed_other_dataframe[feature_columns] = scaler.transform(
-        processed_other_dataframe[feature_columns]
-    )
+    processed_training_dataframe[feature_columns] = scaler.fit_transform(processed_training_dataframe[feature_columns])
+    processed_other_dataframe[feature_columns] = scaler.transform(processed_other_dataframe[feature_columns])
 
     return processed_training_dataframe, processed_other_dataframe
 
@@ -420,14 +393,11 @@ def create_lstm_sequences(
 
     for computer_id in computer_ids:
         computer_rows = dataframe[dataframe[group_column] == computer_id]
-
         feature_values = computer_rows[feature_columns].values
         label_values = computer_rows[label_column].values
 
-        
         for start_index in range(len(feature_values) - window_size + 1):
             end_index = start_index + window_size
-
             window = feature_values[start_index:end_index]
             label = label_values[end_index - 1]
 
@@ -450,18 +420,10 @@ def load_and_prepare_lstm_datasets():
     full_training_dataframe = load_csv_file(LSTM_TRAIN_CSV)
     full_test_dataframe = load_csv_file(LSTM_TEST_CSV)
 
-    training_split, validation_split, training_computers, validation_computers = (
-        split_lstm_data_by_computer(full_training_dataframe)
-    )
+    training_split, validation_split, training_computers, validation_computers = split_lstm_data_by_computer(full_training_dataframe)
 
-    print(
-        f"  Train computers: {len(training_computers)} | "
-        f"Validation computers: {len(validation_computers)}"
-    )
-    print(
-        f"  Train rows: {len(training_split):,} | "
-        f"Validation rows: {len(validation_split):,}"
-    )
+    print(f"  Train computers: {len(training_computers)} | Validation computers: {len(validation_computers)}")
+    print(f"  Train rows: {len(training_split):,} | Validation rows: {len(validation_split):,}")
 
     encoded_training_split, encoded_test_dataframe = encode_and_scale_lstm_data(
         training_split,
@@ -469,32 +431,16 @@ def load_and_prepare_lstm_datasets():
         FEATURE_COLUMNS,
     )
 
-    _, encoded_validation_split = encode_and_scale_lstm_data(
-        training_split,
-        validation_split,
-        FEATURE_COLUMNS,
-    )
+    _, encoded_validation_split = encode_and_scale_lstm_data(training_split, validation_split, FEATURE_COLUMNS)
 
     print("\nBuilding LSTM training sequences...")
-    X_train, y_train = create_lstm_sequences(
-        encoded_training_split,
-        FEATURE_COLUMNS,
-        LSTM_WINDOW_SIZE,
-    )
+    X_train, y_train = create_lstm_sequences(encoded_training_split, FEATURE_COLUMNS, LSTM_WINDOW_SIZE)
 
     print("Building LSTM validation sequences...")
-    X_validation, y_validation = create_lstm_sequences(
-        encoded_validation_split,
-        FEATURE_COLUMNS,
-        LSTM_WINDOW_SIZE,
-    )
+    X_validation, y_validation = create_lstm_sequences(encoded_validation_split, FEATURE_COLUMNS, LSTM_WINDOW_SIZE)
 
     print("Building LSTM test sequences...")
-    X_test, y_test = create_lstm_sequences(
-        encoded_test_dataframe,
-        FEATURE_COLUMNS,
-        LSTM_WINDOW_SIZE,
-    )
+    X_test, y_test = create_lstm_sequences(encoded_test_dataframe, FEATURE_COLUMNS, LSTM_WINDOW_SIZE)
 
     y_train = y_train.astype(int)
     y_validation = y_validation.astype(int)
@@ -506,12 +452,7 @@ def load_and_prepare_lstm_datasets():
 def calculate_lstm_class_weights(y_train):
     # Calculate balanced class weights for the LSTM.
     unique_classes = np.unique(y_train)
-    class_weight_values = compute_class_weight(
-        class_weight="balanced",
-        classes=unique_classes,
-        y=y_train,
-    )
-
+    class_weight_values = compute_class_weight(class_weight="balanced", classes=unique_classes, y=y_train)
     class_weights = dict(zip(unique_classes.astype(int), class_weight_values))
     return class_weights
 
@@ -526,45 +467,23 @@ def build_lstm_model(number_of_hidden_units, number_of_features):
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import LSTM, Dense, Dropout
 
-    model = Sequential(
-        [
-            LSTM(
-                number_of_hidden_units,
-                input_shape=(LSTM_WINDOW_SIZE, number_of_features),
-                return_sequences=False,
-            ),
-            Dropout(0.2),
-            Dense(32, activation="relu"),
-            Dropout(0.2),
-            Dense(1, activation="sigmoid"),
-        ]
-    )
+    model = Sequential([
+        LSTM(number_of_hidden_units, input_shape=(LSTM_WINDOW_SIZE, number_of_features), return_sequences=False),
+        Dropout(0.2),
+        Dense(32, activation="relu"),
+        Dropout(0.2),
+        Dense(1, activation="sigmoid"),
+    ])
 
-    model.compile(
-        optimizer="adam",
-        loss="binary_crossentropy",
-        metrics=["accuracy", "recall"],
-    )
-
+    model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy", "recall"])
     return model
 
 
-def train_lstm_model(
-    model,
-    X_train,
-    y_train,
-    X_validation,
-    y_validation,
-    class_weights,
-):
+def train_lstm_model(model, X_train, y_train, X_validation, y_validation, class_weights):
     # Train the LSTM model with early stopping.
     from tensorflow.keras.callbacks import EarlyStopping
 
-    early_stopping = EarlyStopping(
-        monitor="val_loss",
-        patience=LSTM_PATIENCE,
-        restore_best_weights=True,
-    )
+    early_stopping = EarlyStopping(monitor="val_loss", patience=LSTM_PATIENCE, restore_best_weights=True)
 
     history = model.fit(
         X_train,
@@ -596,9 +515,7 @@ def sweep_lstm(results):
 
     print_section("LSTM SWEEP")
 
-    X_train, y_train, X_validation, y_validation, X_test, y_test = (
-        load_and_prepare_lstm_datasets()
-    )
+    X_train, y_train, X_validation, y_validation, X_test, y_test = load_and_prepare_lstm_datasets()
 
     class_weights = calculate_lstm_class_weights(y_train)
     print(f"  Class weights: {class_weights}")
@@ -636,9 +553,7 @@ def sweep_lstm(results):
             0.5,
         )
 
-        f1, precision, recall, false_positive_rate = calculate_classification_metrics(
-            y_test, predictions
-        )
+        f1, precision, recall, false_positive_rate = calculate_classification_metrics(y_test, predictions)
 
         print(
             f"  F1: {f1:.4f} | "

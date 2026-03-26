@@ -1,10 +1,7 @@
-# feature_engineering.py - Remove weak features and create better ones.
+# feature_engineering.py - remove bad features,  create better ones.
 
 import pandas as pd
 import numpy as np
-
-
-# CONFIGURATION
 
 RANDOM_STATE = 42
 LABEL_COLUMN = "isMalicious"
@@ -20,8 +17,6 @@ ATTACK_TOOLS = [
     "smbexec",
     "psexec",
     "psexesvc",
-    "powershell",
-    "cmd.exe",
 ]
 
 INFRA_TOOLS = ["splunk", "streamfwd"]
@@ -40,6 +35,14 @@ METADATA_COLUMNS = [
     "UtcTime",
     "CreationUtcTime",
     "PreviousCreationUtcTime",
+    "User",
+    "Name",
+    "Version",
+    "StartFunction",
+]
+
+# GUid columns
+GUID_COLUMNS = [
     "Guid",
     "ProcessGuid",
     "SourceProcessGUID",
@@ -48,6 +51,10 @@ METADATA_COLUMNS = [
     "SourceProcessGuid",
     "TargetProcessGuid",
     "LogonGuid",
+]
+
+# Identifier columns
+ID_COLUMNS = [
     "ProcessID",
     "ProcessId",
     "ThreadID",
@@ -56,13 +63,10 @@ METADATA_COLUMNS = [
     "SourceProcessId",
     "SourceThreadId",
     "TargetProcessId",
-    "User",
     "UserID",
-    "Name",
-    "Version",
-    "StartFunction",
 ]
 
+# May contains dataset specific data
 LEAK_RISK_COLUMNS = [
     "CommandLine",
     "ParentCommandLine",
@@ -119,12 +123,13 @@ def find_near_zero_variance_columns(dataframe):
 
     return near_zero_variance_columns
 
-
 def combine_columns_to_drop(dataframe, near_zero_variance_columns):
     # Combine all feature-removal lists and keep only columns that actually exist.
     all_candidate_columns = (
         near_zero_variance_columns
         + METADATA_COLUMNS
+        + GUID_COLUMNS
+        + ID_COLUMNS
         + LEAK_RISK_COLUMNS
         + REDUNDANT_COLUMNS
     )
@@ -142,25 +147,18 @@ def combine_columns_to_drop(dataframe, near_zero_variance_columns):
 
 def drop_features(dataframe):
     # Remove features that are likely to harm generalisation.
-    #
-    # Removed feature types:
-    # 1. Near-zero variance columns
-    # 2. Metadata and identifier columns
-    # 3. High-cardinality leak-risk columns
-    # 4. Redundant columns
-    #
-    # Returns:
-    # - cleaned dataframe
-    # - dropped column list
-    # - original feature count
+
     h("SECTION 1: FEATURE REMOVAL")
 
     near_zero_variance_columns = find_near_zero_variance_columns(dataframe)
 
     print("1a. Near-zero variance columns:", len(near_zero_variance_columns))
-    print("1b. Metadata / identifiers:", len(METADATA_COLUMNS))
-    print("1c. High-cardinality leak risk:", len(LEAK_RISK_COLUMNS))
-    print("1d. Redundant:", len(REDUNDANT_COLUMNS))
+    print("1b. Metadata columns:", len(METADATA_COLUMNS))
+    print("1c. GUID columns:", len(GUID_COLUMNS))
+    print("1d. ID columns:", len(ID_COLUMNS))
+    print("1e. Leak-risk columns:", len(LEAK_RISK_COLUMNS))
+    print("1f. Redundant columns:", len(REDUNDANT_COLUMNS))
+    print("")
 
     final_columns_to_drop = combine_columns_to_drop(
         dataframe,
@@ -207,13 +205,8 @@ def categorise_image(image_path):
 
 
 def bin_port(port_series):
-    # Convert raw port numbers into broader categories:
-    # - NotPopulated: 0 or missing
-    # - WellKnown: 1-1023
-    # - Registered: 1024-49151
-    # - Ephemeral: 49152-65536
     port_numbers = pd.to_numeric(port_series, errors="coerce").fillna(0).astype(int)
-
+    # Convert raw port numbers into broader more relevent categories
     def classify_port(port_number):
         if port_number == 0:
             return "NotPopulated"
@@ -274,18 +267,14 @@ def group_rare_categories(dataframe, rare_threshold):
         )
 
         print(
-            "Done:",
-            column_name,
-            "- grouped",
-            len(rare_categories),
-            "rare categories",
+            "Done:",column_name,"- grouped", len(rare_categories),"rare categories",
         )
 
     return updated_dataframe
 
 
 def create_logonid_flag(dataframe):
-    # Replace LogonId with a simple populated / not-populated flag.
+    # Replace LogonId with a simple populated / not-populated
     updated_dataframe = dataframe.copy()
 
     if "LogonId" in updated_dataframe.columns:
