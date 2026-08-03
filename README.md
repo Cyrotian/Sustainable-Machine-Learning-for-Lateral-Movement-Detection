@@ -4,7 +4,7 @@ A comparative analysis of machine learning models for detecting lateral movement
 
 ## Overview
 
-This research evaluates three machine learning models — **Random Forest**, **LightGBM**, and **LSTM** — for lateral movement detection using both traditional performance metrics and environmental impact measures. Models are trained on LMD-2022 and tested on LMD-2023 in a cross-year generalisation design, providing a more rigorous evaluation than within-dataset cross-validation.
+This research evaluates three machine learning models: **Random Forest**, **LightGBM**, and **LSTM** — for lateral movement detection using both traditional performance metrics and environmental impact measures. Models are trained on LMD-2022 and tested on LMD-2023 in a cross-year generalisation design, providing a more rigorous evaluation than within-dataset cross-validation.
 
 A key empirical finding is that tree-based models (Random Forest, LightGBM) achieve peak F1 at minimum configuration, while LSTM scales emissions without meaningful performance gains. The **Sustainability Score** (SS) is introduced as a supporting analytical tool to surface these trade-offs, rather than as the primary contribution.
 
@@ -157,9 +157,3 @@ Supervisor: Panos
 ## License
 
 This project is part of academic research at Brunel University London.
-
-## Acknowledgments
-
-- Brunel University London — Computer Science Department
-- Dissertation Supervisor — Panos
-- LMD Dataset Contributors
