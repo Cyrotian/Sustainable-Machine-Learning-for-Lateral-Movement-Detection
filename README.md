@@ -25,8 +25,6 @@ A key empirical finding is that tree-based models (Random Forest, LightGBM) achi
 
 The cross-year train/test split tests genuine temporal generalisation, guarding against the testbed leakage artefacts common in prior work (e.g., Smiliotopoulos et al., 2023).
 
-> **Note on the Infra/Splunk testbed:** The LMD datasets contain an infrastructure/Splunk logging artefact with a 99.99% correlation with the malicious class. An ablation study is included showing that tree-based models are more vulnerable to this confound than LSTM due to their reliance on feature importance rankings.
-
 ## Models Evaluated
 
 | Model | Type | Role |
@@ -58,8 +56,8 @@ High-cardinality categorical features use rare-category grouping; LabelEncoder c
 - Inference Time
 
 ### Sustainability Metrics
-- Energy Consumption (kWh) — inference phase only
-- CO₂ Emissions (kg CO₂eq) — 10 inference iterations per model
+- Energy Consumption (kWh) - inference phase only
+- CO₂ Emissions (kg CO₂eq) - 10 inference iterations per model
 - Carbon Intensity
 
 ### Composite Sustainability Score
@@ -100,57 +98,16 @@ Sensitivity analysis across scenarios:
 - Tree models show greater sensitivity to the Infra/Splunk testbed artefact than LSTM
 
 
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/cyrotian/sustainable-ml-lateral-movement.git
-cd sustainable-ml-lateral-movement
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-## Requirements
-
-```
-pandas
-numpy
-scikit-learn
-lightgbm
-tensorflow
-codecarbon
-matplotlib
-seaborn
-```
-
-## Usage
-
-```bash
-# Run full pipeline (train on LMD-2022, test on LMD-2023)
-python src/orchestrator.py
-
-# Run complexity-emissions sweep
-python evaluation/sustainability_metrics.py --sweep
-
-# Generate results report
-python evaluation/performance_metrics.py --report
-```
-
 ## References
 
-- Usman et al. — Systems Theory Model for sustainability assessment
-- Lannelongue et al. — Green Algorithms: carbon footprint measurement framework
-- Smiliotopoulos et al. (2023) — Lateral movement detection benchmark (within-dataset CV)
-- MITRE ATT&CK — Lateral Movement tactics and techniques (TA0008)
+- Usman et al. - Systems Theory Model for sustainability assessment
+- Lannelongue et al. - Green Algorithms: carbon footprint measurement framework
+- Smiliotopoulos et al. (2023) - Lateral movement detection benchmark (within-dataset CV)
+- MITRE ATT&CK - Lateral Movement tactics and techniques (TA0008)
 
 ## Author
 
-**Michael Olanegan** — BSc Computer Science, Brunel University London  
+**Michael Olanegan** - BSc Computer Science, Brunel University London  
 
 ## License
 
