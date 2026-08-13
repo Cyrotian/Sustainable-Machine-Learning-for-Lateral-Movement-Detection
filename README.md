@@ -4,7 +4,7 @@ A comparative analysis of machine learning models for detecting lateral movement
 
 ## Overview
 
-This research evaluates three machine learning models: **Random Forest**, **LightGBM**, and **LSTM** for lateral movement detection using both traditional performance metrics and environmental impact measures. Models are trained on LMD-2022 and tested on LMD-2023 in a cross-year generalisation design, providing a more rigorous evaluation than within-dataset cross-validation.
+This research evaluates three machine learning models: **Random Forest**, **LightGBM**, and **LSTM** for lateral movement detection using both traditional performance metrics and environmental impact measures. Models are trained on LMD-2022 and tested on LMD-2023 in a cross-year generalisation design
 
 A key empirical finding is that tree-based models (Random Forest, LightGBM) achieve peak F1 at minimum configuration, while LSTM scales emissions without meaningful performance gains. The **Sustainability Score** (SS) is introduced as a supporting analytical tool to surface these trade-offs, rather than as the primary contribution.
 
@@ -81,18 +81,18 @@ Sensitivity analysis across scenarios:
 
 ## Methodology
 
-1. **Data Preprocessing** — Feature extraction, rare-category grouping, label encoding
-2. **Feature Selection** — Random Forest importance (top 5 features)
-3. **Model Training** — LMD-2022; consistent preprocessing pipeline
-4. **Cross-Year Testing** — Evaluation on LMD-2023 for generalisation
-5. **Carbon Tracking** — CodeCarbon for inference-phase emissions (10 iterations)
-6. **Complexity-Emissions Sweep** — Configuration variation to map performance/sustainability frontier
-7. **Ablation Study** — Infra/Splunk confound analysis
-8. **Sustainability Scoring** — SAW with sensitivity analysis across weight scenarios
+1. **Data Preprocessing** - Feature extraction, rare-category grouping, label encoding
+2. **Feature Selection** - Random Forest importance (top 5 features)
+3. **Model Training** - LMD-2022; consistent preprocessing pipeline
+4. **Cross-Year Testing** - Evaluation on LMD-2023 for generalisation
+5. **Carbon Tracking** - CodeCarbon for inference-phase emissions (10 iterations)
+6. **Complexity-Emissions Sweep** - Configuration variation to map performance/sustainability frontier
+7. **Ablation Study** - Infra/Splunk confound analysis
+8. **Sustainability Scoring** - SAW with sensitivity analysis across weight scenarios
 
 ## Key Findings
 
-- Tree models (RF, LightGBM) reach peak F1 at minimum configuration — additional complexity yields no gains
+- Tree models (RF, LightGBM) reach peak F1 at minimum configuration - additional complexity yields no gains
 - LSTM emissions scale with configuration without corresponding F1 improvement
 - The complexity-emissions sweep reframes the SS as a decision-support tool for identifying the efficient frontier
 - Tree models show greater sensitivity to the Infra/Splunk testbed artefact than LSTM
