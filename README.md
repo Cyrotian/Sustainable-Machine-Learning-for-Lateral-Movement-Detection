@@ -90,25 +90,3 @@ Sensitivity analysis across scenarios:
 7. **Ablation Study** - Infra/Splunk confound analysis
 8. **Sustainability Scoring** - SAW with sensitivity analysis across weight scenarios
 
-## Key Findings
-
-- Tree models (RF, LightGBM) reach peak F1 at minimum configuration - additional complexity yields no gains
-- LSTM emissions scale with configuration without corresponding F1 improvement
-- The complexity-emissions sweep reframes the SS as a decision-support tool for identifying the efficient frontier
-- Tree models show greater sensitivity to the Infra/Splunk testbed artefact than LSTM
-
-
-## References
-
-- Usman et al. - Systems Theory Model for sustainability assessment
-- Lannelongue et al. - Green Algorithms: carbon footprint measurement framework
-- Smiliotopoulos et al. (2023) - Lateral movement detection benchmark (within-dataset CV)
-- MITRE ATT&CK - Lateral Movement tactics and techniques (TA0008)
-
-## Author
-
-**Michael Olanegan** - BSc Computer Science, Brunel University London  
-
-## License
-
-This project is part of academic research at Brunel University London.
