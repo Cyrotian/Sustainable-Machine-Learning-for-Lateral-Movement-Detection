@@ -1,6 +1,6 @@
 # Sustainable Machine Learning for Lateral Movement Detection
 
-A comparative analysis of machine learning models for detecting lateral movement in enterprise networks, evaluated through the dual lens of detection performance and environmental sustainability.
+An analysis of machine learning models for detecting lateral movement in enterprise networks, evaluated through the lens of detection performance and environmental sustainability.
 
 ## Overview
 
