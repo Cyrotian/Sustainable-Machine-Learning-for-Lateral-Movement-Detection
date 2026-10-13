@@ -8,7 +8,7 @@ Lateral movement is a technique attackers use to move between systems after gain
 
 This project investigates whether that additional complexity leads to meaningful improvements in detection performance.
 
-Three models — **Random Forest, LightGBM and LSTM** — were trained on LMD-2022 and evaluated on LMD-2023 to assess their ability to generalise across datasets collected in different years.
+Three models - **Random Forest, LightGBM and LSTM** - were trained on LMD-2022 and evaluated on LMD-2023 to assess their ability to generalise across datasets collected in different years.
 
 Alongside conventional classification metrics, I measured inference time, energy consumption and CO₂ emissions using CodeCarbon. I also tested different model configurations to examine how increasing complexity affects both detection performance and environmental cost.
 
