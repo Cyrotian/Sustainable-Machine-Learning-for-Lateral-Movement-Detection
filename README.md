@@ -145,13 +145,15 @@ The research followed eight stages.
 
 ## Key Takeaway
 
-**The most complex model was not automatically the most practical.**
+**The most complex model was not necessarily the most practical, but the most efficient model was not always the best choice either.**
 
-LSTM achieved the highest F1-score in the main comparison, but Random Forest and LightGBM delivered competitive detection performance with substantially lower inference time and estimated emissions.
+Random Forest and LightGBM achieved detection performance close to LSTM while requiring considerably less inference time and producing lower emissions. This makes tree-based models better suited to the first stage of detection, where large volumes of network activity need to be processed.
 
-The complexity experiments also showed that increasing model capacity could raise energy consumption and emissions without providing proportionate improvements in detection.
+LSTM could be more useful as a second-stage model, analysing suspicious activity flagged by the tree-based models. Its ability to capture temporal dependencies may help identify more complex attacks that simpler models miss, without applying its higher computational cost to every event.
 
-These findings support considering **detection performance, computational efficiency and environmental impact together** when selecting machine learning models for cybersecurity applications.
+This also raises an important consideration around Red AI: greater computational cost may be justified when the additional detection capability provides sufficient operational benefit. In cybersecurity, preventing a serious breach could potentially avoid resource-intensive recovery operations and their associated emissions.
+
+While this two-stage approach was not experimentally evaluated, it offers a direction for future research into balancing detection effectiveness, operational efficiency and environmental sustainability.
 
 ---
 
