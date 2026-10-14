@@ -1,73 +1,112 @@
+
 # Sustainable Machine Learning for Lateral Movement Detection
 
-A comparison of **Random Forest, LightGBM and LSTM** for detecting lateral movement in enterprise networks, with a focus on how detection performance changes alongside inference time, energy use and carbon emissions.
+A comparison of **Random Forest, LightGBM and LSTM** for detecting lateral movement in enterprise networks, examining detection performance, inference time, energy consumption and carbon emissions.
 
 ## Overview
 
-Lateral movement occurs when an attacker moves between systems after gaining access to a network. Machine learning may help detect this activity, but a more complex model is not necessarily a better choice once computational and environmental costs are considered.
+Lateral movement occurs when an attacker moves between systems after gaining access to a network. Machine learning can help detect this activity, but more complex models also require more computational resources.
 
-This BSc Computer Science dissertation investigates a practical question: **Does the improvement in detection justify the additional cost of a more complex model?**
+This BSc Computer Science dissertation investigates a practical question: **Does improving detection performance justify the additional computational and environmental cost of more complex models?**
 
-The three models were trained on **LMD-2022** and evaluated on **LMD-2023**. I compared classification performance and inference costs, then varied model complexity to examine how emissions scale. I also developed a **Sustainability Score** using Simple Additive Weighting (SAW) to explore how model selection changes under different priorities.
+Three models were trained on **LMD-2022** and evaluated on **LMD-2023** to assess cross-year generalisation. I compared classification performance, inference time and carbon emissions, then varied model complexity to examine how resource consumption changes.
+
+I also developed a **Sustainability Score** using Simple Additive Weighting (SAW) to explore how model selection changes depending on operational priorities.
 
 ## Results
 
-### 1. Detection performance versus environmental cost
+### Detection Performance vs Environmental Cost
 
-![Comparison of F1 score, precision, inference time and CO2 emissions for Random Forest, LightGBM and LSTM](images/model-comparison.png)
+![Comparison of F1-score, precision, inference time and CO2 emissions for Random Forest, LightGBM and LSTM](images/model-comparison.png)
 
-The LSTM produced the highest F1-score in the model comparison, but it also had substantially greater inference time and estimated emissions.
+The LSTM achieved the highest F1-score in the main comparison, but required substantially more inference time and produced higher estimated carbon emissions.
 
-| Model | F1-score | Precision | Inference time | Inference CO₂ |
+| Model | F1-score | Precision | Inference Time | CO₂ Emissions |
 |---|---:|---:|---:|---:|
 | Random Forest | 0.9763 | 0.9958 | 1.57 s | 3.7 µg |
 | LightGBM | 0.9763 | 0.9958 | 1.64 s | 4.1 µg |
 | LSTM | 0.9855 | 0.9966 | 50.24 s | 216.2 µg |
 
-The difference in F1-score was relatively small compared with the increase in inference cost. These figures come from the model-comparison experiment; the complexity sweeps below are separate measurements and should not be treated as the same benchmark runs.
+Although LSTM improved the F1-score, the increase was relatively small compared with its additional inference cost.
 
-### 2. How tree-model complexity affects emissions
+Random Forest and LightGBM achieved competitive detection performance with considerably lower inference time and emissions.
 
-![Training and inference CO2 emissions at different estimator counts for Random Forest and LightGBM](images/tree-model-emissions.png)
+These results illustrate why detection performance alone may not be sufficient when selecting models for operational cybersecurity systems.
 
-I varied the number of estimators in Random Forest and LightGBM and measured emissions during training and inference. Both models showed a strong, approximately linear relationship between estimator count and **inference emissions** across the tested settings (R² = 0.9976 for Random Forest and 0.9971 for LightGBM).
+### Model Complexity and Carbon Emissions
 
-Increasing the number of estimators raised emissions without a corresponding improvement in the best observed F1-score. This makes model configuration an important part of the sustainability trade-off, even within relatively efficient tree-based approaches.
+I also investigated how changing model complexity affected energy consumption, emissions and detection performance.
 
-### 3. How LSTM complexity affects emissions
+For **Random Forest and LightGBM**, I varied the number of estimators and measured emissions during training and inference. Increasing the estimator count generally increased emissions without improving the best observed F1-score.
 
-![Training and inference CO2 emissions at different LSTM hidden-unit counts](images/lstm-emissions.png)
+For **LSTM**, I varied the number of hidden units. Larger configurations required more computational resources, while improvements in detection performance were comparatively limited.
 
-I also varied the number of hidden units in the LSTM. Both training and inference emissions generally increased with model size. The inference-emissions trend had an R² of 0.9662 across the tested configurations.
+These experiments showed that increasing model complexity does not necessarily provide a proportional improvement in detection performance.
 
-The larger configurations consumed more resources, while the detection improvements were comparatively limited. The result was a clear example of diminishing returns from additional complexity.
+The complexity experiments were conducted separately from the main model comparison.
 
 ## Sustainability Score
 
-Performance and emissions are not always enough to identify one universally preferable model. A Security Operations Centre (SOC), for example, might place more weight on missed detections, false alarms or inference speed than an organisation prioritising carbon efficiency.
+The model with the highest detection performance is not necessarily the best choice for every organisation.
 
-To make those trade-offs explicit, I used **Simple Additive Weighting (SAW)** to combine four criteria into a Sustainability Score:
+For example, a Security Operations Centre (SOC) might prioritise reducing false positives and inference time, while another organisation might place greater importance on carbon emissions.
 
-`SS = α × F1 + β × (1 − Inference_norm) + γ × (1 − CO₂_norm) + δ × (1 − FPR_norm)`
+To explore these trade-offs, I developed a **Sustainability Score (SS)** using Simple Additive Weighting (SAW).
 
-Here, the latter three metrics are normalised so that lower time, emissions and false positive rate contribute positively to the score. The equal-weight baseline sets `α = β = γ = δ = 0.25`.
+The score combines four criteria:
 
-![Sustainability Scores for LSTM, Random Forest and LightGBM across five weighting scenarios](images/sustainability-score.png)
+- F1-score
+- False Positive Rate (FPR)
+- Inference Time
+- CO₂ Emissions
 
-The chart compares five weighting scenarios: **Equal, Detection First, Speed First, Green First and SOC Operational**. Random Forest ranked first under Equal, Speed First and Green First; LSTM ranked first under Detection First and SOC Operational. These rankings depend on the chosen weights and normalisation, so the score is a decision-support tool rather than an absolute measure of model quality.
+The formula is:
 
-## Datasets and feature selection
+$$
+SS = \alpha F1 + \beta(1 - Inference_{norm}) + \gamma(1 - CO_{2,norm}) + \delta(1 - FPR_{norm})
+$$
 
-| Dataset | Role |
-|---|---|
-| **LMD-2022** | Training and feature selection |
-| **LMD-2023** | Independent cross-year testing |
+The cost metrics are normalised so that lower inference time, emissions and false positive rates contribute positively to the score.
 
-Using a different year's dataset for testing provides a more demanding check of generalisation than testing only on a random split of the training dataset. It does not, by itself, eliminate every possible source of leakage.
+The baseline uses equal weights:
 
-Preprocessing included feature engineering, rare-category grouping and consistent categorical encoding across training and testing. I compared Mutual Information with Random Forest feature importance. Mutual Information gave too much importance to `EventID`, which contributed to overfitting, so I used the Random Forest-based selection.
+$$
+\alpha = \beta = \gamma = \delta = 0.25
+$$
 
-The final five features were:
+I evaluated five weighting scenarios:
+
+1. **Equal:** All four criteria receive equal weight.
+2. **Detection First:** Prioritises detection performance.
+3. **Speed First:** Prioritises inference time.
+4. **Green First:** Prioritises lower carbon emissions.
+5. **SOC Operational:** Reflects operational security priorities.
+
+The Sustainability Score is intended as a decision-support tool rather than an absolute measure of model quality. Model rankings depend on the criteria, normalisation and weights selected.
+
+## Datasets and Feature Selection
+
+Two lateral movement detection datasets were used:
+
+- **LMD-2022:** Used for model training and feature selection.
+- **LMD-2023:** Used for independent cross-year testing.
+
+Training and testing on different years provides a more demanding assessment of generalisation than relying entirely on a random split of one dataset. However, this approach does not eliminate every potential source of data leakage.
+
+### Feature Engineering
+
+Preprocessing included:
+
+- Data cleaning and feature engineering
+- Grouping rare categorical values
+- Encoding categorical features
+- Maintaining consistent feature representations across training and testing
+
+I compared Mutual Information with Random Forest feature importance for feature selection.
+
+Mutual Information gave excessive importance to `EventID`, which contributed to overfitting. Random Forest importance was therefore used to select the final features.
+
+The five selected features were:
 
 1. `Image_Category`
 2. `GrantedAccess`
@@ -77,21 +116,43 @@ The final five features were:
 
 ## Methodology
 
-1. **Prepare the data:** Clean the datasets, engineer features and group rare categorical values.
-2. **Select features:** Compare selection methods and retain the five features chosen using Random Forest importance.
-3. **Train the models:** Fit Random Forest, LightGBM and LSTM on LMD-2022.
-4. **Test generalisation:** Evaluate the trained models on LMD-2023 using F1-score, precision, recall, false positive rate and inference time.
-5. **Measure environmental cost:** Use CodeCarbon to track energy consumption and CO₂ emissions. The main inference evaluation used 10 iterations per model; the complexity experiments examined training and inference emissions.
-6. **Vary model complexity:** Change estimator counts or LSTM hidden-unit counts and compare the resulting performance and emissions.
-7. **Investigate confounding factors:** Carry out an ablation study of potential Infra/Splunk effects.
-8. **Compare operational priorities:** Calculate SAW-based Sustainability Scores for the five weighting scenarios.
+The research followed eight stages.
 
-## Tools and technologies
+1. **Data Preprocessing:** Cleaned the datasets, engineered features, grouped rare categories and encoded categorical variables.
 
-**Python**, pandas, NumPy, scikit-learn, LightGBM, TensorFlow/Keras and **CodeCarbon**.
+2. **Feature Selection:** Compared feature selection methods and retained five features using Random Forest importance.
 
-## Key takeaway
+3. **Model Training:** Trained Random Forest, LightGBM and LSTM on LMD-2022 using consistent preprocessing.
 
-The most complex model was not automatically the most practical. **LSTM achieved the highest F1-score in the main comparison, but Random Forest and LightGBM delivered competitive detection performance at much lower inference cost.** Across the complexity experiments, additional model capacity increased emissions without proportionate detection gains.
+4. **Cross-Year Evaluation:** Tested the trained models on LMD-2023 using F1-score, precision, recall, false positive rate and inference time.
 
-This project was completed as a **BSc Computer Science dissertation (2025–2026)** at Brunel University of London. Its focus is the measured trade-off between detection quality and computational cost, not production deployment or a reusable software package.
+5. **Carbon Measurement:** Used CodeCarbon to measure energy consumption and CO₂ emissions. The main inference evaluation used 10 iterations per model.
+
+6. **Complexity–Emissions Analysis:** Varied estimator counts for Random Forest and LightGBM and hidden-unit counts for LSTM to examine the relationship between complexity, detection performance and emissions.
+
+7. **Ablation Study:** Investigated potential Infra/Splunk confounding effects on model evaluation.
+
+8. **Sustainability Scoring:** Applied Simple Additive Weighting across five operational scenarios to compare model suitability under different priorities.
+
+## Tools and Technologies
+
+- **Python** - Data preprocessing, feature engineering and experimentation
+- **pandas and NumPy** - Data manipulation and numerical processing
+- **scikit-learn** - Random Forest, feature selection and evaluation metrics
+- **LightGBM** - Gradient-boosted decision trees
+- **TensorFlow/Keras** - LSTM implementation
+- **CodeCarbon** - Energy consumption and carbon-emissions measurement
+
+## Key Takeaway
+
+**The most complex model was not automatically the most practical.**
+
+LSTM achieved the highest F1-score in the main comparison, but Random Forest and LightGBM delivered competitive detection performance with substantially lower inference time and estimated emissions.
+
+The complexity experiments also showed that increasing model capacity could raise energy consumption and emissions without providing proportionate improvements in detection.
+
+These findings support considering **detection performance, computational efficiency and environmental impact together** when selecting machine learning models for cybersecurity applications.
+
+---
+
+**Research Context:** This project was completed as a BSc Computer Science dissertation (2025–2026) at Brunel University of London. It focuses on evaluating the performance and environmental cost of machine learning for lateral movement detection rather than production deployment.
